@@ -1,6 +1,8 @@
 package com.harish.TickIt.Authentication;
 
 import java.io.IOException;
+import java.util.Set;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.harish.TickIt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -33,7 +35,11 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 			if(jwtUtil.validateToken(token))
 			{
 				String username = jwtUtil.getUsernameFromToken(token);
-				org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null, java.util.Collections.emptyList());
+				Set<SimpleGrantedAuthority> auh= jwtUtil.getRolesFromToken(token).stream()
+																				  .map(r-> new SimpleGrantedAuthority(r))
+																				  .collect(java.util.stream.Collectors.toSet());
+				
+				org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null, auh);
 				org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
 				filterChain.doFilter(request, response);
 			}

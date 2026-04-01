@@ -2,6 +2,7 @@ package com.harish.TickIt.util;
 
 import java.util.Set;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.models.UserRegistration;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +11,12 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil
 {
-	private static final String SECRET_KEY= "har22dk@@*(ukl%^)bhdim?:>{qwfqqqcbm^!(@36831737IKNB)}jdch%&*!38372819(&^^";
+	@Value("${jwt.secret}")
+	private String SECRET_KEY;
+	
+	@Value("${jwt.expiration}")
+	private Long EXPIRATION_TIME;
+	
 	SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	
 	public String generateToken(UserRegistration user)
@@ -22,7 +28,7 @@ public class JwtUtil
 				.subject(user.getUserName())
 				.signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
 				.claim("roles", roles)
-				.expiration(new java.util.Date(System.currentTimeMillis() + 3600000))
+				.expiration(new java.util.Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.issuedAt(new java.util.Date(System.currentTimeMillis()))
 				.compact();
 	}
