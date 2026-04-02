@@ -17,6 +17,9 @@ public class Roles
 	{
 		this.roleName = r;
 	}
+	public Roles() {
+		// TODO Auto-generated constructor stub
+	}
 	public Long getId() {
 		return id;
 	}
