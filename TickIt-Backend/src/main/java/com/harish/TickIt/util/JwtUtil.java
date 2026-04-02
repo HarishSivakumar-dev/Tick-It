@@ -17,16 +17,17 @@ public class JwtUtil
 	@Value("${jwt.expiration}")
 	private Long EXPIRATION_TIME;
 	
-	SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	
 	public String generateToken(UserRegistration user)
 	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		
 		Set<String> roles= user.getRoles().stream()
 										  .map(r->r.getRoleName())
 										  .collect(java.util.stream.Collectors.toSet());
 		return Jwts.builder()
 				.subject(user.getUserName())
-				.signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+				.signWith(secretKey)
 				.claim("roles", roles)
 				.expiration(new java.util.Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.issuedAt(new java.util.Date(System.currentTimeMillis()))
@@ -35,6 +36,8 @@ public class JwtUtil
 	
 	public Set<String> getRolesFromToken(String token)
 	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		
 		Set<?> role= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("roles", Set.class);
 		
 		Set<String> ro= role.stream()
@@ -46,11 +49,13 @@ public class JwtUtil
 
 	public boolean validateToken(String token) 
 	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token) != null;
 	}
 
 	public String getUsernameFromToken(String token)
 	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
 	}
 	
