@@ -58,4 +58,11 @@ public class GlobalExceptionHandler
 				.body("{\"error\": \"Conflict: " + ex.getMessage() + "\"}");
 	}
 	
+	@org.springframework.web.bind.annotation.ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+	public org.springframework.http.ResponseEntity<String> handleBadCredentialsException(org.springframework.security.authentication.BadCredentialsException ex)
+	{
+		return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+				.body("{\"error\": \"Unauthorized: " + ex.getMessage() + "\"}");
+	}
+	
 }
