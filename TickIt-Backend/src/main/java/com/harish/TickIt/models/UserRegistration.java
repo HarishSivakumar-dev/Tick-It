@@ -31,7 +31,7 @@ public class UserRegistration
 	    joinColumns = @JoinColumn(name = "user_id"),
 	    inverseJoinColumns = @JoinColumn(name = "role_id")
 	)
-	private Set<Roles> roles;
+	private Set<Roles> roles= new java.util.HashSet<>();
 	
 	
 	public Long getId() {
