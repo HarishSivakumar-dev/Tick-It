@@ -45,16 +45,12 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 			}
 			else
 			{
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.getWriter().write("Invalid or expired token");
-				return;
+				throw new org.springframework.security.authentication.BadCredentialsException("Invalid JWT token");
 			}
 		}
 		else
 		{
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().write("Missing or invalid Authorization header");
-			return;
+			throw new org.springframework.security.authentication.BadCredentialsException("Missing or invalid Authorization header");
 		}
 	}
 
