@@ -23,7 +23,6 @@ public class UserRegistration
 	private String email;
 	private String password;
 	private LocalDateTime registrationDate;
-	private String fullName;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
@@ -63,12 +62,6 @@ public class UserRegistration
 	}
 	public void setRegistrationDate(LocalDateTime registrationDate) {
 		this.registrationDate = registrationDate;
-	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
 	}
 	public Set<Roles> getRoles() {
 		return roles;
