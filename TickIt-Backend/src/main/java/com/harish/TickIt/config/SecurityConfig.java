@@ -33,6 +33,11 @@ public class SecurityConfig
 						   .anyRequest().authenticated())
 				   .formLogin(r->r.disable())
 				   .httpBasic(r->r.disable())
+				   .exceptionHandling(
+						   e->e.authenticationEntryPoint(new com.harish.TickIt.Exceptions.CustomAuthEntryPoint())
+						   	   .accessDeniedHandler(new com.harish.TickIt.Exceptions.CustomAccessDeniedHandler())
+						   
+						   )
 				   .authenticationProvider(custom)
 				   .oauth2Login(o->o.successHandler(oauth2SuccessHandler))
 				   .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
