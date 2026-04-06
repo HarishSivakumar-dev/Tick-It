@@ -2,10 +2,13 @@ package com.harish.TickIt.Exceptions;
 
 import java.io.IOException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+
+@Component
 public class CustomAuthEntryPoint implements org.springframework.security.web.AuthenticationEntryPoint
 {
 
