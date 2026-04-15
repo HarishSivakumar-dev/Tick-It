@@ -22,6 +22,7 @@ public class UserRegistration
 	private String userName;
 	private String email;
 	private String password;
+	private String designation;
 	private LocalDateTime registrationDate;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -68,6 +69,12 @@ public class UserRegistration
 	}
 	public void setRoles(Set<Roles> roles) {
 		this.roles = roles;
+	}
+	public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 	
 }
