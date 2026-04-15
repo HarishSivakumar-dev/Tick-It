@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import com.harish.TickIt.dtos.UserProfileDto;
+import com.harish.TickIt.feign.UserServiceFeign;
 import com.harish.TickIt.models.Roles;
 import com.harish.TickIt.repositories.RoleRepo;
 import com.harish.TickIt.repositories.UserRegRepo;
@@ -24,7 +26,8 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 	private UserRegRepo rep;
 	@Autowired
 	private RoleRepo rolerep;
-	
+	@Autowired
+	private UserServiceFeign userServiceFeign;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -58,6 +61,17 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 			
 			com.harish.TickIt.models.UserRegistration newusr=rep.save(usr);
 			
+			UserProfileDto updto= new UserProfileDto();
+			updto.setEmail(newusr.getEmail());
+			updto.setUserName(newusr.getUserName());
+			updto.setId(newusr.getId());
+			updto.setDepartment("Not specified");
+			updto.setRole(newusr.getRoles().stream().findFirst().get().getRoleName());
+			updto.setRegistrationDate(newusr.getRegistrationDate().toLocalDate());
+			
+			String res=userServiceFeign.createUserProfile(updto).getBody();
+			
+			System.out.println("User profile creation response: " + res);
 			token= jwtUtil.generateToken(newusr);	
 		}	
 		
