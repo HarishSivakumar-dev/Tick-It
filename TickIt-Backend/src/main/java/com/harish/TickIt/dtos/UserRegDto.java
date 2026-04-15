@@ -3,8 +3,6 @@ package com.harish.TickIt.dtos;
 public class UserRegDto
 {
 	private String email;
-	private String name;
-	private Long employeeId;
 	private String userName;
 	private String designation;
 	private String password;
@@ -14,18 +12,6 @@ public class UserRegDto
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public Long getEmployeeId() {
-		return employeeId;
-	}
-	public void setEmployeeId(Long employeeId) {
-		this.employeeId = employeeId;
 	}
 	public String getUserName() {
 		return userName;
