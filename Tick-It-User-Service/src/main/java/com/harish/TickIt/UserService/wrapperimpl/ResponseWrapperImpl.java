@@ -1,8 +1,10 @@
 package com.harish.TickIt.UserService.wrapperimpl;
 
+import org.springframework.stereotype.Component;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
 import com.harish.TickIt.UserService.models.UserProfile;
 
+@Component
 public class ResponseWrapperImpl implements com.harish.TickIt.UserService.wrappers.ProfileWrapper
 {
 
