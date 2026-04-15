@@ -18,7 +18,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 			throws ServletException, IOException
 	{
 		String path = request.getRequestURI();
-		if(path.equals("/api/register") || path.equals("/api/login"))
+		if(path.equals("/api/v1/user-profile/createProfile"))
 		{
 			filterChain.doFilter(request, response);
 			return;
