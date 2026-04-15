@@ -29,7 +29,7 @@ public class SecurityConfig
 	SecurityFilterChain configure(HttpSecurity http) throws Exception
 	{
 		return http.csrf(r->r.disable())
-				   .authorizeHttpRequests(a->a.requestMatchers("/api/register", "/api/login", "/oauth2/authorization/**", "/login/oauth2/code/**").permitAll()
+				   .authorizeHttpRequests(a->a.requestMatchers("/api/user/register", "/api/user/login", "/oauth2/authorization/**", "/login/oauth2/code/**" , "/favicon.ico/**").permitAll()
 						   .anyRequest().authenticated())
 				   .formLogin(r->r.disable())
 				   .httpBasic(r->r.disable())
