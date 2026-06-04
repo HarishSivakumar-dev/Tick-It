@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.harish.TickIt.UserService.dtos.ProfileDto;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
 import com.harish.TickIt.UserService.dtos.UserProfileDto;
 import com.harish.TickIt.UserService.services.UserProfileService;
@@ -34,6 +36,22 @@ public class UserProfileController
 		String res= userProfileService.createUserProfile(dto);
 		
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
+	}
+	
+	@GetMapping("/getBasicUserProfile")
+	public ResponseEntity<ProfileDto> getBasicUserProfile()
+	{
+		ProfileResponseDto userProfile=userProfileService.userProfileRetriever();
+		
+		ProfileDto profileDto = new ProfileDto();
+		profileDto.setName(userProfile.getName());
+		profileDto.setEmail(userProfile.getEmail());
+		profileDto.setEmployeeId(userProfile.getEmployeeId());
+		profileDto.setDepartment(userProfile.getDepartment());
+		profileDto.setProfilePictureUrl(userProfile.getProfilePictureUrl());
+		
+		
+		return ResponseEntity.status(HttpStatus.SC_OK).body(profileDto);
 	}
 	
 	
