@@ -4,7 +4,6 @@ public class TicketDetailsDto
 {
 	private String title;
 	private String description;
-	private String status;
 	private String priority;
 	private long projectId;
 	
@@ -19,12 +18,6 @@ public class TicketDetailsDto
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
 	}
 	public String getPriority() {
 		return priority;
