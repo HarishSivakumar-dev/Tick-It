@@ -1,16 +1,23 @@
 package com.harish.TickIt.UserService.feign;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import com.harish.TickIt.UserService.dtos.TicketDetailsDto;
+import com.harish.TickIt.UserService.dtos.TicketResponseDto;
 
-@FeignClient(name = "user-profile-service")
+@FeignClient(name = "Tick-It-Ticket-Service")
 public interface TicketFeignClient
 {
-	@PostMapping("")
+	@PostMapping("/api/tickets/create")
 	public ResponseEntity<String> ticketCreation(@RequestBody TicketDetailsDto dto);
+	
+	@GetMapping("/api/tickets/project/{projectId}")
+	public ResponseEntity<List<TicketResponseDto>> getProjectTickets(@PathVariable int projectId);
 
 }
