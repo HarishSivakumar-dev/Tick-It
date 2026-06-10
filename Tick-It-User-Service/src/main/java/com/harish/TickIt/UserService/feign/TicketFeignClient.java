@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.harish.TickIt.UserService.dtos.TicketDetailsDto;
 import com.harish.TickIt.UserService.dtos.TicketResponseDto;
+import com.harish.TickIt.UserService.dtos.TicketUpdateDto;
 
 @FeignClient(name = "Tick-It-Ticket-Service")
 public interface TicketFeignClient
@@ -20,8 +21,10 @@ public interface TicketFeignClient
 	
 	@GetMapping("/api/tickets/project/{projectId}")
 	public ResponseEntity<List<TicketResponseDto>> getProjectTickets(@PathVariable int projectId);
-
+	
 	@DeleteMapping("/api/tickets/delete/{ticketId}")
 	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId);
-
-}
+	
+	@PostMapping("/api/tickets/update")
+	public ResponseEntity<String> updateTicket(@RequestBody TicketUpdateDto dto);
+}
