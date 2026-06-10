@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.UserService.dtos.ProfileDto;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
 import com.harish.TickIt.UserService.dtos.UserProfileDto;
-import com.harish.TickIt.UserService.services.UserProfileService;
+import com.harish.TickIt.UserService.services.UserService;
 
 @RestController
 @RequestMapping("/api/v1/user-profile")
@@ -20,12 +20,12 @@ public class UserProfileController
 {
 	
 	@Autowired
-	private UserProfileService userProfileService;
+	private UserService userService;
 	
 	@GetMapping("/getProfile")
 	public ResponseEntity<ProfileResponseDto> getUserProfile()
 	{
-		ProfileResponseDto userProfile=userProfileService.userProfileRetriever();
+		ProfileResponseDto userProfile=userService.userProfileRetriever();
 		
 		return ResponseEntity.status(HttpStatus.SC_OK).body(userProfile);
 	}
@@ -33,7 +33,7 @@ public class UserProfileController
 	@PostMapping("/createProfile")
 	public ResponseEntity<String> createUserProfile(@RequestBody UserProfileDto dto)
 	{
-		String res= userProfileService.createUserProfile(dto);
+		String res= userService.createUserProfile(dto);
 		
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
 	}
@@ -41,7 +41,7 @@ public class UserProfileController
 	@GetMapping("/getBasicUserProfile")
 	public ResponseEntity<ProfileDto> getBasicUserProfile()
 	{
-		ProfileResponseDto userProfile=userProfileService.userProfileRetriever();
+		ProfileResponseDto userProfile=userService.userProfileRetriever();
 		
 		ProfileDto profileDto = new ProfileDto();
 		profileDto.setName(userProfile.getName());
