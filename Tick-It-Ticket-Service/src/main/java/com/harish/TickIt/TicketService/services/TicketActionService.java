@@ -5,41 +5,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
-import com.harish.TickIt.TicketService.dtos.UserDetailsDto;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.repos.TicketRepo;
+import com.harish.TickIt.TicketService.wrapperimpl.TicketWrapperImpl;
 
 @Service
 public class TicketActionService
 {	// This service will handle all the actions related to tickets such as creating a ticket, Getting a ticket, deleting a ticket, etc.
 	
 	@Autowired
-	private UserProfileFeignClient userProfileFeignClient;
-	@Autowired
 	private TicketRepo ticketRepo;
+	@Autowired
+	private TicketWrapperImpl ticketWrapperImpl;
+	@Autowired
+	private UserProfileFeignClient userProfileFeignClient;
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
-		Ticket ticket = new Ticket();
-		ticket.setTitle(dto.getTitle());
-		ticket.setDescription(dto.getDescription());
-		ticket.setStatus(TicketStatus.OPEN);
-		ticket.setAssignedTo(null);
-		ticket.setCreatedAt(java.time.LocalDateTime.now());
-		ticket.setUpdatedAt(null);
-		ticket.setClosedAt(null);
-		ticket.setPriority(dto.getPriority());
-		ticket.setProjectId(dto.getProjectId());
-		
-		UserDetailsDto userDetails = userProfileFeignClient.getUserProfile().getBody();
-		
-		ticket.setCreatedBy(userDetails.getName());
-		ticket.setCreatorId(userDetails.getEmployeeId());
-		ticket.setCreatorMail(userDetails.getEmail());
-		ticket.setCreatorProfilePictureUrl(userDetails.getProfilePictureUrl());
-		
+		// This method will create a ticket
+		Ticket ticket = ticketWrapperImpl.createTicket(dto);
 		ticketRepo.save(ticket);
 		
 		return "Ticket created successfully";
@@ -51,24 +37,10 @@ public class TicketActionService
 		List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusNotAndAssignedToIsNull(projectId, TicketStatus.RESOLVED);
 		List<TicketResponseDto> responseDtos = tickets.stream()
 													  .map(ticket -> {
-														  				TicketResponseDto responseDto = new TicketResponseDto();
-														  				responseDto.setId(ticket.getId());
-														  				responseDto.setTitle(ticket.getTitle());
-														  				responseDto.setDescription(ticket.getDescription());
-														  				responseDto.setStatus(ticket.getStatus().toString());
-														  				responseDto.setPriority(ticket.getPriority().toString());
-														  				responseDto.setCreatedAt(ticket.getCreatedAt());
-														  				responseDto.setUpdatedAt(ticket.getUpdatedAt());
-														  				responseDto.setClosedAt(ticket.getClosedAt());
-														  				responseDto.setCreatedBy(ticket.getCreatedBy());
-														  				responseDto.setCreatorId(ticket.getCreatorId());
-														  				responseDto.setCreatorMail(ticket.getCreatorMail());
-														  				responseDto.setCreatorProfilePictureUrl(ticket.getCreatorProfilePictureUrl());
-														
+														  				TicketResponseDto responseDto = ticketWrapperImpl.toDto(ticket);
 														  				return responseDto;
-													  	 })
+													  			 	})	
 													 .toList();
-		
 		return responseDtos;
 	}
 
