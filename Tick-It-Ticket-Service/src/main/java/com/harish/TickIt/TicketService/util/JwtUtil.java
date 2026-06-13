@@ -1,7 +1,8 @@
 package com.harish.TickIt.TicketService.util;
 
+import java.util.List;
+import java.util.Set;
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
@@ -17,6 +18,23 @@ public class JwtUtil
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token) != null;
+	}
+	
+	public List<String> getRolesFromToken(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		Set<?> st= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("roles", Set.class);
+		
+		List<String> roles= st.stream()
+							   .map(r -> r.toString())
+							   .toList();
+		return roles;
+	}
+	
+	public String getUsernameFromToken(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
 	}
 
 }
