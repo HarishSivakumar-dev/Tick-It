@@ -15,6 +15,7 @@ public class Ticket
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
+	
 	private String creatorProfilePictureUrl;
 	private String title;
 	private String description;
