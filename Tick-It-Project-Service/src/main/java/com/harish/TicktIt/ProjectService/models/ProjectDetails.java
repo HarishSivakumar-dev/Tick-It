@@ -23,8 +23,6 @@ public class ProjectDetails
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private ProjectStatus status;
-	private String ManagerName;
-	private String ManagerEmail;
 	
 	public long getProjectId() {
 		return projectId;
@@ -104,22 +102,6 @@ public class ProjectDetails
 
 	public void setStatus(ProjectStatus status) {
 		this.status = status;
-	}
-
-	public String getManagerName() {
-		return ManagerName;
-	}
-
-	public void setManagerName(String managerName) {
-		ManagerName = managerName;
-	}
-
-	public String getManagerEmail() {
-		return ManagerEmail;
-	}
-
-	public void setManagerEmail(String managerEmail) {
-		ManagerEmail = managerEmail;
 	}
 
 }
