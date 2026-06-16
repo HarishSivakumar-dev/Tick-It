@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TicktIt.ProjectService.services.ProjectService;
 
@@ -17,11 +20,22 @@ public class ProjectHomeController
 	@Autowired
 	private ProjectService ps;
 	
-	@GetMapping("/get/projects")
-	private ResponseEntity<List<ProjectResponseDto>> getAllProjects()
+	@GetMapping("/projects/get")
+	public ResponseEntity<List<ProjectResponseDto>> getAllProjects()
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getAllProjects());
-		
+	}
+	
+	@PostMapping("/project/create")
+	public ResponseEntity<String> createProject(@RequestBody ProjectCreationDto dto)
+	{
+		return ResponseEntity.status(HttpStatus.CREATED).body(ps.projectCreation(dto));
+	}
+	
+	@PostMapping("/project/update/details")
+	public ResponseEntity<String> updateProject(@RequestBody ProjectCreationDto dto)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(ps.projectDetailsUpdation(dto));
 	}
 	
 }
