@@ -1,8 +1,12 @@
 package com.harish.TicktIt.ProjectService.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,15 +17,19 @@ public class ProjectDetails
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long projectId;
-	
+
+	@Column(unique=true)
 	private String projectName;
+	
 	private String projectDescription;
 	private long projectManagerId;
-	private LocalDate createdAt;
-	private LocalDate updatedAt;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 	private boolean isActive;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	
+	@Enumerated(EnumType.STRING)
 	private ProjectStatus status;
 	
 	public long getProjectId() {
@@ -56,19 +64,19 @@ public class ProjectDetails
 		this.projectManagerId = projectManagerId;
 	}
 
-	public LocalDate getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDate createdAt) {
+	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public LocalDate getUpdatedAt() {
+	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(LocalDate updatedAt) {
+	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
