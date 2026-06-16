@@ -1,6 +1,8 @@
 package com.harish.TickIt.ProjectService.dtos;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
 
 public class ProjectResponseDto 
@@ -9,8 +11,8 @@ public class ProjectResponseDto
 	private String projectName;
 	private String projectDescription;
 	private long projectManagerId;
-	private LocalDate createdAt;
-	private LocalDate updatedAt;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 	private boolean isActive;
 	private LocalDate startDate;
 	private LocalDate endDate;
@@ -40,16 +42,16 @@ public class ProjectResponseDto
 	public void setProjectManagerId(long projectManagerId) {
 		this.projectManagerId = projectManagerId;
 	}
-	public LocalDate getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(LocalDate createdAt) {
+	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-	public LocalDate getUpdatedAt() {
+	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
-	public void setUpdatedAt(LocalDate updatedAt) {
+	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 	public boolean isActive() {
