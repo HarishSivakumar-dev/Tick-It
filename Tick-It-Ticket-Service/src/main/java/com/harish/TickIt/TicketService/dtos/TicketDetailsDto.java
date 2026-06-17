@@ -7,7 +7,7 @@ public class TicketDetailsDto
 	private String title;
 	private String description;
 	private TicketPriority priority;
-	private long projectId;
+	private Long projectId;
 	
 	
 	public String getTitle() {
