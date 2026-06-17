@@ -1,7 +1,10 @@
 package com.harish.TicktIt.ProjectService.models;
 
+import java.time.LocalDate;
 import com.harish.TicktIt.ProjectService.enums.ProjectRole;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,8 +16,14 @@ public class ProjectMembers
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	
-	private long projectId;
-	private long userId;
+	private Long projectId;
+	private Long userId;
+	private String mailId;
+	private String userName;
+	private LocalDate assignedDate;
+	private LocalDate relievedDate;
+	
+	@Enumerated(EnumType.STRING)
 	private ProjectRole role;
 	
 	
@@ -42,5 +51,36 @@ public class ProjectMembers
 	public void setRole(ProjectRole role) {
 		this.role = role;
 	}
+	public LocalDate getAssignedDate() {
+		return assignedDate;
+	}
+	public void setAssignedDate(LocalDate assignedDate) {
+		this.assignedDate = assignedDate;
+	}
+	public LocalDate getRelievedDate() {
+		return relievedDate;
+	}
+	public void setRelievedDate(LocalDate relievedDate) {
+		this.relievedDate = relievedDate;
+	}
+	public String getMailId() {
+		return mailId;
+	}
+	public void setMailId(String mailId) {
+		this.mailId = mailId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	
 
 }
