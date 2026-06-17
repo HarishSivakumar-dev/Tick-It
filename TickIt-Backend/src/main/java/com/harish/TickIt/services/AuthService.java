@@ -6,9 +6,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.Exceptions.UserAlreadyRegisteredException;
+import com.harish.TickIt.dtos.UserDetailsDto;
 import com.harish.TickIt.dtos.UserLoginDto;
 import com.harish.TickIt.dtos.UserProfileDto;
 import com.harish.TickIt.dtos.UserRegDto;
+import com.harish.TickIt.feign.ProjectServiceFeign;
 import com.harish.TickIt.feign.UserServiceFeign;
 import com.harish.TickIt.models.Roles;
 import com.harish.TickIt.models.UserRegistration;
@@ -25,6 +27,8 @@ public class AuthService
 	private RoleRepo rolerep;
 	@Autowired
 	private UserServiceFeign userServiceFeign;
+	@Autowired
+	private ProjectServiceFeign project;
 	
 	BCryptPasswordEncoder bpe= new BCryptPasswordEncoder(12);
 	
@@ -66,7 +70,17 @@ public class AuthService
 		
 		String res= userServiceFeign.createUserProfile(updto).getBody();
 		
+		UserDetailsDto dt= new UserDetailsDto();
+		dt.setEmail(reg.getEmail());
+		dt.setUserId(reg.getId());
+		dt.setUserName(reg.getUserName());
+		
+		String resp= project.saveUserDetails(dt).getBody();
+		
+		
+		
 		System.out.println("Profile creation response: " + res);
+		System.out.println("Project Table Population Response : " + resp);
 		
 		return "Registered";
 		
