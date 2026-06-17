@@ -24,7 +24,6 @@ public class UserProfile
 	private String address;
 	private String dateOfBirth;
 	private String gender;
-	
 	private Long noOfTicketsAssigned;
 	private Long noOfTicketsResolved;
 	private long noOfTicketsActionPending;
@@ -164,5 +163,4 @@ public class UserProfile
 		this.noOfTicketsActionPending = noOfTicketsActionPending;
 	}
 	
-
 }
