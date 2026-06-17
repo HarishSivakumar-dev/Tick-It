@@ -5,13 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
+import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
+import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TicktIt.ProjectService.models.ProjectDetails;
+import com.harish.TicktIt.ProjectService.models.ProjectMembers;
 import com.harish.TicktIt.ProjectService.repos.ProjectDetailsRepo;
+import com.harish.TicktIt.ProjectService.repos.ProjectMembersRepo;
 
 public class ProjectService
 {
 	@Autowired
 	private ProjectDetailsRepo pdr;
+	@Autowired
+	private ProjectMembersRepo pmr;
 	
 	public List<ProjectResponseDto> getAllProjects()
 	{
@@ -74,5 +80,38 @@ public class ProjectService
 		
 		return "Updated Successfully";
 		
+	}
+	
+	public List<UserDetailsDto> getAllEmployeesUnassigned()
+	{
+		List<UserDetailsDto> res= pmr.findByProjectIdIsNull().stream()
+															 .map(r->{
+																 UserDetailsDto dto= new UserDetailsDto();
+																 dto.setMailId(r.getMailId());
+																 dto.setProjectId(r.getProjectId());
+																 dto.setUserId(r.getUserId());
+																 dto.setUserName(r.getUserName());
+																 
+																 return dto;
+															 })
+															 .toList();
+		
+		return res;
+	}
+	
+	public String userInfoPopulation(UserProjectDto dto)
+	{
+		ProjectMembers pm= new ProjectMembers();
+		pm.setUserId(dto.getUserId());
+		pm.setUserName(dto.getUserName());
+		pm.setProjectId(null);
+		pm.setMailId(dto.getEmail());
+		pm.setAssignedDate(null);
+		pm.setRole(null);
+		pm.setRelievedDate(null);
+		
+		pmr.save(pm);
+		
+		return "Saved";
 	}
 }
