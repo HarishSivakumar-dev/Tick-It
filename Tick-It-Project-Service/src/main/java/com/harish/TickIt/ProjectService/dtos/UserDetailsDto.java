@@ -1,52 +1,35 @@
 package com.harish.TickIt.ProjectService.dtos;
 
-import java.time.LocalDateTime;
-
 public class UserDetailsDto
 {
-	private Long id;
+	private Long projectId;
+	private Long userId;
+	private String mailId;
 	private String userName;
-	private String email;
-	private String password;
-	private String designation;
-	private LocalDateTime registrationDate;
 	
-	
-	public Long getId() {
-		return id;
+	public Long getProjectId() {
+		return projectId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public String getMailId() {
+		return mailId;
+	}
+	public void setMailId(String mailId) {
+		this.mailId = mailId;
 	}
 	public String getUserName() {
 		return userName;
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getDesignation() {
-		return designation;
-	}
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
-	public LocalDateTime getRegistrationDate() {
-		return registrationDate;
-	}
-	public void setRegistrationDate(LocalDateTime registrationDate) {
-		this.registrationDate = registrationDate;
 	}
 
 }
