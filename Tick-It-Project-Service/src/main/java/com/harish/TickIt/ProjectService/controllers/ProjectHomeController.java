@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TicktIt.ProjectService.services.ProjectService;
@@ -36,6 +37,12 @@ public class ProjectHomeController
 	public ResponseEntity<String> updateProject(@RequestBody ProjectCreationDto dto)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.projectDetailsUpdation(dto));
+	}
+	
+	@PostMapping("/project/members/add")
+	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<MemberDetailsDto> dto)
+	{	
+		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
 	}
 	
 }
