@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface ProjectDetailsRepo extends JpaRepository<ProjectDetails, Integer>
 {
-	Optional<ProjectDetails> findByProjectName(String projectname);
+	Optional<ProjectDetails> findByProjectId(Long projectname);
 
 }
