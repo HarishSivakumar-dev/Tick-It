@@ -1,11 +1,15 @@
 package com.harish.TicktIt.ProjectService.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
+import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TicktIt.ProjectService.models.ProjectDetails;
 import com.harish.TicktIt.ProjectService.models.ProjectMembers;
@@ -113,5 +117,56 @@ public class ProjectService
 		pmr.save(pm);
 		
 		return "Saved";
+	}
+	
+	public List<UserProjectDetailsDto> getAllUserProjects()
+	{
+		String name=SecurityContextHolder.getContext().getAuthentication().getName();
+		List<ProjectMembers> proj= pmr.findByUserNameAndProjectIdNotNull(name);
+		
+		if(proj.isEmpty())
+		{
+			List<UserProjectDetailsDto> dt= null;
+			return dt;
+		}
+		else
+		{
+			List<UserProjectDetailsDto> res= proj.stream()
+					 .map(r->{
+						 UserProjectDetailsDto dto= new UserProjectDetailsDto();
+						 dto.setAssignedDate(r.getAssignedDate());
+						 dto.setMailId(r.getMailId());
+						 dto.setProjectId(r.getProjectId());
+						 dto.setRelievedDate(r.getRelievedDate());
+						 dto.setRole(r.getRole());
+						 dto.setUserId(r.getUserId());
+						 dto.setUserName(r.getUserName());
+						 
+						 return dto;
+					 })
+					 .toList();
+			return res;
+		}
+	}
+	
+	public String addMembersIntoProject(List<MemberDetailsDto> dto)
+	{
+		List<ProjectMembers> ls= dto.stream()
+									.map(r->{
+										ProjectMembers pm= new ProjectMembers();
+										pm.setAssignedDate(LocalDate.now());
+										pm.setMailId(r.getMailId());
+										pm.setProjectId(r.getProjectId());
+										pm.setRelievedDate(null);
+										pm.setRole(r.getRole());
+										pm.setUserId(r.getUserId());
+										pm.setUserName(r.getUserName());
+										
+										return pm;
+									})
+									.toList();
+		pmr.saveAll(ls);
+		
+		return "Saved all Details";
 	}
 }
