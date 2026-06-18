@@ -7,5 +7,5 @@ import com.harish.TicktIt.ProjectService.models.ProjectMembers;
 public interface ProjectMembersRepo extends JpaRepository<ProjectMembers, Integer>
 {
 	List<ProjectMembers> findByProjectIdIsNull();
-
+	List<ProjectMembers> findByUserNameAndProjectIdNotNull(String name);
 }
