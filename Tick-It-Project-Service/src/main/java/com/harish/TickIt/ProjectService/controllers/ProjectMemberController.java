@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
+import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TicktIt.ProjectService.services.ProjectService;
 
@@ -32,5 +33,10 @@ public class ProjectMemberController
 	{
 		return ResponseEntity.status(HttpStatus.CREATED).body(ps.userInfoPopulation(dto));
 	}
-
+	
+	@GetMapping("/myProjects/get")
+	public ResponseEntity<List<UserProjectDetailsDto>> getProjectsForUser()
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(ps.getAllUserProjects());
+	}
 }
