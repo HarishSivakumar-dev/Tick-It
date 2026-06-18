@@ -5,6 +5,7 @@ import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
 
 public class ProjectCreationDto
 {
+	private Long projectId;
 	private String projectName;
 	private String projectDescription;
 	private long projectManagerId;
@@ -55,6 +56,17 @@ public class ProjectCreationDto
 	public void setActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	public Long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+	public Boolean getIsActive() {
+		return isActive;
+	}
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 	
-
 }
