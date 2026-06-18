@@ -11,6 +11,7 @@ import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
 import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
+import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
 import com.harish.TicktIt.ProjectService.models.ProjectDetails;
 import com.harish.TicktIt.ProjectService.models.ProjectMembers;
 import com.harish.TicktIt.ProjectService.repos.ProjectDetailsRepo;
@@ -68,7 +69,7 @@ public class ProjectService
 	
 	public String projectDetailsUpdation(ProjectCreationDto dto)
 	{
-		ProjectDetails det= pdr.findByProjectName(dto.getProjectName()).orElseThrow();
+		ProjectDetails det= pdr.findByProjectId(dto.getProjectId()).orElseThrow(()-> new RuntimeException("No Project Id found"));
 		det.setUpdatedAt(LocalDateTime.now());
 		
 		if(dto.getEndDate()!=null)
@@ -76,7 +77,21 @@ public class ProjectService
 		if(dto.getProjectDescription()!=null)
 			det.setProjectDescription(dto.getProjectDescription());
 		if(dto.getStatus()!=null)
+		{
 			det.setStatus(dto.getStatus());
+			if(dto.getStatus()==ProjectStatus.CANCELLED || dto.getStatus()==ProjectStatus.COMPLETED)
+			{
+				List<ProjectMembers> ls= pmr.findByProjectId(det.getProjectId())
+											.stream()
+											.map(r->{
+												r.setProjectId(null);
+												
+												return r;
+											})
+											.toList();
+				pmr.saveAll(ls);
+			}
+		}
 		if(dto.isActive() != null)
 			det.setActive(dto.isActive());
 		
@@ -169,4 +184,6 @@ public class ProjectService
 		
 		return "Saved all Details";
 	}
+	
+
 }
