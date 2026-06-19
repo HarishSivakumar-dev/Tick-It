@@ -9,4 +9,5 @@ public interface ProjectMembersRepo extends JpaRepository<ProjectMembers, Intege
 	List<ProjectMembers> findByProjectIdIsNull();
 	List<ProjectMembers> findByUserNameAndProjectIdNotNull(String name);
 	List<ProjectMembers> findByProjectId(Long id);
+	List<ProjectMembers> findByUserIdIn(List<Long> ls);
 }
