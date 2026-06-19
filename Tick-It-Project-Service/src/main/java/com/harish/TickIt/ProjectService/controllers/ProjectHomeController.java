@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
+import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TicktIt.ProjectService.services.ProjectService;
 
 @RestController
@@ -43,6 +45,12 @@ public class ProjectHomeController
 	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<MemberDetailsDto> dto)
 	{	
 		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
+	}
+	
+	@GetMapping("/project/members/get/{projectid}")
+	public ResponseEntity<List<UserProjectDetailsDto>> getProjectMembers(@PathVariable Long projectId)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
 	}
 	
 }
