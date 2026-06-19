@@ -2,7 +2,9 @@ package com.harish.TicktIt.ProjectService.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
@@ -16,6 +18,8 @@ import com.harish.TicktIt.ProjectService.models.ProjectDetails;
 import com.harish.TicktIt.ProjectService.models.ProjectMembers;
 import com.harish.TicktIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TicktIt.ProjectService.repos.ProjectMembersRepo;
+
+import jakarta.transaction.Transactional;
 
 public class ProjectService
 {
@@ -47,6 +51,7 @@ public class ProjectService
 		
 	}
 	
+	@Transactional
 	public String projectCreation(ProjectCreationDto dto)
 	{
 		ProjectDetails pd= new ProjectDetails();
@@ -67,6 +72,7 @@ public class ProjectService
 		
 	}
 	
+	@Transactional
 	public String projectDetailsUpdation(ProjectCreationDto dto)
 	{
 		ProjectDetails det= pdr.findByProjectId(dto.getProjectId()).orElseThrow(()-> new RuntimeException("No Project Id found"));
@@ -85,7 +91,8 @@ public class ProjectService
 											.stream()
 											.map(r->{
 												r.setProjectId(null);
-												
+												r.setRole(null);
+												r.setRelievedDate(LocalDate.now());
 												return r;
 											})
 											.toList();
@@ -118,6 +125,7 @@ public class ProjectService
 		return res;
 	}
 	
+	@Transactional
 	public String userInfoPopulation(UserProjectDto dto)
 	{
 		ProjectMembers pm= new ProjectMembers();
@@ -164,25 +172,56 @@ public class ProjectService
 		}
 	}
 	
+	@Transactional
 	public String addMembersIntoProject(List<MemberDetailsDto> dto)
 	{
-		List<ProjectMembers> ls= dto.stream()
-									.map(r->{
-										ProjectMembers pm= new ProjectMembers();
-										pm.setAssignedDate(LocalDate.now());
-										pm.setMailId(r.getMailId());
-										pm.setProjectId(r.getProjectId());
-										pm.setRelievedDate(null);
-										pm.setRole(r.getRole());
-										pm.setUserId(r.getUserId());
-										pm.setUserName(r.getUserName());
-										
-										return pm;
-									})
-									.toList();
-		pmr.saveAll(ls);
+		List<Long> ls= dto.stream()
+						  .map(r->{
+								return r.getUserId();
+						   })
+						  .toList();
+		
+		List<ProjectMembers> pm= pmr.findByUserIdIn(ls);
+		Map<Long, MemberDetailsDto> mp= new HashMap<Long, MemberDetailsDto>();
+		
+		for(MemberDetailsDto dt : dto)
+		{
+			mp.put(dt.getUserId(), dt);
+		}
+		
+		for(ProjectMembers p : pm)
+		{
+			p.setAssignedDate(LocalDate.now());
+			p.setRole(mp.get(p.getUserId()).getRole());
+			p.setProjectId(mp.get(p.getUserId()).getProjectId());
+			p.setRelievedDate(null);
+		}
+		
+		pmr.saveAll(pm);
 		
 		return "Saved all Details";
+	}
+	
+	public List<UserProjectDetailsDto> getProjectMembers(Long projectid)
+	{
+		List<UserProjectDetailsDto> ls= pmr.findByProjectId(projectid)
+				                           .stream()
+				                           .map(r->
+				                           {
+				                        	   UserProjectDetailsDto dt= new UserProjectDetailsDto();
+				                        	   dt.setAssignedDate(r.getAssignedDate());
+				                        	   dt.setMailId(r.getMailId());
+				                        	   dt.setProjectId(r.getProjectId());
+				                        	   dt.setRelievedDate(r.getRelievedDate());
+				                        	   dt.setRole(r.getRole());
+				                        	   dt.setUserId(r.getUserId());
+				                        	   dt.setUserName(r.getUserName());
+				                        	   
+				                        	   return dt;
+				                           })
+				                           .toList();
+		return ls;
+		
 	}
 	
 
