@@ -1,8 +1,10 @@
-package com.harish.TicktIt.ProjectService.models;
+package com.harish.TickIt.ProjectService.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
+
+import com.harish.TickIt.ProjectService.enums.ProjectStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
