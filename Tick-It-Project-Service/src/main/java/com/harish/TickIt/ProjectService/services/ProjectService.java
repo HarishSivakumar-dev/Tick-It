@@ -1,4 +1,4 @@
-package com.harish.TicktIt.ProjectService.services;
+package com.harish.TickIt.ProjectService.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,20 +7,22 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
-import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
-import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
-import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
-import com.harish.TicktIt.ProjectService.models.ProjectDetails;
-import com.harish.TicktIt.ProjectService.models.ProjectMembers;
-import com.harish.TicktIt.ProjectService.repos.ProjectDetailsRepo;
-import com.harish.TicktIt.ProjectService.repos.ProjectMembersRepo;
+import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
+import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
+import com.harish.TickIt.ProjectService.enums.ProjectStatus;
+import com.harish.TickIt.ProjectService.models.ProjectDetails;
+import com.harish.TickIt.ProjectService.models.ProjectMembers;
+import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
+import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
 
 import jakarta.transaction.Transactional;
 
+@Component
 public class ProjectService
 {
 	@Autowired
