@@ -1,7 +1,8 @@
 package com.harish.TickIt.ProjectService.dtos;
 
 import java.time.LocalDate;
-import com.harish.TicktIt.ProjectService.enums.ProjectStatus;
+
+import com.harish.TickIt.ProjectService.enums.ProjectStatus;
 
 public class ProjectCreationDto
 {
