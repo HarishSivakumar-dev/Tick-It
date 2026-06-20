@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
-import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
-import com.harish.TicktIt.ProjectService.dtos.UserProjectDto;
-import com.harish.TicktIt.ProjectService.services.ProjectService;
+import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
+import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
+import com.harish.TickIt.ProjectService.services.ProjectService;
 
 @RestController
 @RequestMapping("/app")
