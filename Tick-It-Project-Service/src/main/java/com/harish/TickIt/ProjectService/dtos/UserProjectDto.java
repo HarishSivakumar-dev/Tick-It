@@ -1,4 +1,4 @@
-package com.harish.TicktIt.ProjectService.dtos;
+package com.harish.TickIt.ProjectService.dtos;
 
 public class UserProjectDto
 {
