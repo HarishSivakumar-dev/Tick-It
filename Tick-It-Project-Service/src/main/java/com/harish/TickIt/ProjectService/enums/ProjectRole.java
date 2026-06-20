@@ -1,4 +1,4 @@
-package com.harish.TicktIt.ProjectService.enums;
+package com.harish.TickIt.ProjectService.enums;
 
 public enum ProjectRole
 {
