@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
-import com.harish.TicktIt.ProjectService.dtos.UserProjectDetailsDto;
-import com.harish.TicktIt.ProjectService.services.ProjectService;
+import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
+import com.harish.TickIt.ProjectService.services.ProjectService;
 
 @RestController
 @RequestMapping("/app")
