@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Enumerated;
 
 @Entity
 public class Ticket
@@ -19,12 +21,17 @@ public class Ticket
 	private String creatorProfilePictureUrl;
 	private String title;
 	private String description;
+	
+	@Enumerated(EnumType.STRING)
 	private TicketStatus status;
+	
 	private String assignedTo;
 	private String createdBy;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime closedAt;
+	
+	@Enumerated(EnumType.STRING)
 	private TicketPriority priority;
 	private long projectId;
 	private long creatorId;
