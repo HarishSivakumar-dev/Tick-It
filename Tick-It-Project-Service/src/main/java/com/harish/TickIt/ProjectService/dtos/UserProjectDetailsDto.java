@@ -1,7 +1,8 @@
-package com.harish.TicktIt.ProjectService.dtos;
+package com.harish.TickIt.ProjectService.dtos;
 
 import java.time.LocalDate;
-import com.harish.TicktIt.ProjectService.enums.ProjectRole;
+
+import com.harish.TickIt.ProjectService.enums.ProjectRole;
 
 public class UserProjectDetailsDto 
 {
