@@ -28,6 +28,12 @@ public class JwtAuthencationFilter extends org.springframework.web.filter.OncePe
 			throws ServletException, IOException
 	{
 		// TODO Auto-generated method stub
+		if(request.getRequestURI().equals("/app/projects/add/default"))
+		{
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
 		String authHeader = request.getHeader("Authorization");
 		if (authHeader != null && authHeader.startsWith("Bearer "))
 		{
