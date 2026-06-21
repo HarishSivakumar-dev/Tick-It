@@ -22,7 +22,7 @@ public class SecurityConfig
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 	{
 		return http.csrf(r->r.disable())
-				   .authorizeHttpRequests(r -> r.anyRequest().permitAll())
+				   .authorizeHttpRequests(r -> r.requestMatchers("/app/projects/add/default").permitAll().anyRequest().authenticated())
 				   .httpBasic(r->r.disable())
 				   .formLogin(r->r.disable())
 				   .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
