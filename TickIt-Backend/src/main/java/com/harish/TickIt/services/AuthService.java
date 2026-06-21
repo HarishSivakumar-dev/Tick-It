@@ -50,6 +50,7 @@ public class AuthService
 			return rolerep.save(newRole);
 		});
 	
+		
 		UserRegistration ur= new UserRegistration();
 		ur.setEmail(dto.getEmail());
 		ur.setPassword(bpe.encode(dto.getPassword()));
@@ -74,10 +75,8 @@ public class AuthService
 		dt.setEmail(reg.getEmail());
 		dt.setUserId(reg.getId());
 		dt.setUserName(reg.getUserName());
-		
+	
 		String resp= project.saveUserDetails(dt).getBody();
-		
-		
 		
 		System.out.println("Profile creation response: " + res);
 		System.out.println("Project Table Population Response : " + resp);
