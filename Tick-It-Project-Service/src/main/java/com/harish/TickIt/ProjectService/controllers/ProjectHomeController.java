@@ -47,7 +47,7 @@ public class ProjectHomeController
 		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
 	}
 	
-	@GetMapping("/project/members/get/{projectid}")
+	@GetMapping("/project/members/get/{projectId}")
 	public ResponseEntity<List<UserProjectDetailsDto>> getProjectMembers(@PathVariable Long projectId)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
