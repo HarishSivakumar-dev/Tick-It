@@ -1,9 +1,7 @@
 package com.harish.TickIt.ProjectService.models;
 
 import java.time.LocalDate;
-
 import com.harish.TickIt.ProjectService.enums.ProjectRole;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,12 +32,6 @@ public class ProjectMembers
 	}
 	public void setId(long id) {
 		this.id = id;
-	}
-	public long getProjectId() {
-		return projectId;
-	}
-	public void setProjectId(long projectId) {
-		this.projectId = projectId;
 	}
 	public long getUserId() {
 		return userId;
@@ -76,6 +68,10 @@ public class ProjectMembers
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	public Long getProjectId()
+	{
+		return projectId;
 	}
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
