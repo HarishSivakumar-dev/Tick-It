@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.Set;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.harish.TickIt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter extends org.springframework.web.filter.OncePerRequestFilter
 {
 	@Autowired
