@@ -1,5 +1,6 @@
 package com.harish.TickIt.util;
 
+import java.util.List;
 import java.util.Set;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ public class JwtUtil
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		
-		Set<?> role= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("roles", Set.class);
+		List<?> role= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("roles", List.class);
 		
 		Set<String> ro= role.stream()
 						   .map(r -> r.toString())
