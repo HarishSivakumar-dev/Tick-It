@@ -24,6 +24,8 @@ public class SecurityConfig
 	private CustomAuthenticationProvider custom;
 	@Autowired
 	private OAuth2SuccessHandler oauth2SuccessHandler;
+	@Autowired
+	private JwtAuthenticationFilter filter;
 	
 	@Bean
 	SecurityFilterChain configure(HttpSecurity http) throws Exception
@@ -41,7 +43,7 @@ public class SecurityConfig
 				   .authenticationProvider(custom)
 				   .oauth2Login(o->o.successHandler(oauth2SuccessHandler))
 				   .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				   .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+				   .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 				   .build();
 		
 		
