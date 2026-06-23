@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.services.TicketActionService;
@@ -40,6 +42,13 @@ public class TicketActionController
 	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId)
 	{
 		String response = tcs.deleteTicket(ticketId);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@PostMapping("/assign/user/ticket")
+	public ResponseEntity<String> assignUserTicket(@RequestBody AssignUserDto dtos) throws Exception
+	{
+		String response= tcs.assignUserTicket(dtos);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
