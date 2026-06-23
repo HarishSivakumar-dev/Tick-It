@@ -1,11 +1,15 @@
 package com.harish.TickIt.TicketService.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
+import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
+import com.harish.TickIt.TicketService.feign.UserFeignClient;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.repos.TicketRepo;
@@ -21,6 +25,8 @@ public class TicketActionService
 	private TicketWrapperImpl ticketWrapperImpl;
 	@Autowired
 	private UserProfileFeignClient userProfileFeignClient;
+	@Autowired
+	private UserFeignClient ufc;
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
@@ -89,6 +95,22 @@ public class TicketActionService
 		{
 			return "Ticket not found";
 		}
+	}
+	
+	public String assignUserTicket(AssignUserDto dto) throws Exception
+	{
+		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new Exception("TICKET NOT FOUND !"));
+		
+		UserFeignDto ufr=  ufc.getUserFromAuthService(Long.valueOf(dto.getUserId())).getBody();
+		
+		tk.setAssignedTo(ufr.getUserName());
+		tk.setUpdatedAt(LocalDateTime.now());
+		tk.setStatus(TicketStatus.IN_PROGRESS);
+		
+		ticketRepo.save(tk);
+		
+		return "User Assigned !";
+		
 	}
 
 }
