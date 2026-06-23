@@ -1,12 +1,15 @@
 package com.harish.TickIt.services;
 
 import java.time.LocalDateTime;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.Exceptions.UserAlreadyRegisteredException;
 import com.harish.TickIt.dtos.UserDetailsDto;
+import com.harish.TickIt.dtos.UserFeignResponse;
 import com.harish.TickIt.dtos.UserLoginDto;
 import com.harish.TickIt.dtos.UserProfileDto;
 import com.harish.TickIt.dtos.UserRegDto;
@@ -92,6 +95,19 @@ public class AuthService
 		String token=jwtUtil.generateToken(rep.findByUserName(dto.getUserName()).get());
 		
 		return token;
+	}
+
+	public UserFeignResponse returnUserDetails(Long userId) throws Exception
+	{
+		UserRegistration uf= rep.findById(userId).orElseThrow(()-> new Exception("NO USER FOUND"));
+		
+		UserFeignResponse ufr = new UserFeignResponse();
+		ufr.setDesignation(uf.getDesignation());
+		ufr.setEmailId(uf.getEmail());
+		ufr.setUserId(uf.getId());
+		ufr.setUserName(uf.getUserName());
+		
+		return ufr;
 	}
 	
 }
