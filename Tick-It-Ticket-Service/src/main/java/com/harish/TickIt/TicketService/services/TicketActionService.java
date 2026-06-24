@@ -1,6 +1,7 @@
 package com.harish.TickIt.TicketService.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,14 @@ import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
+import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.repos.TicketRepo;
 import com.harish.TickIt.TicketService.wrapperimpl.TicketWrapperImpl;
+
 
 @Service
 public class TicketActionService
@@ -110,7 +113,38 @@ public class TicketActionService
 		ticketRepo.save(tk);
 		
 		return "User Assigned !";
+	}
+	
+	public List<TicketResponseDto> getAvailableTicketsForUser(int projectId)
+	{
+		List<TicketPriority> ls= new ArrayList<>();
+		ls.add(TicketPriority.CRITICAL);
+		ls.add(TicketPriority.HIGH);
 		
+		List<TicketResponseDto> dt= ticketRepo.findByProjectIdAndStatusAndPriorityNotInAndAssignedToIsNull(projectId,TicketStatus.OPEN,ls)
+											  .stream()
+											  .map(r->{
+												  
+												  TicketResponseDto dto= new TicketResponseDto();
+												  dto.setClosedAt(r.getClosedAt());
+												  dto.setCreatedAt(r.getCreatedAt());
+												  dto.setCreatedBy(r.getCreatedBy());
+												  dto.setCreatorId(r.getCreatorId());
+												  dto.setCreatorMail(r.getCreatorMail());
+												  dto.setCreatorProfilePictureUrl(r.getCreatorProfilePictureUrl());
+												  dto.setDescription(r.getDescription());
+												  dto.setId(r.getId());
+												  dto.setPriority(r.getPriority().toString());
+												  dto.setStatus(r.getStatus().toString());
+												  dto.setTitle(r.getTitle());
+												  dto.setUpdatedAt(r.getUpdatedAt());
+												  
+												  return dto;
+												  
+											  })
+											  .toList();
+		
+		return dt;
 	}
 
 }
