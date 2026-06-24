@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
@@ -49,6 +48,14 @@ public class TicketActionController
 	public ResponseEntity<String> assignUserTicket(@RequestBody AssignUserDto dtos) throws Exception
 	{
 		String response= tcs.assignUserTicket(dtos);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@GetMapping("/tickets/open/get/{projectId}")
+	public ResponseEntity<List<TicketResponseDto>> getTicketsForUser(@PathVariable int projectId)
+	{
+		List<TicketResponseDto> response= tcs.getAvailableTicketsForUser(projectId);
+		
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
