@@ -10,5 +10,6 @@ public interface UserProfileFeignClient
 {
 	@GetMapping("/api/v1/user-profile/getProfile")
 	public ResponseEntity<UserDetailsDto> getUserProfile();
+	
 
 }
