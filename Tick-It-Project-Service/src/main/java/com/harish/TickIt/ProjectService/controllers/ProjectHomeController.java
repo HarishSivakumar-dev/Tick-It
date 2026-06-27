@@ -1,6 +1,8 @@
 package com.harish.TickIt.ProjectService.controllers;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
+import com.harish.TickIt.ProjectService.dtos.ProjectDetDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.services.ProjectService;
@@ -51,6 +55,12 @@ public class ProjectHomeController
 	public ResponseEntity<List<UserProjectDetailsDto>> getProjectMembers(@PathVariable Long projectId)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
+	}
+	
+	@PostMapping("/project/find")
+	public Optional<ProjectDetDto> findProjectById(@RequestParam long projectid)
+	{
+		return ps.findProject(projectid);
 	}
 	
 }
