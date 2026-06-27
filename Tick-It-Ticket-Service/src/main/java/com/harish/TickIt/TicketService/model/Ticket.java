@@ -1,6 +1,7 @@
 package com.harish.TickIt.TicketService.model;
 
 import java.time.LocalDateTime;
+import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import jakarta.persistence.Entity;
@@ -36,6 +37,7 @@ public class Ticket
 	private long projectId;
 	private long creatorId;
 	private String creatorMail;
+	private TicketApprovalStatus approved;
 	
 	public int getId() {
 		return id;
@@ -121,5 +123,12 @@ public class Ticket
 	public void setCreatorMail(String creatorMail) {
 		this.creatorMail = creatorMail;
 	}
+	public TicketApprovalStatus getApproved() {
+		return approved;
+	}
+	public void setApproved(TicketApprovalStatus approved) {
+		this.approved = approved;
+	}
+	
 
 }
