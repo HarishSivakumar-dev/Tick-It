@@ -44,6 +44,10 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 		}
 		else
 		{
+			if(!isPre.get().getIsActive())
+			{
+				throw new RuntimeException("PROJECT EXPIRED !");
+			}
 			ticket.setProjectId(isPre.get().getProjectId());
 		}
 		
