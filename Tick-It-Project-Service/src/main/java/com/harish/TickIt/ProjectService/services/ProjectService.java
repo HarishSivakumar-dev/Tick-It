@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
+import com.harish.TickIt.ProjectService.dtos.ProjectDetDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
@@ -224,6 +226,27 @@ public class ProjectService
 				                           .toList();
 		return ls;
 		
+	}
+
+	public Optional<ProjectDetDto> findProject(long projectid) 
+	{
+		Optional<ProjectDetails> pm= pdr.findByProjectId(projectid);
+		
+		if(pm.isEmpty())
+		{
+			return Optional.of(null);
+		}
+		else
+		{
+			ProjectDetails pd= pm.get();
+			
+			ProjectDetDto pdt= new ProjectDetDto();
+			pdt.setActive(pd.isActive());
+			pdt.setProjectId(pd.getProjectId());
+			pdt.setProjectName(pd.getProjectName());
+			
+			return Optional.of(pdt);
+		}	
 	}
 	
 
