@@ -246,7 +246,7 @@ public class ProjectService
 		
 		if(pm.isEmpty())
 		{
-			return Optional.of(null);
+			return Optional.empty();
 		}
 		else
 		{
