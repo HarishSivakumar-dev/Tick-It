@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.harish.TickIt.UserService.dtos.ProfileDto;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
 import com.harish.TickIt.UserService.dtos.UserProfileDto;
@@ -34,24 +34,21 @@ public class UserProfileController
 	public ResponseEntity<String> createUserProfile(@RequestBody UserProfileDto dto)
 	{
 		String res= userService.createUserProfile(dto);
-		
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
 	}
 	
 	@GetMapping("/getBasicUserProfile")
 	public ResponseEntity<ProfileDto> getBasicUserProfile()
 	{
-		ProfileResponseDto userProfile=userService.userProfileRetriever();
-		
-		ProfileDto profileDto = new ProfileDto();
-		profileDto.setName(userProfile.getName());
-		profileDto.setEmail(userProfile.getEmail());
-		profileDto.setEmployeeId(userProfile.getEmployeeId());
-		profileDto.setDepartment(userProfile.getDepartment());
-		profileDto.setProfilePictureUrl(userProfile.getProfilePictureUrl());
-		
-		
-		return ResponseEntity.status(HttpStatus.SC_OK).body(profileDto);
+		ProfileDto dt= userService.getBasicUserProfile();
+		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
+	}
+	
+	@GetMapping("/user/details")
+	public ResponseEntity<Boolean> getUserDetails(@RequestParam long projectManagerId)
+	{
+		Boolean res= userService.getUserDetails(projectManagerId);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
 	}
 	
 	
