@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
-import com.harish.TickIt.TicketService.dtos.TicketStatusUpdateDto;
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
@@ -81,6 +80,7 @@ public class TicketActionService
 			if(status == TicketStatus.RESOLVED)
 			{
 				ticket.setClosedAt(java.time.LocalDateTime.now());
+				ticket.setApproved(TicketApprovalStatus.PENDING);
 			}
 			else if(status == TicketStatus.IN_PROGRESS)
 			{
@@ -149,17 +149,5 @@ public class TicketActionService
 		return dt;
 	}
 
-	public String updateTicketStatus(TicketStatusUpdateDto dto) throws Exception
-	{
-		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new Exception("NO TICKET FOUND"));
-		
-		tk.setStatus(dto.getTicketStatus());
-		tk.setClosedAt(LocalDateTime.now());
-		tk.setApproved(TicketApprovalStatus.PENDING);
-		
-		ticketRepo.save(tk);
-		
-		return "CHANGES UPDATED ";
-	}
 
 }
