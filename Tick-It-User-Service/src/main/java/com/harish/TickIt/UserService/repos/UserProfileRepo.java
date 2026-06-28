@@ -9,4 +9,5 @@ import com.harish.TickIt.UserService.models.UserProfile;
 public interface UserProfileRepo extends org.springframework.data.jpa.repository.JpaRepository<com.harish.TickIt.UserService.models.UserProfile, Long>
 {
 	Optional<UserProfile> findByEmail(String email);
+	Optional<UserProfile> findByEmployeeId(Long employeeid);
 }
