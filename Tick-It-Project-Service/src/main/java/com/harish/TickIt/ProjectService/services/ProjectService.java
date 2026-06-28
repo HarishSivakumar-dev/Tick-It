@@ -17,6 +17,7 @@ import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TickIt.ProjectService.enums.ProjectStatus;
+import com.harish.TickIt.ProjectService.feign.UserInformationFeign;
 import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
@@ -31,6 +32,8 @@ public class ProjectService
 	private ProjectDetailsRepo pdr;
 	@Autowired
 	private ProjectMembersRepo pmr;
+	@Autowired
+	private UserInformationFeign uif;
 	
 	public List<ProjectResponseDto> getAllProjects()
 	{
@@ -64,7 +67,16 @@ public class ProjectService
 		pd.setCreatedAt(LocalDateTime.now());
 		pd.setEndDate(null);
 		pd.setProjectDescription(dto.getProjectDescription());
-		pd.setProjectManagerId(dto.getProjectManagerId());
+		
+		if(uif.findProjectManagerId(dto.getProjectManagerId()).getBody().equals(Boolean.TRUE))
+		{
+			pd.setProjectManagerId(dto.getProjectManagerId());
+		}
+		else
+		{
+			throw new RuntimeException("NO PROJECT MANAGER FOUND WITH THAT ID");
+		}
+		
 		pd.setProjectName(dto.getProjectName());
 		pd.setStartDate(dto.getStartDate());
 		pd.setStatus(dto.getStatus());
