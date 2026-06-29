@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
+import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
@@ -15,8 +16,12 @@ import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.model.Ticket;
+import com.harish.TickIt.TicketService.model.TicketApprovalAudit;
+import com.harish.TickIt.TicketService.repos.TicketApprovalAuditRepo;
 import com.harish.TickIt.TicketService.repos.TicketRepo;
 import com.harish.TickIt.TicketService.wrapperimpl.TicketWrapperImpl;
+
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -31,6 +36,8 @@ public class TicketActionService
 	private UserProfileFeignClient userProfileFeignClient;
 	@Autowired
 	private UserFeignClient ufc;
+	@Autowired
+	private TicketApprovalAuditRepo trep;
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
@@ -148,6 +155,41 @@ public class TicketActionService
 		
 		return dt;
 	}
-
+	
+	@Transactional
+	public String updateTicketApprovalStatus(TicketApprovalDto dto)
+	{
+		if(dto.getStatus().equals(TicketApprovalStatus.PENDING))
+		{
+			return "Same State !"; 
+		}
+		
+		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new RuntimeException("No Ticket Found !"));
+		
+		if(dto.getStatus().equals(TicketApprovalStatus.NOT_APPROVED))
+		{
+			tk.setApproved(null);
+			tk.setClosedAt(null);
+			tk.setStatus(TicketStatus.REOPENED);
+		}
+		else
+		{
+			tk.setApproved(dto.getStatus());
+		}
+		
+		tk.setUpdatedAt(LocalDateTime.now());
+		
+		TicketApprovalAudit taa= new TicketApprovalAudit();
+		taa.setDescription(dto.getDescription());
+		taa.setHandledUserName(tk.getAssignedTo());
+		taa.setStatus(dto.getStatus());
+		taa.setTicketId(tk);
+		
+		trep.save(taa);
+		
+		return "Updated Successfully";
+	}
+	
+	
 
 }
