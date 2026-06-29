@@ -66,5 +66,4 @@ public class TicketActionController
 		return ResponseEntity.status(HttpStatus.OK).body(str);
 	}
 	
-
 }
