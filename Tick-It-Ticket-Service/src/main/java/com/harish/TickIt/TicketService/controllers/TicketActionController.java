@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
+import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.services.TicketActionService;
@@ -56,6 +57,13 @@ public class TicketActionController
 	{
 		List<TicketResponseDto> response= tcs.getAvailableTicketsForUser(projectId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@PostMapping("/ticket/update/approval/status")
+	public ResponseEntity<String> updateTicketStatus(@RequestBody TicketApprovalDto dto)
+	{
+		String str= tcs.updateTicketApprovalStatus(dto);
+		return ResponseEntity.status(HttpStatus.OK).body(str);
 	}
 	
 
