@@ -190,6 +190,31 @@ public class TicketActionService
 		return "Updated Successfully";
 	}
 	
+	public List<TicketResponseDto> getTicketBasedOnFilter(TicketStatus stat, TicketPriority prior, TicketApprovalStatus status)
+	{
+		List<TicketResponseDto> res= ticketRepo.filterBySpecs(stat, prior, status)
+											   .stream()
+											   .map(r->{
+												   
+												   	  TicketResponseDto dto= new TicketResponseDto();
+												   	  dto.setClosedAt(r.getClosedAt());
+													  dto.setCreatedAt(r.getCreatedAt());
+													  dto.setCreatedBy(r.getCreatedBy());
+													  dto.setCreatorId(r.getCreatorId());
+													  dto.setCreatorMail(r.getCreatorMail());
+													  dto.setCreatorProfilePictureUrl(r.getCreatorProfilePictureUrl());
+													  dto.setDescription(r.getDescription());
+													  dto.setId(r.getId());
+													  dto.setPriority(r.getPriority().toString());
+													  dto.setStatus(r.getStatus().toString());
+													  dto.setTitle(r.getTitle());
+													  dto.setUpdatedAt(r.getUpdatedAt());
+													  
+													  return dto;
+												   
+											   })
+											   .toList();
+		return res;
+	}
 	
-
 }
