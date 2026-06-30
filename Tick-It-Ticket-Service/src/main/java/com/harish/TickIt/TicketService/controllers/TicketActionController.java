@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
+import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
+import com.harish.TickIt.TicketService.enums.TicketPriority;
+import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.services.TicketActionService;
 
 @RestController
@@ -64,6 +68,15 @@ public class TicketActionController
 	{
 		String str= tcs.updateTicketApprovalStatus(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(str);
+	}
+	
+	@GetMapping("get/")
+	public ResponseEntity<List<TicketResponseDto>> getFilteredTickets(@RequestParam(required=false) TicketStatus status,
+																	  @RequestParam(required=false) TicketPriority priority, 
+																	  @RequestParam(required=false) TicketApprovalStatus appStat)
+	{
+		List<TicketResponseDto> res= tcs.getTicketBasedOnFilter(status, priority, appStat);
+		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
 }
