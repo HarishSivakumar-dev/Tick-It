@@ -51,6 +51,12 @@ public class UserProfileController
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
 	}
 	
+	@PostMapping("/updateProfile")
+	public ResponseEntity<String> updateUserProfile(@RequestBody UserProfileDto dto)
+	{
+		String res= userService.updateUserProfile(dto);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
+	}
 	
 
 }
