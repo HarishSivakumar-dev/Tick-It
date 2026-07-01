@@ -64,10 +64,9 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 			UserProfileDto updto= new UserProfileDto();
 			updto.setEmail(newusr.getEmail());
 			updto.setUserName(newusr.getUserName());
-			updto.setId(newusr.getId());
-			updto.setDepartment("Not specified");
-			updto.setRole(newusr.getRoles().stream().findFirst().get().getRoleName());
-			updto.setRegistrationDate(newusr.getRegistrationDate().toLocalDate());
+			updto.setEmployeeId(newusr.getId());
+			updto.setDepartment(null); // Set department to null or any default value
+			updto.setProfileCreatedAt(newusr.getRegistrationDate());
 			
 			String res=userServiceFeign.createUserProfile(updto).getBody();
 			
