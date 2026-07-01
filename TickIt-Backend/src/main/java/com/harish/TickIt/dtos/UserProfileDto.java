@@ -1,22 +1,21 @@
 package com.harish.TickIt.dtos;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UserProfileDto
 {
-	private Long id;
+	private Long employeeId;
 	private String userName;
 	private String email;
-	private String role;
 	private String department;
-	private LocalDate registrationDate;
+	private LocalDateTime profileCreatedAt;
 	
 	
-	public Long getId() {
-		return id;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getUserName() {
 		return userName;
@@ -30,23 +29,17 @@ public class UserProfileDto
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getRole() {
-		return role;
-	}
-	public void setRole(String role) {
-		this.role = role;
-	}
 	public String getDepartment() {
 		return department;
 	}
 	public void setDepartment(String department) {
 		this.department = department;
 	}
-	public LocalDate getRegistrationDate() {
-		return registrationDate;
+	public LocalDateTime getProfileCreatedAt() {
+		return profileCreatedAt;
 	}
-	public void setRegistrationDate(LocalDate registrationDate) {
-		this.registrationDate = registrationDate;
+	public void setProfileCreatedAt(LocalDateTime profileCreatedAt) {
+		this.profileCreatedAt = profileCreatedAt;
 	}
 
 }
