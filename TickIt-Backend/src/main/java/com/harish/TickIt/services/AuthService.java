@@ -65,10 +65,9 @@ public class AuthService
 		UserProfileDto updto= new UserProfileDto();
 		updto.setEmail(reg.getEmail());
 		updto.setUserName(reg.getUserName());
-		updto.setId(reg.getId());
-		updto.setRole(reg.getRoles().stream().findFirst().get().getRoleName());
+		updto.setEmployeeId(reg.getId());
 		updto.setDepartment(reg.getDesignation());
-		updto.setRegistrationDate(reg.getRegistrationDate().toLocalDate());
+		updto.setProfileCreatedAt(reg.getRegistrationDate());
 		
 		String res= userServiceFeign.createUserProfile(updto).getBody();
 		
