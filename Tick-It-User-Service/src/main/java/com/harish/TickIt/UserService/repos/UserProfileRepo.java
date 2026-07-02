@@ -10,4 +10,5 @@ public interface UserProfileRepo extends org.springframework.data.jpa.repository
 {
 	Optional<UserProfile> findByEmail(String email);
 	Optional<UserProfile> findByEmployeeId(Long employeeid);
+	Optional<UserProfile> findByUserName(String username);
 }
