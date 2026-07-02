@@ -1,5 +1,6 @@
 package com.harish.TickIt.UserService.services;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,7 @@ import com.harish.TickIt.UserService.dtos.UserProfileDto;
 import com.harish.TickIt.UserService.models.UserProfile;
 import com.harish.TickIt.UserService.repos.UserProfileRepo;
 import com.harish.TickIt.UserService.wrapperimpl.ResponseWrapperImpl;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService
@@ -23,7 +25,7 @@ public class UserService
 	public ProfileResponseDto userProfileRetriever()
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
-		UserProfile prof=userProfileRepo.findByEmail(name).orElseThrow(()->new RuntimeException("User not found"));
+		UserProfile prof=userProfileRepo.findByUserName(name).orElseThrow(()->new RuntimeException("User not found"));
 		
 		return responseWrapper.getProfileResponseWrapper(prof);
 		
@@ -37,6 +39,7 @@ public class UserService
 		userProfile.setEmployeeId(dto.getEmployeeId());
 		userProfile.setDepartment(dto.getDepartment());
 		userProfile.setProfileCreatedAt(dto.getProfileCreatedAt());
+		userProfile.setProfileCompleted(Boolean.FALSE);
 		
 		userProfileRepo.save(userProfile);
 		
@@ -74,10 +77,67 @@ public class UserService
 		}	
 	}
 
-	public String updateUserProfile(UserProfileDto dto)
+	@Transactional
+	public String updateUserProfile(ProfileResponseDto dto)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		UserProfile userProfile=userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		
+		if(dto.getAddress()!=null)
+			userProfile.setAddress(dto.getAddress());
+		if(dto.getContactNumber()!=null)
+			userProfile.setContactNumber(dto.getContactNumber());
+		if(dto.getDateOfBirth()!=null)
+			userProfile.setDateOfBirth(dto.getDateOfBirth());
+		if(dto.getDesignation()!=null)
+			userProfile.setDesignation(dto.getDesignation());
+		if(dto.getBio()!=null)
+			userProfile.setBio(dto.getBio());
+		if(dto.getDepartment()!=null)
+			userProfile.setDepartment(dto.getDepartment());
+		if(dto.getGender()!=null)
+			userProfile.setGender(dto.getGender());
+		if(dto.getProfilePictureUrl()!=null)
+			userProfile.setProfilePictureUrl(dto.getProfilePictureUrl());
+		
+		if(userProfile.getContactNumber()!=null && userProfile.getDesignation()!=null && userProfile.getDepartment()!=null && userProfile.getProfilePictureUrl()!=null)
+		{
+			if(!userProfile.getContactNumber().isBlank() && !userProfile.getDesignation().isBlank() && !userProfile.getDepartment().isBlank() && !userProfile.getProfilePictureUrl().isBlank())
+				userProfile.setProfileCompleted(Boolean.TRUE);
+			else
+				userProfile.setProfileCompleted(Boolean.FALSE);
+		}
+		else
+		{
+			userProfile.setProfileCompleted(Boolean.FALSE);
+		}
+		
+		userProfile.setProfileUpdatedAt(LocalDateTime.now());
+		
+		return "Updated !";
+	}
+
+	@Transactional
+	public String updateProfilePicture(String profilePictureUrl)
+	{
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		UserProfile userProfile=userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		
+		userProfile.setProfilePictureUrl(profilePictureUrl);
+		
+		return "Profile picture updated successfully";
+	}
+
+	@Transactional
+	public String deleteProfilePicture()
+	{
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		UserProfile user= userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		user.setProfilePictureUrl(null);
+		
+		return "Profile picture deleted successfully";
 	}
 	
 }
