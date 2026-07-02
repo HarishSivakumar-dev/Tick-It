@@ -2,7 +2,6 @@ package com.harish.TickIt.UserService.dtos;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.harish.TickIt.UserService.enums.EmployeeStatus;
 import com.harish.TickIt.UserService.enums.Gender;
 
 public class ProfileResponseDto 
@@ -18,7 +17,6 @@ public class ProfileResponseDto
     private LocalDate dateOfBirth;
     private Gender gender;
     private String bio;
-    private EmployeeStatus employeeStatus;
     private LocalDateTime profileCreatedAt;
     private LocalDateTime profileUpdatedAt;
     private Boolean profileCompleted;
@@ -89,12 +87,6 @@ public class ProfileResponseDto
 	}
 	public void setBio(String bio) {
 		this.bio = bio;
-	}
-	public EmployeeStatus getEmployeeStatus() {
-		return employeeStatus;
-	}
-	public void setEmployeeStatus(EmployeeStatus employeeStatus) {
-		this.employeeStatus = employeeStatus;
 	}
 	public LocalDateTime getProfileCreatedAt() {
 		return profileCreatedAt;
