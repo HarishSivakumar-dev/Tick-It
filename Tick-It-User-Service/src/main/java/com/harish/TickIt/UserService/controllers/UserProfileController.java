@@ -3,8 +3,10 @@ package com.harish.TickIt.UserService.controllers;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,11 +54,24 @@ public class UserProfileController
 	}
 	
 	@PostMapping("/updateProfile")
-	public ResponseEntity<String> updateUserProfile(@RequestBody UserProfileDto dto)
+	public ResponseEntity<String> updateUserProfile(@RequestBody ProfileResponseDto dto)
 	{
 		String res= userService.updateUserProfile(dto);
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
 	}
 	
+	@PutMapping("/updateProfilePicture")
+	public ResponseEntity<String> updateProfilePicture(@RequestParam String profilePictureUrl)
+	{
+		String res= userService.updateProfilePicture(profilePictureUrl);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
+	}
+	
+	@DeleteMapping("/deleteProfilePicture")
+	public ResponseEntity<String> deleteProfilePicture()
+	{
+		String res= userService.deleteProfilePicture();
+		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
+	}
 
 }
