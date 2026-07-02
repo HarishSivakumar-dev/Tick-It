@@ -1,6 +1,7 @@
 package com.harish.TickIt.UserService.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -139,6 +140,51 @@ public class UserService
 		
 		return "Profile picture deleted successfully";
 	}
+
+	public ProfileResponseDto getEmployeeDetails(long employeeId)
+	{
+		UserProfile usr= userProfileRepo.findByEmployeeId(employeeId).orElseThrow(()-> new RuntimeException("NO USER FOUND !"));
+		return responseWrapper.getProfileResponseWrapper(usr);
+	}
+
+	public List<ProfileDto> searchProfiles(String query)
+	{
+		List<ProfileDto> dt= userProfileRepo.findByUserNameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query)
+											.stream()
+											.map(r->{
+												ProfileDto dto= new ProfileDto();
+												dto.setName(r.getUserName());
+												dto.setEmail(r.getEmail());
+												dto.setEmployeeId(r.getEmployeeId());
+												dto.setDepartment(r.getDepartment());
+												dto.setProfilePictureUrl(r.getProfilePictureUrl());
+												
+												return dto;
+											})
+											.toList();
+		return dt;
+	}
+
+	public List<ProfileDto> searchProfilesByFilter(String department, String designation)
+	{
+		List<ProfileDto> dt= userProfileRepo.findBasedOnFilter(department, designation)
+											.stream()
+											.map(r->{
+												ProfileDto dto= new ProfileDto();
+												dto.setName(r.getUserName());
+												dto.setEmail(r.getEmail());
+												dto.setEmployeeId(r.getEmployeeId());
+												dto.setDepartment(r.getDepartment());
+												dto.setProfilePictureUrl(r.getProfilePictureUrl());
+												
+												return dto;
+											})
+											.toList();
+		
+		return dt;
+	}
+	
+	
 	
 }
 
