@@ -2,7 +2,6 @@ package com.harish.TickIt.UserService.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.harish.TickIt.UserService.enums.EmployeeStatus;
 import com.harish.TickIt.UserService.enums.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,9 +43,6 @@ public class UserProfile
 	    
 	    @Column(length = 1000)
 	    private String bio;
-	    
-	    @Enumerated(EnumType.STRING)
-	    private EmployeeStatus employeeStatus;
 	    
 	    private LocalDateTime profileCreatedAt;
 	    private LocalDateTime profileUpdatedAt;
@@ -124,12 +120,6 @@ public class UserProfile
 		}
 		public void setBio(String bio) {
 			this.bio = bio;
-		}
-		public EmployeeStatus getEmployeeStatus() {
-			return employeeStatus;
-		}
-		public void setEmployeeStatus(EmployeeStatus employeeStatus) {
-			this.employeeStatus = employeeStatus;
 		}
 		public LocalDateTime getProfileCreatedAt() {
 			return profileCreatedAt;
