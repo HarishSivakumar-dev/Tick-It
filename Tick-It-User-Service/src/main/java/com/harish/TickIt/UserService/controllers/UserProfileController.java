@@ -83,14 +83,14 @@ public class UserProfileController
 		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
 	}
 	
-	@GetMapping("/profile/search/")
+	@GetMapping("/profile/search")
 	public ResponseEntity<List<ProfileDto>> searchProfiles(@RequestParam String query)
 	{
 		List<ProfileDto> dt= userService.searchProfiles(query);
 		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
 	}
 	
-	@GetMapping("/profile/search")
+	@GetMapping("/profile/search/filter")
 	public ResponseEntity<List<ProfileDto>> searchProfilesByFilter(@RequestParam String department, @RequestParam String designation)
 	{
 		List<ProfileDto> dt= userService.searchProfilesByFilter(department, designation);
