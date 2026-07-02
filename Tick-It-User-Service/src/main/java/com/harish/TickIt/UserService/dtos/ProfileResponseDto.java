@@ -2,35 +2,39 @@ package com.harish.TickIt.UserService.dtos;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.harish.TickIt.UserService.enums.EmployeeStatus;
+import com.harish.TickIt.UserService.enums.Gender;
 
 public class ProfileResponseDto 
 {
-	private String name;
-	private String email;
 	private Long employeeId;
-	private String department;
-	private String contactNumber;
-	private String profilePictureUrl;
-	private String address;
-	private String dateOfBirth;
-	private String gender;
-	private Long noOfTicketsAssigned;
-	private Long noOfTicketsResolved;
-	private long noOfTicketsActionPending;
-	private LocalDateTime lastLoginTime;
-	private LocalDate accountCreationDate;
-	private String accountStatus;
-	private Long noOfTicketsExcalated;
-	private Long strikeCount;
-	private LocalDateTime lastStrikeDate;
-	private String performanceRating;
-	
-	
-	public String getName() {
-		return name;
+    private String userName;
+    private String email;
+    private String department;
+    private String designation;
+    private String contactNumber;
+    private String profilePictureUrl;
+    private String address;
+    private LocalDate dateOfBirth;
+    private Gender gender;
+    private String bio;
+    private EmployeeStatus employeeStatus;
+    private LocalDateTime profileCreatedAt;
+    private LocalDateTime profileUpdatedAt;
+    private Boolean profileCompleted;
+    
+    
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	public String getEmail() {
 		return email;
@@ -38,17 +42,17 @@ public class ProfileResponseDto
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public Long getEmployeeId() {
-		return employeeId;
-	}
-	public void setEmployeeId(Long employeeId) {
-		this.employeeId = employeeId;
-	}
 	public String getDepartment() {
 		return department;
 	}
 	public void setDepartment(String department) {
 		this.department = department;
+	}
+	public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 	public String getContactNumber() {
 		return contactNumber;
@@ -68,77 +72,47 @@ public class ProfileResponseDto
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(String dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	public String getGender() {
+	public Gender getGender() {
 		return gender;
 	}
-	public void setGender(String gender) {
+	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	public Long getNoOfTicketsAssigned() {
-		return noOfTicketsAssigned;
+	public String getBio() {
+		return bio;
 	}
-	public void setNoOfTicketsAssigned(Long noOfTicketsAssigned) {
-		this.noOfTicketsAssigned = noOfTicketsAssigned;
+	public void setBio(String bio) {
+		this.bio = bio;
 	}
-	public Long getNoOfTicketsResolved() {
-		return noOfTicketsResolved;
+	public EmployeeStatus getEmployeeStatus() {
+		return employeeStatus;
 	}
-	public void setNoOfTicketsResolved(Long noOfTicketsResolved) {
-		this.noOfTicketsResolved = noOfTicketsResolved;
+	public void setEmployeeStatus(EmployeeStatus employeeStatus) {
+		this.employeeStatus = employeeStatus;
 	}
-	public LocalDateTime getLastLoginTime() {
-		return lastLoginTime;
+	public LocalDateTime getProfileCreatedAt() {
+		return profileCreatedAt;
 	}
-	public void setLastLoginTime(LocalDateTime lastLoginTime) {
-		this.lastLoginTime = lastLoginTime;
+	public void setProfileCreatedAt(LocalDateTime profileCreatedAt) {
+		this.profileCreatedAt = profileCreatedAt;
 	}
-	public LocalDate getAccountCreationDate() {
-		return accountCreationDate;
+	public LocalDateTime getProfileUpdatedAt() {
+		return profileUpdatedAt;
 	}
-	public void setAccountCreationDate(LocalDate accountCreationDate) {
-		this.accountCreationDate = accountCreationDate;
+	public void setProfileUpdatedAt(LocalDateTime profileUpdatedAt) {
+		this.profileUpdatedAt = profileUpdatedAt;
 	}
-	public String getAccountStatus() {
-		return accountStatus;
+	public Boolean getProfileCompleted() {
+		return profileCompleted;
 	}
-	public void setAccountStatus(String accountStatus) {
-		this.accountStatus = accountStatus;
-	}
-	public Long getNoOfTicketsExcalated() {
-		return noOfTicketsExcalated;
-	}
-	public void setNoOfTicketsExcalated(Long noOfTicketsExcalated) {
-		this.noOfTicketsExcalated = noOfTicketsExcalated;
-	}
-	public Long getStrikeCount() {
-		return strikeCount;
-	}
-	public void setStrikeCount(Long strikeCount) {
-		this.strikeCount = strikeCount;
-	}
-	public LocalDateTime getLastStrikeDate() {
-		return lastStrikeDate;
-	}
-	public void setLastStrikeDate(LocalDateTime lastStrikeDate) {
-		this.lastStrikeDate = lastStrikeDate;
-	}
-	public String getPerformanceRating() {
-		return performanceRating;
-	}
-	public void setPerformanceRating(String performanceRating) {
-		this.performanceRating = performanceRating;
-	}
-	public long getNoOfTicketsActionPending() {
-		return noOfTicketsActionPending;
-	}
-	public void setNoOfTicketsActionPending(long noOfTicketsActionPending) {
-		this.noOfTicketsActionPending = noOfTicketsActionPending;
+	public void setProfileCompleted(Boolean profileCompleted) {
+		this.profileCompleted = profileCompleted;
 	}
 		
 }
