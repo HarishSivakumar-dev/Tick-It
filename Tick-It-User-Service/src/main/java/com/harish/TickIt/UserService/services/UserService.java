@@ -1,6 +1,5 @@
 package com.harish.TickIt.UserService.services;
 
-
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,12 +32,11 @@ public class UserService
 	public String createUserProfile(UserProfileDto dto)
 	{
 		UserProfile userProfile=new UserProfile();
-		userProfile.setName(dto.getUserName());
+		userProfile.setUserName(dto.getUserName());
 		userProfile.setEmail(dto.getEmail());
-		userProfile.setEmployeeId(dto.getId());
-		userProfile.setRole(dto.getRole());
+		userProfile.setEmployeeId(dto.getEmployeeId());
 		userProfile.setDepartment(dto.getDepartment());
-		userProfile.setAccountCreationDate(dto.getRegistrationDate());
+		userProfile.setProfileCreatedAt(dto.getProfileCreatedAt());
 		
 		userProfileRepo.save(userProfile);
 		
@@ -50,7 +48,7 @@ public class UserService
 		ProfileResponseDto userProfile=this.userProfileRetriever();
 		
 		ProfileDto profileDto = new ProfileDto();
-		profileDto.setName(userProfile.getName());
+		profileDto.setName(userProfile.getUserName());
 		profileDto.setEmail(userProfile.getEmail());
 		profileDto.setEmployeeId(userProfile.getEmployeeId());
 		profileDto.setDepartment(userProfile.getDepartment());
@@ -69,11 +67,17 @@ public class UserService
 		}
 		else
 		{
-			if(usr.get().getRole().equals("ROLE_PROJECT_MANAGER"))
+			if(usr.get().getDesignation().equals("PROJECT_MANAGER"))
 				return true;
 			else
 			return false;
 		}	
+	}
+
+	public String updateUserProfile(UserProfileDto dto)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
