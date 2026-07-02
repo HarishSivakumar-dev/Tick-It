@@ -2,7 +2,6 @@ package com.harish.TickIt.ProjectService.controllers;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +56,7 @@ public class ProjectHomeController
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
 	}
 	
-	@PostMapping("/project/find")
+	@GetMapping("/project/find")
 	public Optional<ProjectDetDto> findProjectById(@RequestParam long projectid)
 	{
 		return ps.findProject(projectid);
