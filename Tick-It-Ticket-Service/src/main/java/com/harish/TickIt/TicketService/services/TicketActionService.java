@@ -14,7 +14,6 @@ import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
-import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketApprovalAudit;
 import com.harish.TickIt.TicketService.repos.TicketApprovalAuditRepo;
@@ -32,8 +31,6 @@ public class TicketActionService
 	private TicketRepo ticketRepo;
 	@Autowired
 	private TicketWrapperImpl ticketWrapperImpl;
-	@Autowired
-	private UserProfileFeignClient userProfileFeignClient;
 	@Autowired
 	private UserFeignClient ufc;
 	@Autowired
@@ -88,10 +85,6 @@ public class TicketActionService
 			{
 				ticket.setClosedAt(java.time.LocalDateTime.now());
 				ticket.setApproved(TicketApprovalStatus.PENDING);
-			}
-			else if(status == TicketStatus.IN_PROGRESS)
-			{
-				ticket.setAssignedTo(userProfileFeignClient.getUserProfile().getBody().getName());
 			}
 			else if(status == TicketStatus.REOPENED)
 			{
