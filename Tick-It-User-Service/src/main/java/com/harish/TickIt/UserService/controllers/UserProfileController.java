@@ -1,10 +1,12 @@
 package com.harish.TickIt.UserService.controllers;
 
+import java.util.List;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,6 +74,27 @@ public class UserProfileController
 	{
 		String res= userService.deleteProfilePicture();
 		return ResponseEntity.status(HttpStatus.SC_OK).body(res);
+	}
+	
+	@GetMapping("/profile/{employeeId}")
+	public ResponseEntity<ProfileResponseDto> getEmployeeDetails(@PathVariable long employeeId)
+	{
+		ProfileResponseDto dt= userService.getEmployeeDetails(employeeId);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
+	}
+	
+	@GetMapping("/profile/search/")
+	public ResponseEntity<List<ProfileDto>> searchProfiles(@RequestParam String query)
+	{
+		List<ProfileDto> dt= userService.searchProfiles(query);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
+	}
+	
+	@GetMapping("/profile/search")
+	public ResponseEntity<List<ProfileDto>> searchProfilesByFilter(@RequestParam String department, @RequestParam String designation)
+	{
+		List<ProfileDto> dt= userService.searchProfilesByFilter(department, designation);
+		return ResponseEntity.status(HttpStatus.SC_OK).body(dt);
 	}
 
 }
