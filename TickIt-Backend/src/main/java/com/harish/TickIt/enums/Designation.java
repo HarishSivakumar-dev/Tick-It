@@ -1,0 +1,17 @@
+package com.harish.TickIt.enums;
+
+public enum Designation
+{
+	SOFTWARE_ENGINEER,
+    SENIOR_SOFTWARE_ENGINEER,
+    TECH_LEAD,
+    TEAM_LEAD,
+    PROJECT_MANAGER,
+    QA_ENGINEER,
+    SENIOR_QA_ENGINEER,
+    DEVOPS_ENGINEER,
+    UI_UX_DESIGNER,
+    BUSINESS_ANALYST,
+    PRODUCT_MANAGER
+
+}
