@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import com.harish.TickIt.dtos.UserDetailsDto;
 import com.harish.TickIt.dtos.UserProfileDto;
 import com.harish.TickIt.feign.UserServiceFeign;
 import com.harish.TickIt.models.Roles;
@@ -28,6 +29,8 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 	private RoleRepo rolerep;
 	@Autowired
 	private UserServiceFeign userServiceFeign;
+	@Autowired
+	private com.harish.TickIt.feign.ProjectServiceFeign project;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -70,7 +73,15 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 			
 			String res=userServiceFeign.createUserProfile(updto).getBody();
 			
+			UserDetailsDto dt= new UserDetailsDto();
+			dt.setEmail(newusr.getEmail());
+			dt.setUserId(newusr.getId());
+			dt.setUserName(newusr.getUserName());
+		
+			String resp= project.saveUserDetails(dt).getBody();
+			
 			System.out.println("User profile creation response: " + res);
+			System.out.println("Project service response: " + resp);
 			token= jwtUtil.generateToken(newusr);	
 		}	
 		
