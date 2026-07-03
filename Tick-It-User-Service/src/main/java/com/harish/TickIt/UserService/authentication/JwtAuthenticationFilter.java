@@ -2,16 +2,19 @@ package com.harish.TickIt.UserService.authentication;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.harish.TickIt.UserService.util.JwtUtil;
 import jakarta.servlet.FilterChain;
+import org.springframework.stereotype.Component;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter extends org.springframework.web.filter.OncePerRequestFilter
 {
 	
 	@Autowired
-	private com.harish.TickIt.UserService.util.JwtUtil jwtUtil;
+	private JwtUtil jwtUtil;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
