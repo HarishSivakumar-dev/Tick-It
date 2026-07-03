@@ -8,11 +8,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import com.harish.TickIt.UserService.authentication.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig
 {
+	@Autowired
+	private JwtAuthenticationFilter jwt;
+	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
@@ -21,7 +25,7 @@ public class SecurityConfig
 				   .httpBasic(b -> b.disable())
 				   .authorizeHttpRequests(r->r.requestMatchers("/api/v1/user-profile/createProfile").permitAll().anyRequest().authenticated())
 				   .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				   .addFilterBefore(new JwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+				   .addFilterBefore(jwt, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
 				   .build();
 			
 	}
