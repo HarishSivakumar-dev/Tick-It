@@ -1,9 +1,11 @@
 package com.harish.TickIt.UserService.util;
 
 import javax.crypto.SecretKey;
+import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Jwts;
 
+@Component
 public class JwtUtil
 {
 	@Value("${jwt.secret}")
