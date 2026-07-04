@@ -3,6 +3,7 @@ package com.harish.TickIt.Authentication;
 import java.io.IOException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 	@Autowired
 	private UserRegRepo rep;
 	@Autowired
+	@Lazy
 	private AuthService ser;
 
 	@Override
