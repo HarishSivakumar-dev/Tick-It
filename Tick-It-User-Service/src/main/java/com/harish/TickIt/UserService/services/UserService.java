@@ -99,9 +99,9 @@ public class UserService
 		if(dto.getProfilePictureUrl()!=null)
 			userProfile.setProfilePictureUrl(dto.getProfilePictureUrl());
 		
-		if(userProfile.getContactNumber()!=null && userProfile.getBio()!=null && userProfile.getGender()!=null && userProfile.getProfilePictureUrl()!=null)
+		if(userProfile.getContactNumber()!=null && userProfile.getBio()!=null && userProfile.getProfilePictureUrl()!=null && userProfile.getUserName()!=null)
 		{
-			if(!userProfile.getContactNumber().isBlank() && !userProfile.getBio().isBlank() && !userProfile.getProfilePictureUrl().isBlank())
+			if(!userProfile.getContactNumber().isBlank() && !userProfile.getBio().isBlank() && !userProfile.getProfilePictureUrl().isBlank() && !userProfile.getUserName().isBlank())
 				userProfile.setProfileCompleted(Boolean.TRUE);
 			else
 				userProfile.setProfileCompleted(Boolean.FALSE);
