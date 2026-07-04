@@ -9,7 +9,7 @@ public class UserProfileDto
 	private String email;
 	private String department;
 	private LocalDateTime profileCreatedAt;
-	
+	private String designation;
 	
 	public Long getEmployeeId() {
 		return employeeId;
@@ -41,6 +41,11 @@ public class UserProfileDto
 	public void setDepartment(String department) {
 		this.department = department;
 	}
-	
+	public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
 
 }
