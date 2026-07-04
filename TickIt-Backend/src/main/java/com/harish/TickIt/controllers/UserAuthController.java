@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.harish.TickIt.dtos.UserFeignResponse;
 import com.harish.TickIt.dtos.UserLoginDto;
 import com.harish.TickIt.dtos.UserRegDto;
@@ -24,7 +23,7 @@ public class UserAuthController
 	@PostMapping("/user/register")
 	public ResponseEntity<String> registerUser(@RequestBody UserRegDto dto)
 	{
-		return ResponseEntity.status(200).body(userService.registerUser(dto));
+		return ResponseEntity.status(200).body(userService.registerUser(dto).getUserName() + " registered successfully");
 	}
 	
 	@PostMapping("/user/login")
