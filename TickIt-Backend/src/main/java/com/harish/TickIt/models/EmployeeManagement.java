@@ -16,11 +16,10 @@ public class EmployeeManagement
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	private String userName;
+	private String fullName;
 	private String email;
 	private Designation designation;
 	private Department department;
-	private String password;
 	private Boolean AccountActivated;
 	
 	
@@ -30,11 +29,11 @@ public class EmployeeManagement
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String getUserName() {
-		return userName;
+	public String getfullName() {
+		return fullName;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setfullName(String fullName) {
+		this.fullName = fullName;
 	}
 	public String getEmail() {
 		return email;
@@ -53,12 +52,6 @@ public class EmployeeManagement
 	}
 	public void setDepartment(Department department) {
 		this.department = department;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
 	}
 	public Boolean getAccountActivated() {
 		return AccountActivated;
