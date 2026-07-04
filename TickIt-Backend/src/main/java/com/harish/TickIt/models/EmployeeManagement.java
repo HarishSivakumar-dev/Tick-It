@@ -3,6 +3,7 @@ package com.harish.TickIt.models;
 import com.harish.TickIt.enums.Department;
 import com.harish.TickIt.enums.Designation;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,8 +19,12 @@ public class EmployeeManagement
 	
 	private String fullName;
 	private String email;
+	
+	@Enumerated(jakarta.persistence.EnumType.STRING)
 	private Designation designation;
+	@Enumerated(jakarta.persistence.EnumType.STRING)
 	private Department department;
+	
 	private Boolean AccountActivated;
 	
 	
