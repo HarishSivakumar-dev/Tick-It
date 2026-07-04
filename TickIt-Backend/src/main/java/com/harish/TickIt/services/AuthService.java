@@ -22,6 +22,7 @@ import com.harish.TickIt.repositories.EmployeeManagementRepo;
 import com.harish.TickIt.repositories.RoleRepo;
 import com.harish.TickIt.repositories.UserRegRepo;
 import com.harish.TickIt.util.JwtUtil;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -47,19 +48,20 @@ public class AuthService
 	private JwtUtil jwtUtil;
 	
 	@Transactional
-	public String registerUser(UserRegDto dto)
+	public UserRegistration registerUser(UserRegDto dto)
 	{
-		EmployeeManagement employee= validateEmployee(dto);
+		EmployeeManagement employee= validateEmployeeLocal(dto);
 		
-		UserRegistration reg= createUser(dto, employee);
+		UserRegistration reg= createUserLocal(dto, employee);
 			
 		String res= createUserProfile(reg, employee.getId());
 		String resp= createProjectDetails(reg);
 		
 		System.out.println("Profile creation response: " + res);
 		System.out.println("Project Table Population Response : " + resp);
+		employee.setAccountActivated(true);
 		
-		return "Registered";
+		return reg;
 		
 	}
 	
@@ -85,9 +87,9 @@ public class AuthService
 		return ufr;
 	}
 	
-	public EmployeeManagement validateEmployee(UserRegDto dto)
+	public EmployeeManagement validateEmployeeLocal(UserRegDto dto)
 	{
-		Optional<EmployeeManagement> em= emr.findById(dto.getEmployeeId());
+		Optional<EmployeeManagement> em= emr.findByEmailAndId(dto.getEmail(), dto.getEmployeeId());
 		
 		if(!em.isPresent())
 		{
@@ -101,22 +103,43 @@ public class AuthService
 			{
 				throw new RuntimeException("Employee account is already activated");
 			}
-			else if(!employee.getEmail().equals(dto.getEmail()))
-			{
-				throw new RuntimeException("Email does not match with employee record");
-			}
 			
 			if(rep.findByEmail(dto.getEmail()).isPresent())
 			{
 				throw new UserAlreadyRegisteredException("User with this email is already registered");
 			}
 			
-			employee.setAccountActivated(true);
 			return employee;
 		}
 	}
 	
-	public UserRegistration createUser(UserRegDto dto, EmployeeManagement employee)
+	public EmployeeManagement validateEmployeeOauth(String email)
+	{
+		Optional<EmployeeManagement> em= emr.findByEmail(email);
+		
+		if(!em.isPresent())
+		{
+			throw new RuntimeException("Employee not found");
+		}
+		else
+		{
+			EmployeeManagement employee= em.get();
+			
+			if(employee.getAccountActivated())
+			{
+				throw new RuntimeException("Employee account is already activated");
+			}
+
+			if(rep.findByEmail(email).isPresent())
+			{
+				throw new UserAlreadyRegisteredException("User with this email is already registered");
+			}
+			
+			return employee;
+		}
+	}
+	
+	public UserRegistration createUserLocal(UserRegDto dto, EmployeeManagement employee)
 	{
 		UserRegistration reg= new UserRegistration();
 		reg.setEmployeeId(employee.getId());
@@ -124,7 +147,29 @@ public class AuthService
 		reg.setUserName(dto.getUserName());
 		reg.setPassword(bpe.encode(dto.getPassword()));
 		reg.setRegistrationDate(LocalDateTime.now());
+		
+		reg= assignRole(reg, employee);
 			
+			
+		return rep.save(reg);
+	 }
+	
+	public UserRegistration createUserOauth(EmployeeManagement employee, String name)
+	{
+		UserRegistration reg= new UserRegistration();
+		reg.setEmployeeId(employee.getId());
+		reg.setEmail(employee.getEmail());
+		reg.setUserName(name);
+		reg.setPassword(null);
+		reg.setRegistrationDate(LocalDateTime.now());
+		
+		reg= assignRole(reg, employee);
+				
+		return rep.save(reg);
+	 }
+	
+	public UserRegistration assignRole(UserRegistration reg, EmployeeManagement employee)
+	{
 		if(employee.getDesignation().equals(Designation.PROJECT_MANAGER))
 		{
 			reg.setDepartment(employee.getDepartment());
@@ -146,9 +191,10 @@ public class AuthService
 			Roles role= rolerep.findByRoleName("ROLE_USER").get();
 			reg.getRoles().add(role);
 		}
-			
-		return rep.save(reg);
-	 }
+		
+		return reg;
+	}
+	
 	public String createUserProfile(UserRegistration reg, Long employeeId)
 	{
 		UserProfileDto updto= new UserProfileDto();
@@ -172,5 +218,18 @@ public class AuthService
 		String resp= project.saveUserDetails(dt).getBody();
 		
 		return resp;	
+	}
+	public UserRegistration registerUserOauth(String email, String name)
+	{
+		EmployeeManagement emp= validateEmployeeOauth(email);
+		
+		UserRegistration reg= createUserOauth(emp, name);
+		String res= createUserProfile(reg, emp.getId());
+		String resp= createProjectDetails(reg);
+		
+		System.out.println("Profile creation response: " + res);
+		System.out.println("Project Table Population Response : " + resp);
+		
+		return reg;	
 	}
 }
