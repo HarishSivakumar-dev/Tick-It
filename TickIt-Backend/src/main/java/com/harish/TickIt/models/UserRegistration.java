@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
@@ -25,8 +26,12 @@ public class UserRegistration
 	private String userName;
 	private String email;
 	private String password;
+	
+	@Enumerated(jakarta.persistence.EnumType.STRING)
 	private Designation designation;
+	@Enumerated(jakarta.persistence.EnumType.STRING)
 	private Department department;
+	
 	private LocalDateTime registrationDate;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
