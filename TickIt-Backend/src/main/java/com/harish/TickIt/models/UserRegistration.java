@@ -2,6 +2,8 @@ package com.harish.TickIt.models;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import com.harish.TickIt.enums.Department;
+import com.harish.TickIt.enums.Designation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,10 +21,12 @@ public class UserRegistration
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private Long employeeId;
 	private String userName;
 	private String email;
 	private String password;
-	private String designation;
+	private Designation designation;
+	private Department department;
 	private LocalDateTime registrationDate;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -70,11 +74,23 @@ public class UserRegistration
 	public void setRoles(Set<Roles> roles) {
 		this.roles = roles;
 	}
-	public String getDesignation() {
+	public Designation getDesignation() {
 		return designation;
 	}
-	public void setDesignation(String designation) {
+	public void setDesignation(Designation designation) {
 		this.designation = designation;
+	}
+	public Department getDepartment() {
+		return department;
+	}
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+	public Long getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	
 }
