@@ -2,9 +2,9 @@ package com.harish.TickIt.dtos;
 
 public class UserRegDto
 {
+	private Long employeeId;
 	private String email;
 	private String userName;
-	private String designation;
 	private String password;
 	
 	public String getEmail() {
@@ -19,18 +19,17 @@ public class UserRegDto
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getDesignation() {
-		return designation;
-	}
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public Long getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
+	}
 	
-
 }
