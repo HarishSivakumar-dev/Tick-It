@@ -5,7 +5,5 @@ public enum Department
 	ENGINEERING,
     QUALITY_ASSURANCE,
     DEVOPS,
-    PRODUCT,
     DESIGN
-
 }
