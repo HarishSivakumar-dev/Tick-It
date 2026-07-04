@@ -21,6 +21,7 @@ public class EmployeeManagement
 	private Designation designation;
 	private Department department;
 	private String password;
+	private Boolean AccountActivated;
 	
 	
 	public long getId() {
@@ -58,6 +59,12 @@ public class EmployeeManagement
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public Boolean getAccountActivated() {
+		return AccountActivated;
+	}
+	public void setAccountActivated(Boolean accountActivated) {
+		AccountActivated = accountActivated;
 	}
 
 }
