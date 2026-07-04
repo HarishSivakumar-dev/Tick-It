@@ -39,6 +39,7 @@ public class UserService
 		userProfile.setEmail(dto.getEmail());
 		userProfile.setEmployeeId(dto.getEmployeeId());
 		userProfile.setDepartment(dto.getDepartment());
+		userProfile.setDesignation(dto.getDesignation());
 		userProfile.setProfileCreatedAt(dto.getProfileCreatedAt());
 		userProfile.setProfileCompleted(Boolean.FALSE);
 		
@@ -91,20 +92,16 @@ public class UserService
 			userProfile.setContactNumber(dto.getContactNumber());
 		if(dto.getDateOfBirth()!=null)
 			userProfile.setDateOfBirth(dto.getDateOfBirth());
-		if(dto.getDesignation()!=null)
-			userProfile.setDesignation(dto.getDesignation());
 		if(dto.getBio()!=null)
 			userProfile.setBio(dto.getBio());
-		if(dto.getDepartment()!=null)
-			userProfile.setDepartment(dto.getDepartment());
 		if(dto.getGender()!=null)
 			userProfile.setGender(dto.getGender());
 		if(dto.getProfilePictureUrl()!=null)
 			userProfile.setProfilePictureUrl(dto.getProfilePictureUrl());
 		
-		if(userProfile.getContactNumber()!=null && userProfile.getDesignation()!=null && userProfile.getDepartment()!=null && userProfile.getProfilePictureUrl()!=null)
+		if(userProfile.getContactNumber()!=null && userProfile.getBio()!=null && userProfile.getGender()!=null && userProfile.getProfilePictureUrl()!=null)
 		{
-			if(!userProfile.getContactNumber().isBlank() && !userProfile.getDesignation().isBlank() && !userProfile.getDepartment().isBlank() && !userProfile.getProfilePictureUrl().isBlank())
+			if(!userProfile.getContactNumber().isBlank() && !userProfile.getBio().isBlank() && !userProfile.getProfilePictureUrl().isBlank())
 				userProfile.setProfileCompleted(Boolean.TRUE);
 			else
 				userProfile.setProfileCompleted(Boolean.FALSE);
