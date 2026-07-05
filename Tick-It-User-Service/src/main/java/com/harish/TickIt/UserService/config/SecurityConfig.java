@@ -36,5 +36,18 @@ public class SecurityConfig
 		return http.getSharedObject(AuthenticationManagerBuilder.class)
 				   .build();
 	}
-
+	
+	@Bean
+	public org.springframework.security.access.hierarchicalroles.RoleHierarchy roleHierarchy()
+	{
+		return org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_USER");
+	}
+	
+	@Bean
+	public org.springframework.security.access.expression.method.MethodSecurityExpressionHandler methodSecurityExpressionHandler(org.springframework.security.access.hierarchicalroles.RoleHierarchy roleHierarchy)
+	{
+		org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler expressionHandler = new org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy);
+		return expressionHandler;
+	}
 }
