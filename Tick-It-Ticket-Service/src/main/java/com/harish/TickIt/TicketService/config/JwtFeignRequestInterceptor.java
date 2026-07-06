@@ -19,7 +19,7 @@ public class JwtFeignRequestInterceptor implements RequestInterceptor
 		ServletRequestAttributes sra = (ServletRequestAttributes) ra;
 		
 		String token=sra.getRequest().getHeader("Authorization");
-		
+		System.out.println("Token in Feign Interceptor: "+token);
 		template.header("Authorization", token);
 	}
 
