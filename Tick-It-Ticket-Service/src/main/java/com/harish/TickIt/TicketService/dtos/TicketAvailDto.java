@@ -4,7 +4,7 @@ public class TicketAvailDto
 {
 	private Long projectId;
 	private String projectName;
-	private Boolean isActive;
+	private boolean isActive;
 	
 	
 	public Long getProjectId() {
@@ -19,12 +19,11 @@ public class TicketAvailDto
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-	public Boolean getIsActive() {
+	public boolean isActive() {
 		return isActive;
 	}
-	public void setIsActive(Boolean isActive) {
+	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	
 	
 }
