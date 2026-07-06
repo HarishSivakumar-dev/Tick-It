@@ -35,6 +35,7 @@ public class JwtAuthencationFilter extends org.springframework.web.filter.OncePe
 		}
 		
 		String authHeader = request.getHeader("Authorization");
+		
 		if (authHeader != null && authHeader.startsWith("Bearer "))
 		{
 			String token = authHeader.substring(7);
