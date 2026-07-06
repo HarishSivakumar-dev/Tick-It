@@ -9,6 +9,7 @@ import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
+import com.harish.TickIt.TicketService.dtos.TicketStatusUpdateDto;
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
@@ -71,12 +72,13 @@ public class TicketActionService
 		}
 	}
 	
-	public String updateTicketStatus(int ticketId, TicketStatus status)
+	public String updateTicketStatus(TicketStatusUpdateDto dto)
 	{
 		// This method will update the status of a ticket
-		Ticket ticket = ticketRepo.findById(ticketId).orElse(null);
+		Ticket ticket = ticketRepo.findById(dto.getTicketId()).orElse(null);
 		if(ticket != null)
 		{
+			TicketStatus status=dto.getStatus();
 			ticket.setStatus(status);
 			ticket.setUpdatedAt(java.time.LocalDateTime.now());
 			
