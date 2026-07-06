@@ -9,7 +9,7 @@ import com.harish.TickIt.TicketService.dtos.TicketAvailDto;
 @FeignClient("Tick-It-Project-Service")
 public interface ProjectFeignClient
 {
-	@GetMapping("/app/projects/find")
+	@GetMapping("/app/project/find")
 	Optional<TicketAvailDto> getProjectIdFromService(@RequestParam long projectId);
 	
 }
