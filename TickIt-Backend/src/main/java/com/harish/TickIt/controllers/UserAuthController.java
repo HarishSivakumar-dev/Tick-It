@@ -34,7 +34,7 @@ public class UserAuthController
 	}
 	
 	@GetMapping("/user/get/details/{userId}")
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<UserFeignResponse> getUserDetails(@PathVariable Long userId) throws Exception
 	{
 		return ResponseEntity.status(200).body(userService.returnUserDetails(userId));
