@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class UserProfileController
 	private UserService userService;
 	
 	@GetMapping("/getProfile")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<ProfileResponseDto> getUserProfile()
 	{
 		ProfileResponseDto userProfile=userService.userProfileRetriever();
@@ -42,6 +44,7 @@ public class UserProfileController
 	}
 	
 	@GetMapping("/getBasicUserProfile")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<ProfileDto> getBasicUserProfile()
 	{
 		ProfileDto dt= userService.getBasicUserProfile();
@@ -49,6 +52,7 @@ public class UserProfileController
 	}
 	
 	@GetMapping("/user/details")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Boolean> getUserDetails(@RequestParam long projectManagerId)
 	{
 		Boolean res= userService.getUserDetails(projectManagerId);
@@ -56,6 +60,7 @@ public class UserProfileController
 	}
 	
 	@PostMapping("/updateProfile")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> updateUserProfile(@RequestBody ProfileResponseDto dto)
 	{
 		String res= userService.updateUserProfile(dto);
@@ -63,6 +68,7 @@ public class UserProfileController
 	}
 	
 	@PutMapping("/updateProfilePicture")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> updateProfilePicture(@RequestParam String profilePictureUrl)
 	{
 		String res= userService.updateProfilePicture(profilePictureUrl);
@@ -70,6 +76,7 @@ public class UserProfileController
 	}
 	
 	@DeleteMapping("/deleteProfilePicture")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> deleteProfilePicture()
 	{
 		String res= userService.deleteProfilePicture();
@@ -77,6 +84,7 @@ public class UserProfileController
 	}
 	
 	@GetMapping("/profile/{employeeId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<ProfileResponseDto> getEmployeeDetails(@PathVariable long employeeId)
 	{
 		ProfileResponseDto dt= userService.getEmployeeDetails(employeeId);
@@ -84,6 +92,7 @@ public class UserProfileController
 	}
 	
 	@GetMapping("/profile/search")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<ProfileDto>> searchProfiles(@RequestParam String query)
 	{
 		List<ProfileDto> dt= userService.searchProfiles(query);
@@ -91,6 +100,7 @@ public class UserProfileController
 	}
 	
 	@GetMapping("/profile/search/filter")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<ProfileDto>> searchProfilesByFilter(@RequestParam String department, @RequestParam String designation)
 	{
 		List<ProfileDto> dt= userService.searchProfilesByFilter(department, designation);
