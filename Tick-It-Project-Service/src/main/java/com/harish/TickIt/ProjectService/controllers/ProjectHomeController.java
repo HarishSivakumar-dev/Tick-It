@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,9 +65,10 @@ public class ProjectHomeController
 	
 	@GetMapping("/project/find")
 	@PreAuthorize("hasRole('USER')")
-	public Optional<ProjectDetDto> findProjectById(@RequestParam long projectid)
+	public Optional<ProjectDetDto> findProjectById(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam long projectId)
 	{
-		return ps.findProject(projectid);
+		System.out.println("Token received: " + token);
+		return ps.findProject(projectId);
 	}
 	
 }
