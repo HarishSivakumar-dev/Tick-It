@@ -2,6 +2,7 @@ package com.harish.TickIt.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class UserAuthController
 	}
 	
 	@GetMapping("/user/get/details/{userId}")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<UserFeignResponse> getUserDetails(@PathVariable Long userId) throws Exception
 	{
 		return ResponseEntity.status(200).body(userService.returnUserDetails(userId));
