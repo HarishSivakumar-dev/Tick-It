@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,36 +28,42 @@ public class ProjectHomeController
 	private ProjectService ps;
 	
 	@GetMapping("/projects/get")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<ProjectResponseDto>> getAllProjects()
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getAllProjects());
 	}
 	
 	@PostMapping("/project/create")
+	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> createProject(@RequestBody ProjectCreationDto dto)
 	{
 		return ResponseEntity.status(HttpStatus.CREATED).body(ps.projectCreation(dto));
 	}
 	
 	@PostMapping("/project/update/details")
+	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> updateProject(@RequestBody ProjectCreationDto dto)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.projectDetailsUpdation(dto));
 	}
 	
 	@PostMapping("/project/members/add")
+	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<MemberDetailsDto> dto)
 	{	
 		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
 	}
 	
 	@GetMapping("/project/members/get/{projectId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<UserProjectDetailsDto>> getProjectMembers(@PathVariable Long projectId)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
 	}
 	
 	@GetMapping("/project/find")
+	@PreAuthorize("hasRole('USER')")
 	public Optional<ProjectDetDto> findProjectById(@RequestParam long projectid)
 	{
 		return ps.findProject(projectid);
