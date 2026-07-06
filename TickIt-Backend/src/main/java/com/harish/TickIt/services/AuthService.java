@@ -184,6 +184,13 @@ public class AuthService
 			Roles role= rolerep.findByRoleName("ROLE_ADMIN").get();
 			reg.getRoles().add(role);	
 		}
+		else if(employee.getDesignation().equals(Designation.TEAM_LEAD))
+		{
+			reg.setDepartment(employee.getDepartment());
+			reg.setDesignation(employee.getDesignation());
+			Roles role= rolerep.findByRoleName("ROLE_LEAD").get();
+			reg.getRoles().add(role);	
+		}
 		else
 		{
 			reg.setDepartment(employee.getDepartment());
