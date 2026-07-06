@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
+import com.harish.TickIt.TicketService.dtos.TicketStatusUpdateDto;
 import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
@@ -29,6 +31,7 @@ public class TicketActionController
 	private TicketActionService tcs;
 	
 	@PostMapping("/create")
+	@PreAuthorize("hasRole('LEAD')")
 	public ResponseEntity<String> createTicket(@RequestBody TicketDetailsDto dto)
 	{
 		String response = tcs.createTicket(dto);
@@ -36,6 +39,7 @@ public class TicketActionController
 	}
 	
 	@GetMapping("/project/{projectId}")
+	@PreAuthorize("hasRole('LEAD')")
 	public ResponseEntity<List<TicketResponseDto>> getProjectTickets(@PathVariable int projectId)
 	{
 		List<TicketResponseDto> response = tcs.getProjectTickets(projectId);
@@ -43,6 +47,7 @@ public class TicketActionController
 	}
 	
 	@DeleteMapping("/delete/{ticketId}")
+	@PreAuthorize("hasRole('LEAD')")
 	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId)
 	{
 		String response = tcs.deleteTicket(ticketId);
@@ -50,6 +55,7 @@ public class TicketActionController
 	}
 	
 	@PostMapping("/assign/user/ticket")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> assignUserTicket(@RequestBody AssignUserDto dtos) throws Exception
 	{
 		String response= tcs.assignUserTicket(dtos);
@@ -57,6 +63,7 @@ public class TicketActionController
 	}
 	
 	@GetMapping("/tickets/open/get/{projectId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<TicketResponseDto>> getTicketsForUser(@PathVariable int projectId)
 	{
 		List<TicketResponseDto> response= tcs.getAvailableTicketsForUser(projectId);
@@ -64,18 +71,28 @@ public class TicketActionController
 	}
 	
 	@PostMapping("/ticket/update/approval/status")
-	public ResponseEntity<String> updateTicketStatus(@RequestBody TicketApprovalDto dto)
+	@PreAuthorize("hasRole('LEAD')")
+	public ResponseEntity<String> updateTicketApproval(@RequestBody TicketApprovalDto dto)
 	{
 		String str= tcs.updateTicketApprovalStatus(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(str);
 	}
 	
-	@GetMapping("get/")
+	@GetMapping("/get/")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<TicketResponseDto>> getFilteredTickets(@RequestParam(required=false) TicketStatus status,
 																	  @RequestParam(required=false) TicketPriority priority, 
 																	  @RequestParam(required=false) TicketApprovalStatus appStat)
 	{
 		List<TicketResponseDto> res= tcs.getTicketBasedOnFilter(status, priority, appStat);
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+	}
+	
+	@PostMapping("/update/status")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<String> updateTicketStatus(@RequestBody TicketStatusUpdateDto dto)
+	{
+		String res= tcs.updateTicketStatus(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
