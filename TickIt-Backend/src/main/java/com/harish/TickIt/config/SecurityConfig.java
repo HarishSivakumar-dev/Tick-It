@@ -65,7 +65,7 @@ public class SecurityConfig
 	@Bean
 	public RoleHierarchy roleHierarchy()
 	{
-		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_USER");
+		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE>LEAD > ROLE_USER");
 		
 	}
 	
