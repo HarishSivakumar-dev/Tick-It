@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import com.harish.TickIt.UserService.dtos.ProfileDto;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
+import com.harish.TickIt.UserService.dtos.ProfileUpdateDto;
 import com.harish.TickIt.UserService.dtos.UserProfileDto;
 import com.harish.TickIt.UserService.models.UserProfile;
 import com.harish.TickIt.UserService.repos.UserProfileRepo;
@@ -19,9 +21,10 @@ public class UserService
 {
 	@Autowired
 	private UserProfileRepo userProfileRepo;
-	
 	@Autowired
 	private ResponseWrapperImpl responseWrapper;
+	@Autowired
+	private CloudinaryService cloud;
 	
 	public ProfileResponseDto userProfileRetriever()
 	{
@@ -80,7 +83,7 @@ public class UserService
 	}
 
 	@Transactional
-	public String updateUserProfile(ProfileResponseDto dto)
+	public String updateUserProfile(ProfileUpdateDto dto)
 	{
 		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
 		
@@ -96,8 +99,11 @@ public class UserService
 			userProfile.setBio(dto.getBio());
 		if(dto.getGender()!=null)
 			userProfile.setGender(dto.getGender());
-		if(dto.getProfilePictureUrl()!=null)
-			userProfile.setProfilePictureUrl(dto.getProfilePictureUrl());
+		if(dto.getProfilePicture()!=null)
+		{
+			String op= cloud.photoUploaded(dto.getProfilePicture(), userProfile.getEmployeeId());
+			userProfile.setProfilePictureUrl(op);
+		}
 		
 		if(userProfile.getContactNumber()!=null && userProfile.getBio()!=null && userProfile.getProfilePictureUrl()!=null && userProfile.getUserName()!=null)
 		{
@@ -117,12 +123,14 @@ public class UserService
 	}
 
 	@Transactional
-	public String updateProfilePicture(String profilePictureUrl)
+	public String updateProfilePicture(MultipartFile profilePicture)
 	{
 		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
 		UserProfile userProfile=userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
 		
-		userProfile.setProfilePictureUrl(profilePictureUrl);
+		String url=cloud.photoUpdate(profilePicture, userProfile.getEmployeeId());
+		
+		userProfile.setProfilePictureUrl(url);
 		
 		return "Profile picture updated successfully";
 	}
@@ -134,8 +142,9 @@ public class UserService
 		
 		UserProfile user= userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
 		user.setProfilePictureUrl(null);
+		String s=cloud.photoDelete(user.getEmployeeId());
 		
-		return "Profile picture deleted successfully";
+		return "Profile picture deleted successfully" + s;
 	}
 
 	public ProfileResponseDto getEmployeeDetails(long employeeId)
