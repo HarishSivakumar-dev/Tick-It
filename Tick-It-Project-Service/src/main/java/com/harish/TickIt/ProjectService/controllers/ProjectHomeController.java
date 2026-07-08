@@ -35,35 +35,35 @@ public class ProjectHomeController
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getAllProjects());
 	}
 	
-	@PostMapping("/project/create")
+	@PostMapping("/projects/create")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> createProject(@RequestBody ProjectCreationDto dto)
 	{
 		return ResponseEntity.status(HttpStatus.CREATED).body(ps.projectCreation(dto));
 	}
 	
-	@PostMapping("/project/update/details")
+	@PostMapping("/projects/update/details")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> updateProject(@RequestBody ProjectCreationDto dto)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.projectDetailsUpdation(dto));
 	}
 	
-	@PostMapping("/project/members/add")
+	@PostMapping("/projects/members/add")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<MemberDetailsDto> dto)
 	{	
 		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
 	}
 	
-	@GetMapping("/project/members/get/{projectId}")
+	@GetMapping("/projects/members/get/{projectId}")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<UserProjectDetailsDto>> getProjectMembers(@PathVariable Long projectId)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
 	}
 	
-	@GetMapping("/project/find")
+	@GetMapping("/projects/find")
 	@PreAuthorize("hasRole('USER')")
 	public Optional<ProjectDetDto> findProjectById(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam long projectId)
 	{
