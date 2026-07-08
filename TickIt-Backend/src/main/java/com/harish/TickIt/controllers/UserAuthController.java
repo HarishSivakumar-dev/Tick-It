@@ -15,7 +15,7 @@ import com.harish.TickIt.dtos.UserRegDto;
 import com.harish.TickIt.services.AuthService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class UserAuthController 
 {
 	@Autowired
