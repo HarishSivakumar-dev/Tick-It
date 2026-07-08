@@ -35,7 +35,7 @@ public class ProjectMemberController
 		return ResponseEntity.status(HttpStatus.CREATED).body(ps.userInfoPopulation(dto));
 	}
 	
-	@GetMapping("/myProjects/get")
+	@GetMapping("/projects/myProjects/get")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 	public ResponseEntity<List<UserProjectDetailsDto>> getProjectsForUser()
 	{
