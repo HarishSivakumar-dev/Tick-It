@@ -22,7 +22,6 @@ import com.harish.TickIt.repositories.EmployeeManagementRepo;
 import com.harish.TickIt.repositories.RoleRepo;
 import com.harish.TickIt.repositories.UserRegRepo;
 import com.harish.TickIt.util.JwtUtil;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -54,11 +53,9 @@ public class AuthService
 		
 		UserRegistration reg= createUserLocal(dto, employee);
 			
-		String res= createUserProfile(reg, employee.getId());
-		String resp= createProjectDetails(reg);
+		createUserProfile(reg, employee.getId());
+		createProjectDetails(reg);
 		
-		System.out.println("Profile creation response: " + res);
-		System.out.println("Project Table Population Response : " + resp);
 		employee.setAccountActivated(true);
 		
 		return reg;
@@ -232,11 +229,8 @@ public class AuthService
 		EmployeeManagement emp= validateEmployeeOauth(email);
 		
 		UserRegistration reg= createUserOauth(emp, name);
-		String res= createUserProfile(reg, emp.getId());
-		String resp= createProjectDetails(reg);
-		
-		System.out.println("Profile creation response: " + res);
-		System.out.println("Project Table Population Response : " + resp);
+		createUserProfile(reg, emp.getId());
+		createProjectDetails(reg);
 		
 		return reg;	
 	}
