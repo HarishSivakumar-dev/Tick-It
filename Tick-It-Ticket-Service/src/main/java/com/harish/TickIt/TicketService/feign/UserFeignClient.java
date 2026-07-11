@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 
-@FeignClient("Tick-It-auth-service")
+@FeignClient("Tick-It-Auth-Service")
 public interface UserFeignClient
 {
 	@GetMapping("api/user/get/details/{userId}")
