@@ -1,0 +1,16 @@
+spring:
+   application:
+       name: {YOUR_APPLICATION_NAME}
+   config:
+       import: "configserver:"
+   cloud:
+       config:
+          discovery:
+                enabled: true
+                service-id: {YOUR_CONFIG_SERVER_NAME}
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+          defaultZone: {YOUR_EUREKA_SERVER_URL}
