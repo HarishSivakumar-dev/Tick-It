@@ -1,0 +1,7 @@
+spring.application.name={APP_NAME}
+spring.config.import=configserver:
+spring.cloud.config.discovery.enabled=true
+eureka.client.fetch-registry=true
+eureka.client.register-with-eureka=true
+eureka.client.service-url.defaultZone={EUREKA_SERVER_REGISTRY_URL}
+spring.cloud.config.discovery.service-id={CONFIG_SERVER_NAME}
