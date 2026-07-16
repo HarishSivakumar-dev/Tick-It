@@ -30,6 +30,7 @@ public class JwtUtil
 				.subject(user.getUserName())
 				.signWith(secretKey)
 				.claim("roles", roles)
+				.claim("employeeId", user.getEmployeeId())
 				.expiration(new java.util.Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.issuedAt(new java.util.Date(System.currentTimeMillis()))
 				.compact();
