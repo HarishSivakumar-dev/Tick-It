@@ -42,8 +42,11 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 				Set<SimpleGrantedAuthority> auh= jwtUtil.getRolesFromToken(token).stream()
 																				  .map(r-> new SimpleGrantedAuthority(r))
 																				  .collect(java.util.stream.Collectors.toSet());
+				UserPrincipal up= new UserPrincipal();
+				up.setEmployeeId(jwtUtil.getUserId(token));
+				up.setUserName(username);
 				
-				org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null, auh);
+				org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(up, null, auh);
 				org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
 				filterChain.doFilter(request, response);
 			}
