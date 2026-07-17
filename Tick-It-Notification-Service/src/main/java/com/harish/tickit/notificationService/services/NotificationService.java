@@ -3,7 +3,9 @@ package com.harish.tickit.notificationService.services;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.harish.tickit.notificationService.auth.UserPrincipal;
 import com.harish.tickit.notificationService.dtos.NotificationDto;
 import com.harish.tickit.notificationService.dtos.NotificationResponseDto;
 import com.harish.tickit.notificationService.dtos.NotificationUpdateDto;
@@ -25,41 +27,54 @@ public class NotificationService
 		nt.setRead(false);
 		nt.setTitle(ndto.getTitle());
 		nt.setType(ndto.getType());
-		nt.setUserId(ndto.getUserId());
+		nt.setEmployeeId(ndto.getEmployeeId());
 		
 		nr.save(nt);
 		
 		return "Notification sent/saved";
 	}
 	
+	@Transactional
 	public String updateNotificationStatus(NotificationUpdateDto dto)
 	{
 		Notification nt= nr.findById(dto.getNotificationId()).orElseThrow(()-> new RuntimeException("Notification not found"));
+		int userId= getEmployeeId();
+		
+		if(userId!=nt.getEmployeeId())
+		{
+			throw new RuntimeException("ACCESS DENIED");
+		}
+	
 		nt.setRead(true);
-		nr.save(nt);
 		
 		return "Notification updated !";
 	}
 	
 	@Transactional
-	public String updateNotificationStatusAll(int userId)
+	public String updateNotificationStatusAll()
 	{
-		List<Notification> nt=nr.findByUserIdAndReadFalse(userId);
+		int userId= getEmployeeId();
+		
+		List<Notification> nt=nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
 		nt.forEach(r->r.setRead(true));
 		
 		return "Updated";
 								
 	}
 	
-	public Integer getUnreadNotificationCount(int userId)
+	public Integer getUnreadNotificationCount()
 	{
-		int count= nr.countByUserIdAndReadFalse(userId);
+		int userId= getEmployeeId();
+		
+		int count= nr.countByEmployeeIdAndReadFalseAndDeletedFalse(userId);
 		return count;
 	}
 	
-	public List<NotificationResponseDto> getAllUnreadNotifications(int userId)
+	public List<NotificationResponseDto> getAllUnreadNotifications()
 	{
-		List<NotificationResponseDto> res = nr.findByUserIdAndReadFalse(userId)
+		
+		int userId= getEmployeeId();
+		List<NotificationResponseDto> res = nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId)
 										     .stream()
 										     .map(r->{
 										    	 NotificationResponseDto dto= new NotificationResponseDto();
@@ -67,7 +82,7 @@ public class NotificationService
 										    	 dto.setNotificationId(r.getId());
 										    	 dto.setTitle(r.getTitle());
 										    	 dto.setType(r.getType());
-										    	 dto.setUserId(r.getUserId());
+										    	 dto.setEmployeeId(r.getEmployeeId());
 										    	 
 										    	 return dto;
 										     })
@@ -76,8 +91,60 @@ public class NotificationService
 		return res;
 	}
 	
+	public List<NotificationResponseDto> getAllNotifications()
+	{
+		int userId= getEmployeeId();
+		
+		List<NotificationResponseDto> res = nr.findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(userId)
+			     							  .stream()
+			     							  .map(r->{
+			     								  NotificationResponseDto dto= new NotificationResponseDto();
+			     								  dto.setMessage(r.getMessage());
+			     								  dto.setNotificationId(r.getId());
+			     								  dto.setTitle(r.getTitle());
+			     								  dto.setType(r.getType());
+			     								  dto.setEmployeeId(r.getEmployeeId());
+			    	 
+			     								  return dto;
+			     							  })
+			     							  .toList();
+		return res;
+	}
+	
+	@Transactional
+	public String deleteNotifications(NotificationUpdateDto dto)
+	{
+		Notification nt= nr.findById(dto.getNotificationId()).orElseThrow(()-> new RuntimeException("Notification not found"));
+		int userId= getEmployeeId();
+		
+		if(userId!=nt.getEmployeeId())
+		{
+			throw new RuntimeException("ACCESS DENIED");
+		}
+	
+		nt.setDeleted(true);
+		
+		return "DELETED";
+	}
+	
+	@Transactional
+	public String deleteAllNotifications()
+	{
+		int userId= getEmployeeId();
+		
+		List<Notification> nt=nr.findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(userId);
+		nt.forEach(r->r.setDeleted(true));
+		
+		return "Deleted all";
+	}
+	
+	public int getEmployeeId()
+	{
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		int userId=up.getEmployeeId();
+		
+		return userId;
+	}
 	
 	
-	
-
 }
