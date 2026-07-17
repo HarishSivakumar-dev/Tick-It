@@ -61,5 +61,11 @@ public class JwtUtil
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
 	}
 	
+	public Integer getUserId(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("employeeId", Integer.class);
+	}
+	
 
 }
