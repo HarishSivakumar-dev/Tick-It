@@ -11,8 +11,9 @@ public class Notification
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
-	private int userId;
+	private int employeeId;
 	private String title;
+	private boolean deleted;
 	private String message;
 	private NotificationType type;
 	private Boolean read;
@@ -25,11 +26,11 @@ public class Notification
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getUserId() {
-		return userId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getTitle() {
 		return title;
@@ -61,5 +62,12 @@ public class Notification
 	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
 	}
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+	
 	
 }
