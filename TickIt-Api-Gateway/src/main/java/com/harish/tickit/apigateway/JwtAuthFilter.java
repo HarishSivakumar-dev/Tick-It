@@ -61,12 +61,12 @@ public class JwtAuthFilter extends OncePerRequestFilter
 				}
 				else
 				{
-					throw new RuntimeException("INVALID JWT TOKEN ");
+					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "INVALID JWT");
 				}
 			}
 			else
 			{
-				throw new RuntimeException("NO AUTH HEADER !");
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NO AUTH HEADER");
 			}
 		}
 	}
