@@ -1,12 +1,9 @@
 package com.harish.tickit.apigateway;
 
 import java.util.List;
-
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -41,6 +38,14 @@ public class JwtUtil
 		SecretKey key= Keys.hmacShaKeyFor(secretKey.getBytes());
 		
 		String res= Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
+		return res;
+	}
+	
+	public Integer getEmployeeId(String token)
+	{
+		SecretKey key= Keys.hmacShaKeyFor(secretKey.getBytes());
+		
+		Integer res= Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("employeeId", Integer.class);
 		return res;
 	}
 	

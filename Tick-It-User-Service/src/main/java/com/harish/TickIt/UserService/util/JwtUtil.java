@@ -34,6 +34,12 @@ public class JwtUtil
 		
 		return ro;
 	}
+
+	public Integer getEmployeeId(String token)
+	{
+		SecretKey secretKeyObj = io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes());
+		return Jwts.parser().verifyWith(secretKeyObj).build().parseSignedClaims(token).getPayload().get("employeeId", Integer.class);
+	}
 	
 	
 
