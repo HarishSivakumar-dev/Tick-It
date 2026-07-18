@@ -41,14 +41,20 @@ public class JwtAuthencationFilter extends org.springframework.web.filter.OncePe
 			String token = authHeader.substring(7);
 			if (jwtUtil.validateToken(token))
 			{
-				String username = jwtUtil.getUsernameFromToken(token);
 				List<String>roles = jwtUtil.getRolesFromToken(token);
 				
 				Set<SimpleGrantedAuthority> authorities = roles.stream()
 													.map(SimpleGrantedAuthority::new)
 													.collect(Collectors.toSet());
 				
-				Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+				String user= jwtUtil.getUsernameFromToken(token);
+				Integer id= jwtUtil.getEmployeeId(token);
+				
+				UserPrincipal up= new UserPrincipal();
+				up.setEmployeeId(id);
+				up.setUserName(user);
+				
+				Authentication authentication = new UsernamePasswordAuthenticationToken(up, null, authorities);
 				
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				
