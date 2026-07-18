@@ -51,13 +51,13 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 				filterChain.doFilter(request, response);
 			}
 			else
-			{
-				throw new org.springframework.security.authentication.BadCredentialsException("Invalid JWT token");
+			{	
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "INVALID JWT");
 			}
 		}
 		else
 		{
-			throw new org.springframework.security.authentication.BadCredentialsException("Missing or invalid Authorization header");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NO AUTH HEADER");
 		}
 	}
 
