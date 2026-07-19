@@ -26,5 +26,7 @@ public interface TicketRepo extends org.springframework.data.jpa.repository.JpaR
 			
 			""")
 	List<com.harish.TickIt.TicketService.model.Ticket> filterBySpecs(@Param("status") TicketStatus status, @Param("priority") TicketPriority priority, @Param("approval") TicketApprovalStatus approval);
+
+	List<com.harish.TickIt.TicketService.model.Ticket> findByAssignedEmployeeIdOrderByCreatedAtDesc(long employeeId);
 	
 }
