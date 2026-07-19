@@ -17,7 +17,7 @@ public class ProjectMembers
 	private long id;
 	
 	private Long projectId;
-	private Long userId;
+	private Long employeeId;
 	private String mailId;
 	private String userName;
 	private LocalDate assignedDate;
@@ -33,11 +33,11 @@ public class ProjectMembers
 	public void setId(long id) {
 		this.id = id;
 	}
-	public long getUserId() {
-		return userId;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public ProjectRole getRole() {
 		return role;
@@ -76,9 +76,5 @@ public class ProjectMembers
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	
 
 }

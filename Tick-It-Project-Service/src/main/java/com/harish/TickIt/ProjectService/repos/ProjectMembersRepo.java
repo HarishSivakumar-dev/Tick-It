@@ -10,7 +10,7 @@ import com.harish.TickIt.ProjectService.models.ProjectMembers;
 public interface ProjectMembersRepo extends JpaRepository<ProjectMembers, Integer>
 {
 	List<ProjectMembers> findByProjectIdIsNull();
-	List<ProjectMembers> findByUserNameAndProjectIdNotNull(String name);
+	List<ProjectMembers> findByEmployeeIdIdAndProjectIdNotNull(Long id);
 	List<ProjectMembers> findByProjectId(Long id);
-	List<ProjectMembers> findByUserIdIn(List<Long> ls);
+	List<ProjectMembers> findByEmployeeIdIn(List<Long> ls);
 }
