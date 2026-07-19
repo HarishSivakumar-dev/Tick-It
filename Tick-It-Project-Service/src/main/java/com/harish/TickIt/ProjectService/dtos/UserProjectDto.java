@@ -2,16 +2,16 @@ package com.harish.TickIt.ProjectService.dtos;
 
 public class UserProjectDto
 {
-	private Long userId;
+	private Long EmployeeId;
 	private String userName;
 	private String email;
 	
 	
-	public Long getUserId() {
-		return userId;
+	public Long getEmployeeId() {
+		return EmployeeId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		EmployeeId = employeeId;
 	}
 	public String getUserName() {
 		return userName;
