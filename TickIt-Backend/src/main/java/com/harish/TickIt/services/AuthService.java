@@ -71,14 +71,14 @@ public class AuthService
 		return token;
 	}
 
-	public UserFeignResponse returnUserDetails(Long userId) throws Exception
+	public UserFeignResponse returnUserDetails(Long employeeId) throws Exception
 	{
-		UserRegistration uf= rep.findById(userId).orElseThrow(()-> new Exception("NO USER FOUND"));
+		UserRegistration uf= rep.findByEmployeeId(employeeId).orElseThrow(()-> new Exception("NO USER FOUND"));
 		
 		UserFeignResponse ufr = new UserFeignResponse();
 		ufr.setDesignation(uf.getDesignation().toString());
 		ufr.setEmailId(uf.getEmail());
-		ufr.setUserId(uf.getId());
+		ufr.setEmployeeId(uf.getEmployeeId());
 		ufr.setUserName(uf.getUserName());
 		
 		return ufr;
@@ -217,7 +217,7 @@ public class AuthService
 	{
 		UserDetailsDto dt= new UserDetailsDto();
 		dt.setEmail(reg.getEmail());
-		dt.setUserId(reg.getId());
+		dt.setEmployeeId(reg.getEmployeeId());
 		dt.setUserName(reg.getUserName());
 	
 		String resp= project.saveUserDetails(dt).getBody();

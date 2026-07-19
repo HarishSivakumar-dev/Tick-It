@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
@@ -107,10 +109,11 @@ public class TicketActionService
 	{
 		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new Exception("TICKET NOT FOUND !"));
 		
-		UserFeignDto ufr=  ufc.getUserFromAuthService(Long.valueOf(dto.getUserId())).getBody();
+		UserFeignDto ufr=  ufc.getUserFromAuthService(Long.valueOf(dto.getEmployeeId())).getBody();
 		
 		tk.setAssignedTo(ufr.getUserName());
 		tk.setUpdatedAt(LocalDateTime.now());
+		tk.setAssignedEmployeeId(ufr.getEmployeeId());
 		tk.setStatus(TicketStatus.IN_PROGRESS);
 		
 		ticketRepo.save(tk);
@@ -208,6 +211,34 @@ public class TicketActionService
 												   
 											   })
 											   .toList();
+		return res;
+	}
+	
+	public List<TicketResponseDto> getUserTickets()
+	{
+		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		List<TicketResponseDto> res= ticketRepo.findByAssignedEmployeeIdOrderByCreatedAtDesc((long)prin.getEmployeeId())
+											   .stream()
+											   .map(r->{
+
+												   	  TicketResponseDto dto= new TicketResponseDto();
+												   	  dto.setClosedAt(r.getClosedAt());
+													  dto.setCreatedAt(r.getCreatedAt());
+													  dto.setCreatedBy(r.getCreatedBy());
+													  dto.setCreatorId(r.getCreatorId());
+													  dto.setCreatorMail(r.getCreatorMail());
+													  dto.setCreatorProfilePictureUrl(r.getCreatorProfilePictureUrl());
+													  dto.setDescription(r.getDescription());
+													  dto.setId(r.getId());
+													  dto.setPriority(r.getPriority().toString());
+													  dto.setStatus(r.getStatus().toString());
+													  dto.setTitle(r.getTitle());
+													  dto.setUpdatedAt(r.getUpdatedAt());
+													  
+													  return dto;
+											   })
+											   .toList();
+		
 		return res;
 	}
 	
