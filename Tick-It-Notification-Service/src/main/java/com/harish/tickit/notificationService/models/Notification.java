@@ -13,7 +13,7 @@ public class Notification
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
-	private int employeeId;
+	private Long employeeId;
 	private String title;
 	private boolean deleted;
 	private String message;
@@ -28,10 +28,10 @@ public class Notification
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getEmployeeId() {
+	public Long getEmployeeId() {
 		return employeeId;
 	}
-	public void setEmployeeId(int employeeId) {
+	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
 	}
 	public String getTitle() {
