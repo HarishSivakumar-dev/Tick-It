@@ -12,7 +12,6 @@ public interface UserProfileRepo extends org.springframework.data.jpa.repository
 {
 	Optional<UserProfile> findByEmail(String email);
 	Optional<UserProfile> findByEmployeeId(Long employeeid);
-	Optional<UserProfile> findByUserName(String username);
 	List<UserProfile> findByUserNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String query, String query2);
 	
 	@Query("SELECT u FROM UserProfile u WHERE (:department IS NULL OR u.department = :department) AND (:designation IS NULL OR u.designation = :designation)")
