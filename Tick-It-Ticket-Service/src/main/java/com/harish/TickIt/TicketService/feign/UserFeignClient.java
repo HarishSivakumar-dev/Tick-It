@@ -11,6 +11,6 @@ import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 public interface UserFeignClient
 {
 	@GetMapping("api/user/get/details/{userId}")
-	ResponseEntity<UserFeignDto> getUserFromAuthService(@PathVariable Long userId);
+	ResponseEntity<UserFeignDto> getUserFromAuthService(@PathVariable Long employeeId);
 
 }
