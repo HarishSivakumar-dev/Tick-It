@@ -96,4 +96,13 @@ public class TicketActionController
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
+	@GetMapping("/get/my")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<List<TicketResponseDto>> getFilteredTickets()
+	{
+		List<TicketResponseDto> res= tcs.getUserTickets();
+		return ResponseEntity.status(HttpStatus.OK).body(res);
+	}
+	
+	
 }
