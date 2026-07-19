@@ -4,17 +4,17 @@ import com.harish.tickit.notificationService.enums.NotificationType;
 
 public class NotificationResponseDto
 {
-	private int employeeId;
+	private Long employeeId;
 	private String title;
 	private String message;
 	private NotificationType type;
 	private int notificationId;
 	
 	
-	public int getEmployeeId() {
+	public Long getEmployeeId() {
 		return employeeId;
 	}
-	public void setEmployeeId(int employeeId) {
+	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
 	}
 	public String getTitle() {

@@ -38,7 +38,7 @@ public class NotificationService
 	public String updateNotificationStatus(NotificationUpdateDto dto)
 	{
 		Notification nt= nr.findById(dto.getNotificationId()).orElseThrow(()-> new RuntimeException("Notification not found"));
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		if(userId!=nt.getEmployeeId())
 		{
@@ -53,7 +53,7 @@ public class NotificationService
 	@Transactional
 	public String updateNotificationStatusAll()
 	{
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		List<Notification> nt=nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
 		nt.forEach(r->r.setRead(true));
@@ -64,7 +64,7 @@ public class NotificationService
 	
 	public Integer getUnreadNotificationCount()
 	{
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		int count= nr.countByEmployeeIdAndReadFalseAndDeletedFalse(userId);
 		return count;
@@ -73,7 +73,7 @@ public class NotificationService
 	public List<NotificationResponseDto> getAllUnreadNotifications()
 	{
 		
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		List<NotificationResponseDto> res = nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId)
 										     .stream()
 										     .map(r->{
@@ -93,7 +93,7 @@ public class NotificationService
 	
 	public List<NotificationResponseDto> getAllNotifications()
 	{
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		List<NotificationResponseDto> res = nr.findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(userId)
 			     							  .stream()
@@ -115,7 +115,7 @@ public class NotificationService
 	public String deleteNotifications(NotificationUpdateDto dto)
 	{
 		Notification nt= nr.findById(dto.getNotificationId()).orElseThrow(()-> new RuntimeException("Notification not found"));
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		if(userId!=nt.getEmployeeId())
 		{
@@ -130,7 +130,7 @@ public class NotificationService
 	@Transactional
 	public String deleteAllNotifications()
 	{
-		int userId= getEmployeeId();
+		long userId= getEmployeeId();
 		
 		List<Notification> nt=nr.findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(userId);
 		nt.forEach(r->r.setDeleted(true));
@@ -138,10 +138,10 @@ public class NotificationService
 		return "Deleted all";
 	}
 	
-	public int getEmployeeId()
+	public long getEmployeeId()
 	{
 		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		int userId=up.getEmployeeId();
+		long userId=up.getEmployeeId();
 		
 		return userId;
 	}
