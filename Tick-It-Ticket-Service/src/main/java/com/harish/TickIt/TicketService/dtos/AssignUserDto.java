@@ -4,14 +4,15 @@ package com.harish.TickIt.TicketService.dtos;
 public class AssignUserDto
 {
 	
-	private int userId;
+	private Long employeeId;
 	private int ticketId;
 	
-	public int getUserId() {
-		return userId;
+	
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public int getTicketId() {
 		return ticketId;
