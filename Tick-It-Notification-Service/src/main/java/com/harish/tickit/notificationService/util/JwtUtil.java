@@ -13,10 +13,10 @@ public class JwtUtil
 	@Value("${jwt.secret}")
 	private String secret;
 
-	public Integer extractUserId(String token)
+	public Long extractUserId(String token)
 	{
 		SecretKey key= Keys.hmacShaKeyFor(secret.getBytes());
-		Integer id=Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("employeeId", Integer.class);
+		Long id=Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("employeeId", Long.class);
 		
 		return id;
 	}
