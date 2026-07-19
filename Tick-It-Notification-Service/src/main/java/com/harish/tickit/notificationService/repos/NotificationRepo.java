@@ -8,8 +8,8 @@ import com.harish.tickit.notificationService.models.Notification;
 @Repository
 public interface NotificationRepo extends JpaRepository<Notification, Integer>
 {
-	int countByEmployeeIdAndReadFalseAndDeletedFalse(int employeeid);
-	List<Notification> findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(int employeeid);
-	List<Notification> findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(int employeeid);
+	int countByEmployeeIdAndReadFalseAndDeletedFalse(long employeeid);
+	List<Notification> findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(long employeeid);
+	List<Notification> findByEmployeeIdAndDeletedFalseOrderByCreatedAtDesc(long employeeid);
 
 }
