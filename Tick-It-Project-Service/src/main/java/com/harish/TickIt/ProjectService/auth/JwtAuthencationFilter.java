@@ -48,7 +48,7 @@ public class JwtAuthencationFilter extends org.springframework.web.filter.OncePe
 													.collect(Collectors.toSet());
 				
 				String user= jwtUtil.getUsernameFromToken(token);
-				Integer id= jwtUtil.getEmployeeId(token);
+				Long id= jwtUtil.getEmployeeId(token);
 				
 				UserPrincipal up= new UserPrincipal();
 				up.setEmployeeId(id);
