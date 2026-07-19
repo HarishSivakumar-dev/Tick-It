@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.harish.TickIt.UserService.authentication.UserPrincipal;
 import com.harish.TickIt.UserService.dtos.ProfileDto;
 import com.harish.TickIt.UserService.dtos.ProfileResponseDto;
 import com.harish.TickIt.UserService.dtos.ProfileUpdateDto;
@@ -28,8 +29,9 @@ public class UserService
 	
 	public ProfileResponseDto userProfileRetriever()
 	{
-		String name=SecurityContextHolder.getContext().getAuthentication().getName();
-		UserProfile prof=userProfileRepo.findByUserName(name).orElseThrow(()->new RuntimeException("User not found"));
+		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		UserProfile prof=userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
 		
 		return responseWrapper.getProfileResponseWrapper(prof);
 		
@@ -65,9 +67,9 @@ public class UserService
 		return profileDto;
 	}
 
-	public Boolean getUserDetails(long userId)
+	public Boolean getUserDetails(long employeeId)
 	{
-		Optional<UserProfile> usr= userProfileRepo.findByEmployeeId(userId);
+		Optional<UserProfile> usr= userProfileRepo.findByEmployeeId(employeeId);
 		
 		if(usr.isEmpty())
 		{
@@ -85,9 +87,9 @@ public class UserService
 	@Transactional
 	public String updateUserProfile(ProfileUpdateDto dto)
 	{
-		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		UserProfile userProfile=userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		UserProfile userProfile=userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
 		
 		if(dto.getAddress()!=null)
 			userProfile.setAddress(dto.getAddress());
@@ -125,8 +127,9 @@ public class UserService
 	@Transactional
 	public String updateProfilePicture(MultipartFile profilePicture)
 	{
-		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
-		UserProfile userProfile=userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		UserProfile userProfile=userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
 		
 		String url=cloud.photoUpdate(profilePicture, userProfile.getEmployeeId());
 		
@@ -138,9 +141,9 @@ public class UserService
 	@Transactional
 	public String deleteProfilePicture()
 	{
-		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		UserProfile user= userProfileRepo.findByUserName(userName).orElseThrow(()->new RuntimeException("User not found"));
+		UserProfile user= userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
 		user.setProfilePictureUrl(null);
 		String s=cloud.photoDelete(user.getEmployeeId());
 		
@@ -188,10 +191,7 @@ public class UserService
 											.toList();
 		
 		return dt;
-	}
-	
-	
-	
+	}	
 }
 
 
