@@ -7,7 +7,7 @@ import com.harish.TickIt.ProjectService.enums.ProjectRole;
 public class UserProjectDetailsDto 
 {
 	private Long projectId;
-	private Long userId;
+	private Long employeeId;
 	private String mailId;
 	private String userName;
 	private LocalDate assignedDate;
@@ -21,11 +21,11 @@ public class UserProjectDetailsDto
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
-	public Long getUserId() {
-		return userId;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getMailId() {
 		return mailId;

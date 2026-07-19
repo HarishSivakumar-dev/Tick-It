@@ -2,17 +2,17 @@ package com.harish.TickIt.dtos;
 
 public class UserFeignResponse 
 {
-	private Long userId;
+	private Long employeeId;
 	private String userName;
 	private String designation;
 	private String emailId;
 	
 	
-	public Long getUserId() {
-		return userId;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getUserName() {
 		return userName;
