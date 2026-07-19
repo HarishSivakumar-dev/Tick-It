@@ -3,7 +3,7 @@ package com.harish.TickIt.ProjectService.dtos;
 public class UserDetailsDto
 {
 	private Long projectId;
-	private Long userId;
+	private Long employeeId;
 	private String mailId;
 	private String userName;
 	
@@ -13,11 +13,11 @@ public class UserDetailsDto
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
-	public Long getUserId() {
-		return userId;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 	public String getMailId() {
 		return mailId;
