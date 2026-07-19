@@ -2,13 +2,13 @@ package com.harish.TickIt.ProjectService.auth;
 
 public class UserPrincipal
 {
-	private Integer employeeId;
+	private Long employeeId;
 	private String userName;
 	
-	public Integer getEmployeeId() {
+	public Long getEmployeeId() {
 		return employeeId;
 	}
-	public void setEmployeeId(Integer employeeId) {
+	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
 	}
 	public String getUserName() {
