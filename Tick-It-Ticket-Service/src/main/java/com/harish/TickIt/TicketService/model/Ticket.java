@@ -27,6 +27,7 @@ public class Ticket
 	private TicketStatus status;
 	
 	private String assignedTo;
+	private Long assignedEmployeeId;
 	private String createdBy;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -129,6 +130,11 @@ public class Ticket
 	public void setApproved(TicketApprovalStatus approved) {
 		this.approved = approved;
 	}
+	public Long getAssignedEmployeeId() {
+		return assignedEmployeeId;
+	}
+	public void setAssignedEmployeeId(Long assignedEmployeeId) {
+		this.assignedEmployeeId = assignedEmployeeId;
+	}
 	
-
 }

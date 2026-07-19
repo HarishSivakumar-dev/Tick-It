@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import com.harish.TickIt.ProjectService.auth.UserPrincipal;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectDetDto;
@@ -131,7 +132,7 @@ public class ProjectService
 																 UserDetailsDto dto= new UserDetailsDto();
 																 dto.setMailId(r.getMailId());
 																 dto.setProjectId(r.getProjectId());
-																 dto.setUserId(r.getUserId());
+																 dto.setEmployeeId(r.getEmployeeId());
 																 dto.setUserName(r.getUserName());
 																 
 																 return dto;
@@ -145,7 +146,7 @@ public class ProjectService
 	public String userInfoPopulation(UserProjectDto dto)
 	{
 		ProjectMembers pm= new ProjectMembers();
-		pm.setUserId(dto.getUserId());
+		pm.setEmployeeId(dto.getEmployeeId());
 		pm.setUserName(dto.getUserName());
 		pm.setProjectId(null);
 		pm.setMailId(dto.getEmail());
@@ -160,8 +161,8 @@ public class ProjectService
 	
 	public List<UserProjectDetailsDto> getAllUserProjects()
 	{
-		String name=SecurityContextHolder.getContext().getAuthentication().getName();
-		List<ProjectMembers> proj= pmr.findByUserNameAndProjectIdNotNull(name);
+		UserPrincipal up =(UserPrincipal) SecurityContextHolder.getContext().getAuthentication();
+		List<ProjectMembers> proj= pmr.findByEmployeeIdIdAndProjectIdNotNull(up.getEmployeeId());
 		
 		if(proj.isEmpty())
 		{
@@ -178,7 +179,7 @@ public class ProjectService
 						 dto.setProjectId(r.getProjectId());
 						 dto.setRelievedDate(r.getRelievedDate());
 						 dto.setRole(r.getRole());
-						 dto.setUserId(r.getUserId());
+						 dto.setEmployeeId(r.getEmployeeId());
 						 dto.setUserName(r.getUserName());
 						 
 						 return dto;
@@ -193,23 +194,23 @@ public class ProjectService
 	{
 		List<Long> ls= dto.stream()
 						  .map(r->{
-								return r.getUserId();
+								return r.getEmployeeId();
 						   })
 						  .toList();
 		
-		List<ProjectMembers> pm= pmr.findByUserIdIn(ls);
+		List<ProjectMembers> pm= pmr.findByEmployeeIdIn(ls);
 		Map<Long, MemberDetailsDto> mp= new HashMap<Long, MemberDetailsDto>();
 		
 		for(MemberDetailsDto dt : dto)
 		{
-			mp.put(dt.getUserId(), dt);
+			mp.put(dt.getEmployeeId(), dt);
 		}
 		
 		for(ProjectMembers p : pm)
 		{
 			p.setAssignedDate(LocalDate.now());
-			p.setRole(mp.get(p.getUserId()).getRole());
-			p.setProjectId(mp.get(p.getUserId()).getProjectId());
+			p.setRole(mp.get(p.getEmployeeId()).getRole());
+			p.setProjectId(mp.get(p.getEmployeeId()).getProjectId());
 			p.setRelievedDate(null);
 		}
 		
@@ -230,7 +231,7 @@ public class ProjectService
 				                        	   dt.setProjectId(r.getProjectId());
 				                        	   dt.setRelievedDate(r.getRelievedDate());
 				                        	   dt.setRole(r.getRole());
-				                        	   dt.setUserId(r.getUserId());
+				                        	   dt.setEmployeeId(r.getEmployeeId());
 				                        	   dt.setUserName(r.getUserName());
 				                        	   
 				                        	   return dt;
