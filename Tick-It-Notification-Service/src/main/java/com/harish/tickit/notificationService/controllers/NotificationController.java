@@ -24,7 +24,6 @@ public class NotificationController
 	private NotificationService ns;
 	
 	@PostMapping("/create")
-	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> createNotification(@RequestBody NotificationDto dto)
 	{
 		String res= ns.createNotification(dto);
