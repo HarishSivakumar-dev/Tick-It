@@ -63,7 +63,7 @@ public class ProjectHomeController
 		return ResponseEntity.status(HttpStatus.OK).body(ps.getProjectMembers(projectId));
 	}
 	
-	@GetMapping("/projects/find")
+	@GetMapping("/project/find")
 	@PreAuthorize("hasRole('USER')")
 	public Optional<ProjectDetDto> findProjectById(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam long projectId)
 	{
