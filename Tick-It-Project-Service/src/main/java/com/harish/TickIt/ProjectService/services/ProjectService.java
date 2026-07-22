@@ -162,7 +162,7 @@ public class ProjectService
 	public List<UserProjectDetailsDto> getAllUserProjects()
 	{
 		UserPrincipal up =(UserPrincipal) SecurityContextHolder.getContext().getAuthentication();
-		List<ProjectMembers> proj= pmr.findByEmployeeIdIdAndProjectIdNotNull(up.getEmployeeId());
+		List<ProjectMembers> proj= pmr.findByEmployeeIdAndProjectIdNotNull(up.getEmployeeId());
 		
 		if(proj.isEmpty())
 		{
