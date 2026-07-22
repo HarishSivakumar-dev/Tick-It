@@ -17,7 +17,7 @@ public class SecurityConfig
 	private JwtFilter jwtfilter;
 	
 	@Bean
-	public SecurityFilterChain securityConfig(HttpSecurity sec)
+	public SecurityFilterChain secConfig(HttpSecurity sec)
 	{
 		return sec.csrf(r->r.disable())
 				  .httpBasic(r->r.disable())
