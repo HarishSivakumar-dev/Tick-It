@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 					up.setEmployeeId(id);
 					up.setUserName(username);
 					
-					org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null, auh);
+					org.springframework.security.core.Authentication auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(up, null, auh);
 					org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
 					filterChain.doFilter(request, response);
 				}
