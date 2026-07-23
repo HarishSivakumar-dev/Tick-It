@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.tickit.notificationService.auth.UserPrincipal;
-import com.harish.tickit.notificationService.dtos.NotificationDto;
 import com.harish.tickit.notificationService.dtos.NotificationResponseDto;
 import com.harish.tickit.notificationService.dtos.NotificationUpdateDto;
+import com.harish.tickit.notificationService.events.NotificationEvent;
 import com.harish.tickit.notificationService.models.Notification;
 import com.harish.tickit.notificationService.repos.NotificationRepo;
 import jakarta.transaction.Transactional;
@@ -19,7 +19,7 @@ public class NotificationService
 	@Autowired
 	private NotificationRepo nr;
 	
-	public String createNotification(NotificationDto ndto)
+	public String createNotification(NotificationEvent ndto)
 	{
 		Notification nt= new Notification();
 		nt.setCreatedAt(LocalDate.now());
