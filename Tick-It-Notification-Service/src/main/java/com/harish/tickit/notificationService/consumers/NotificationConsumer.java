@@ -11,7 +11,6 @@ public class NotificationConsumer
 	@Autowired
 	private NotificationService service;
 	
-	@KafkaListener(topics= "notification-topic")
 	public void consume(NotificationEvent event)
 	{
 		service.createNotification(event);
