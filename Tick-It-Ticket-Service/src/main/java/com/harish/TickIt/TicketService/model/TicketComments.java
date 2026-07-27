@@ -14,7 +14,8 @@ public class TicketComments
 	private int id;
 	
 	private Long employeeId;
-	private int commentId;
+	private String employeeName;
+	private int ticketId;
 	private String message;
 	private Integer parentCommentId;
 	private LocalDateTime createdAt;
@@ -27,17 +28,23 @@ public class TicketComments
 	public void setId(int id) {
 		this.id = id;
 	}
+	public int getTicketId() {
+		return ticketId;
+	}
+	public void setTicketId(int ticketId) {
+		this.ticketId = ticketId;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
 	public Long getEmployeeId() {
 		return employeeId;
 	}
 	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
-	}
-	public int getCommentId() {
-		return commentId;
-	}
-	public void setCommentId(int commentId) {
-		this.commentId = commentId;
 	}
 	public String getMessage() {
 		return message;
