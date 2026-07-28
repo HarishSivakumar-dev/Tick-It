@@ -261,6 +261,14 @@ public class ProjectService
 			return Optional.of(pdt);
 		}	
 	}
+
+	public Boolean verifyEmployeeProjectId(long projectId)
+	{
+		UserPrincipal usr= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Boolean pm= pmr.existsByEmployeeIdAndProjectId(usr.getEmployeeId(), projectId);
+		
+		return pm.booleanValue();
+	}
 	
 
 }
