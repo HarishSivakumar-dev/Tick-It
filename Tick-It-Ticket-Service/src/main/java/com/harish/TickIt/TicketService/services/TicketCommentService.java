@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.TicketCommentDto;
 import com.harish.TickIt.TicketService.dtos.TicketCommentResponseDto;
+import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
+import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketComments;
 import com.harish.TickIt.TicketService.repos.TicketCommentsRepo;
+import com.harish.TickIt.TicketService.repos.TicketRepo;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,10 +21,25 @@ public class TicketCommentService
 {
 	@Autowired
 	private TicketCommentsRepo tcr;
+	@Autowired
+	private ProjectFeignClient pfc;
+	@Autowired
+	private TicketRepo tr;
 	
 	public String createComment(int ticketId, TicketCommentDto dto)
 	{
 		UserPrincipal user= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Optional<Ticket> tk= tr.findById(ticketId);
+		
+		if(tk.isEmpty())
+		{
+			throw new RuntimeException("TICKET NOT FOUND");
+		}
+		
+		if(!pfc.verifyEmployee(tk.get().getProjectId()).getBody())
+		{
+			throw new RuntimeException("COULD NOT ACCESS");
+		}
 		
 		TicketComments tc= new TicketComments();
 		tc.setCreatedAt(LocalDateTime.now());
@@ -39,7 +57,7 @@ public class TicketCommentService
 		else
 		{
 			Optional<TicketComments> res= tcr.findById(dto.getParentCommentId());
-			if(res.isPresent())
+			if(res.isPresent() && res.get().getTicketId()==ticketId)
 			{
 				tc.setParentCommentId(dto.getParentCommentId());
 			}
