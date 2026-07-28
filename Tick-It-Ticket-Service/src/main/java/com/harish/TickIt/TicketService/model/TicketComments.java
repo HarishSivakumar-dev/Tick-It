@@ -20,7 +20,7 @@ public class TicketComments
 	private Integer parentCommentId;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	
+	private Boolean deleted;
 	
 	public int getId() {
 		return id;
@@ -69,6 +69,12 @@ public class TicketComments
 	}
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 }
