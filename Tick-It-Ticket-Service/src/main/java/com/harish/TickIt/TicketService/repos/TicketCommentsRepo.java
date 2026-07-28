@@ -8,5 +8,5 @@ import com.harish.TickIt.TicketService.model.TicketComments;
 @Repository
 public interface TicketCommentsRepo extends JpaRepository<TicketComments, Integer>
 {
-	List<TicketComments> findByTicketId(int ticketId);
+	List<TicketComments> findByTicketIdAndDeletedFalseOrderByCreatedAtAsc(int ticketId);
 }
