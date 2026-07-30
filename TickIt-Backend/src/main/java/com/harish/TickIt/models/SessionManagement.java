@@ -1,39 +1,60 @@
 package com.harish.TickIt.models;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+
 @Entity
-public class RefreshToken
+public class SessionManagement
 {
 	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-	private int id;
+	private UUID sessionID;
 	
-	private Long employeeId;
-	private String token;
+	private Long employeeID;
+	private UUID accessTokenJti;
+	private UUID refreshTokenJti;
+	private LocalDateTime createdAt;
+	private LocalDateTime expiresAt;
 	private Boolean revoked;
 	
 	
-	public int getId() {
-		return id;
+	public UUID getSessionID() {
+		return sessionID;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setSessionID(UUID sessionID) {
+		this.sessionID = sessionID;
 	}
-	public Long getEmployeeId() {
-		return employeeId;
+	public Long getEmployeeID() {
+		return employeeID;
 	}
-	public void setEmployeeId(Long employeeId) {
-		this.employeeId = employeeId;
+	public void setEmployeeID(Long employeeID) {
+		this.employeeID = employeeID;
 	}
-	public String getToken() {
-		return token;
+	public UUID getAccessTokenJti() {
+		return accessTokenJti;
 	}
-	public void setToken(String token) {
-		this.token = token;
+	public void setAccessTokenJti(UUID accessTokenJti) {
+		this.accessTokenJti = accessTokenJti;
+	}
+	public UUID getRefreshTokenJti() {
+		return refreshTokenJti;
+	}
+	public void setRefreshTokenJti(UUID refreshTokenJti) {
+		this.refreshTokenJti = refreshTokenJti;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getExpiresAt() {
+		return expiresAt;
+	}
+	public void setExpiresAt(LocalDateTime expiresAt) {
+		this.expiresAt = expiresAt;
 	}
 	public Boolean getRevoked() {
 		return revoked;
