@@ -2,11 +2,13 @@ package com.harish.TickIt.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.Exceptions.UserAlreadyRegisteredException;
+import com.harish.TickIt.dtos.RefreshDto;
 import com.harish.TickIt.dtos.UserDetailsDto;
 import com.harish.TickIt.dtos.UserFeignResponse;
 import com.harish.TickIt.dtos.UserLoginDto;
@@ -17,9 +19,11 @@ import com.harish.TickIt.feign.ProjectServiceFeign;
 import com.harish.TickIt.feign.UserServiceFeign;
 import com.harish.TickIt.models.EmployeeManagement;
 import com.harish.TickIt.models.Roles;
+import com.harish.TickIt.models.SessionManagement;
 import com.harish.TickIt.models.UserRegistration;
 import com.harish.TickIt.repositories.EmployeeManagementRepo;
 import com.harish.TickIt.repositories.RoleRepo;
+import com.harish.TickIt.repositories.SessionManagementRepo;
 import com.harish.TickIt.repositories.UserRegRepo;
 import com.harish.TickIt.util.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -37,12 +41,15 @@ public class AuthService
 	private ProjectServiceFeign project;
 	@Autowired
 	private EmployeeManagementRepo emr;
+	@Autowired
+	private JwtUtil util;
+	@Autowired
+	private SessionManagementRepo smr;
 	
 	BCryptPasswordEncoder bpe= new BCryptPasswordEncoder(12);
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
 	@Autowired
 	private JwtUtil jwtUtil;
 	
@@ -65,10 +72,14 @@ public class AuthService
 	public String loginUser(UserLoginDto dto)
 	{
 		authenticationManager.authenticate(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(dto.getUserName(), dto.getPassword()));
+		UserRegistration ur= rep.findByUserName(dto.getUserName()).get();
 		
-		String token=jwtUtil.generateToken(rep.findByUserName(dto.getUserName()).get());
+		String token=jwtUtil.generateToken(ur);
+		String refresh= jwtUtil.generateRefreshToken(ur);
 		
-		return token;
+		sessionCreation(token, refresh,ur);
+		
+		return token+ "REFRESH: "+refresh;
 	}
 
 	public UserFeignResponse returnUserDetails(Long employeeId) throws Exception
@@ -234,4 +245,41 @@ public class AuthService
 		
 		return reg;	
 	}
+
+	public String refreshTokenVerify(RefreshDto dto)
+	{
+		String token= dto.getRefreshToken();
+		
+		Boolean res=util.verifyRefreshToken(token);
+		
+		if(!res)
+		{
+			throw new RuntimeException("INVALID REFRESH TOKEN");
+		}
+		
+		UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
+		return util.generateToken(usr);
+	}
+	
+	public void sessionCreation(String token, String refresh, UserRegistration ur)
+	{
+		SessionManagement sm= new SessionManagement();
+		
+		UUID sessionUuid= UUID.randomUUID();
+		UUID accessUid= util.getUuidFromToken(token);
+		UUID refreshUid= util.getUuidFromRefresh(refresh);
+		Long empId= ur.getEmployeeId();
+		LocalDateTime createdAt= LocalDateTime.now();
+		LocalDateTime expiryAt= LocalDateTime.now().plusDays(7);
+		
+		sm.setAccessTokenJti(accessUid);
+		sm.setCreatedAt(createdAt);
+		sm.setEmployeeID(empId);
+		sm.setExpiresAt(expiryAt);
+		sm.setRefreshTokenJti(refreshUid);
+		sm.setRevoked(null);
+		sm.setSessionID(sessionUuid);
+		
+		smr.save(sm);
+	}	
 }
