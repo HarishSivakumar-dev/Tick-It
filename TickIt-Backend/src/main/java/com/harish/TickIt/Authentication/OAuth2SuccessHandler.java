@@ -38,16 +38,21 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 		Optional<com.harish.TickIt.models.UserRegistration> optionalUser= rep.findByEmail(email);
 		com.harish.TickIt.models.UserRegistration usr;
 		String token;
+		String refresh;
 		
 		if(optionalUser.isPresent())
 		{
 			usr= optionalUser.get();
 			token= jwtUtil.generateToken(usr);
+			refresh= jwtUtil.generateRefreshToken(usr);
+			ser.sessionCreation(token, refresh, usr);
 		}
 		else
 		{
 			UserRegistration reg= ser.registerUserOauth(email, name);
 			token= jwtUtil.generateToken(reg);
+			refresh= jwtUtil.generateRefreshToken(reg);
+			ser.sessionCreation(token, refresh, reg);
 		}	
 		
 		response.setHeader("Authorization", "Bearer "+token);
