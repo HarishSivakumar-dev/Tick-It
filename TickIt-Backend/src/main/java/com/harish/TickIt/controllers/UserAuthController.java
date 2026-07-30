@@ -1,6 +1,7 @@
 package com.harish.TickIt.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.TickIt.dtos.RefreshDto;
 import com.harish.TickIt.dtos.UserFeignResponse;
 import com.harish.TickIt.dtos.UserLoginDto;
 import com.harish.TickIt.dtos.UserRegDto;
@@ -38,5 +40,11 @@ public class UserAuthController
 	public ResponseEntity<UserFeignResponse> getUserDetails(@PathVariable Long userId) throws Exception
 	{
 		return ResponseEntity.status(200).body(userService.returnUserDetails(userId));
+	}
+	
+	@PostMapping("/user/refresh")
+	public ResponseEntity<String> refreshController(@RequestBody RefreshDto dt)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(userService.refreshTokenVerify(dt));
 	}
 }
