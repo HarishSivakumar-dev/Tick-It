@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 		String path = request.getRequestURI();
 		System.out.println("Request Path: " + path);
 		
-		if(path.equals("/api/user/register") || path.equals("/api/user/login") || path.equals("/oauth2/authorization/google") || path.startsWith("/login/oauth2/code/google") || path.equals("/favicon.ico"))
+		if(path.equals("/api/user/register") || path.equals("/api/user/login") || path.equals("/oauth2/authorization/google") || path.startsWith("/login/oauth2/code/google") || path.equals("/favicon.ico") || path.equals("/api/user/refresh"))
 		{
 			filterChain.doFilter(request, response);
 			return;
