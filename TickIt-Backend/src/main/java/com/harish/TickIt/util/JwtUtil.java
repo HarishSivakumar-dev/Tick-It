@@ -1,7 +1,10 @@
 package com.harish.TickIt.util;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,8 +18,14 @@ public class JwtUtil
 	@Value("${jwt.secret}")
 	private String SECRET_KEY;
 	
+	@Value("${jwt.refresh.secret}")
+	private String REFRESH_SECRET;
+	
 	@Value("${jwt.expiration}")
 	private Long EXPIRATION_TIME;
+	
+	@Value("${jwt.refresh.expiration}")
+	private Long REFRESH_EXPIRATION;
 	
 	
 	public String generateToken(UserRegistration user)
@@ -26,11 +35,15 @@ public class JwtUtil
 		Set<String> roles= user.getRoles().stream()
 										  .map(r->r.getRoleName())
 										  .collect(java.util.stream.Collectors.toSet());
+		
+		UUID accessUuid= UUID.randomUUID();
+		
 		return Jwts.builder()
 				.subject(user.getUserName())
 				.signWith(secretKey)
 				.claim("roles", roles)
 				.claim("employeeId", user.getEmployeeId())
+				.claim("uuid", accessUuid)
 				.expiration(new java.util.Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.issuedAt(new java.util.Date(System.currentTimeMillis()))
 				.compact();
@@ -65,6 +78,51 @@ public class JwtUtil
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("employeeId", Long.class);
+	}
+	
+	public String generateRefreshToken(UserRegistration user)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
+		
+		Set<String> st= user.getRoles()
+							.stream()
+							.map(r->r.toString())
+							.collect(Collectors.toSet());
+		
+		return Jwts.builder()
+				   .subject(user.getUserName())
+				   .claim("roles", st)
+				   .claim("employeeId", user.getId())
+				   .signWith(secretKey)
+				   .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
+				   .issuedAt(new Date(System.currentTimeMillis()))
+				   .compact();
+	}
+	
+	public Boolean verifyRefreshToken(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
+		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token) != null;
+	}
+	
+	public UUID getUuidFromToken(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		String uuid= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uuid", String.class);
+		
+		UUID uid= UUID.fromString(uuid);
+		
+		return uid;
+	}
+
+	public UUID getUuidFromRefresh(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
+		String uuid= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uuid", String.class);
+		
+		UUID uid= UUID.fromString(uuid);
+		
+		return uid;
 	}
 	
 
