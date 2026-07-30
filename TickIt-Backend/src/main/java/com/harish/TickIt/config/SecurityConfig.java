@@ -35,7 +35,7 @@ public class SecurityConfig
 	SecurityFilterChain configure(HttpSecurity http) throws Exception
 	{
 		return http.csrf(r->r.disable())
-				   .authorizeHttpRequests(a->a.requestMatchers("/api/user/register", "/api/user/login", "/oauth2/authorization/**", "/login/oauth2/code/**" , "/favicon.ico/**").permitAll()
+				   .authorizeHttpRequests(a->a.requestMatchers("/api/user/register", "/api/user/login", "/oauth2/authorization/**", "/login/oauth2/code/**" , "/favicon.ico/**", "/api/user/refresh").permitAll()
 						   .anyRequest().authenticated())
 				   .formLogin(r->r.disable())
 				   .httpBasic(r->r.disable())
@@ -50,8 +50,6 @@ public class SecurityConfig
 				   .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 				   .build();
 		
-		
-				
 	}
 	
 	@Bean
