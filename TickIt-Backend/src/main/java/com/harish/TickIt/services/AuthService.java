@@ -256,9 +256,22 @@ public class AuthService
 		{
 			throw new RuntimeException("INVALID REFRESH TOKEN");
 		}
-		
-		UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
-		return util.generateToken(usr);
+		else
+		{
+			UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
+			String tok=util.generateToken(usr);
+			
+			Optional<SessionManagement> sm= smr.findByAccessTokenJti(util.getUuidFromRefresh(token));
+			if(sm.isPresent())
+			{
+				sm.get().setAccessTokenJti(util.getUuidFromToken(tok));
+				return tok;
+			}
+			else
+			{
+				throw new RuntimeException("NO SESSION FOUND");
+			}
+		}
 	}
 	
 	public void sessionCreation(String token, String refresh, UserRegistration ur)
