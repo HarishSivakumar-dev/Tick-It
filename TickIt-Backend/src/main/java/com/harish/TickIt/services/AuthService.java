@@ -246,7 +246,7 @@ public class AuthService
 		return reg;	
 	}
 
-	public String refreshTokenVerify(RefreshDto dto)
+	public String refreshTokenVerify(RefreshDto dto) throws Exception
 	{
 		String token= dto.getRefreshToken();
 		
