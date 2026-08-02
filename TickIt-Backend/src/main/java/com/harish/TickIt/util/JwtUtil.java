@@ -105,7 +105,7 @@ public class JwtUtil
 				   .compact();
 	}
 	
-	public Boolean verifyRefreshToken(String token)
+	public Boolean verifyRefreshToken(String token) throws Exception
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
 		
