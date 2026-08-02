@@ -8,8 +8,14 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.harish.TickIt.Exceptions.RefreshTokenExpiredException;
+import com.harish.TickIt.Exceptions.RefreshTokenInvalidException;
+import com.harish.TickIt.Exceptions.RefreshTokenMalformedException;
 import com.harish.TickIt.models.UserRegistration;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -102,7 +108,24 @@ public class JwtUtil
 	public Boolean verifyRefreshToken(String token)
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token) != null;
+		
+		try
+		{
+			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+			return true;
+		}
+		catch(ExpiredJwtException e)
+		{
+			throw new RefreshTokenExpiredException("REFRESH TOKEN EXPIRED");
+		}
+		catch(MalformedJwtException e)
+		{
+			throw new RefreshTokenMalformedException("REFRESH TOKEN MALFORM");
+		}
+		catch(JwtException e)
+		{
+			throw new RefreshTokenInvalidException("INVALID REFRESH TOKEN");
+		}
 	}
 	
 	public UUID getUuidFromToken(String token)
