@@ -1,10 +1,20 @@
 package com.harish.TickIt.Exceptions;
 
-public class RefreshTokenExpiredException extends Exception 
+import java.util.UUID;
+
+public class RefreshTokenExpiredException extends RuntimeException 
 {
 	private static final long serialVersionUID = 1L;
-	public RefreshTokenExpiredException(String message) 
+	private UUID uuid;
+	
+	public RefreshTokenExpiredException(String message, UUID uuid) 
 	{
 		super(message);
+		this.uuid=uuid;
+	}
+	
+	public UUID getUuid() 
+	{
+		return uuid;
 	}
 }
