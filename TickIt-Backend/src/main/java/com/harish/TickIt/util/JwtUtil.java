@@ -105,18 +105,18 @@ public class JwtUtil
 				   .compact();
 	}
 	
-	public Boolean verifyRefreshToken(String token) throws Exception
+	public void verifyRefreshToken(String token)
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
 		
 		try
 		{
 			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-			return true;
 		}
 		catch(ExpiredJwtException e)
 		{
-			throw new RefreshTokenExpiredException("REFRESH TOKEN EXPIRED");
+			UUID uuid= UUID.fromString(e.getClaims().get("uuid", String.class));
+			throw new RefreshTokenExpiredException("REFRESH TOKEN EXPIRED",uuid);
 		}
 		catch(MalformedJwtException e)
 		{
