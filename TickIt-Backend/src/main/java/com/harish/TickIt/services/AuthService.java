@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.harish.TickIt.Exceptions.RefreshTokenExpiredException;
+import com.harish.TickIt.Exceptions.RefreshTokenInvalidException;
+import com.harish.TickIt.Exceptions.RefreshTokenMalformedException;
 import com.harish.TickIt.Exceptions.UserAlreadyRegisteredException;
 import com.harish.TickIt.dtos.RefreshDto;
 import com.harish.TickIt.dtos.UserDetailsDto;
@@ -52,6 +56,8 @@ public class AuthService
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private JwtUtil jwtUtil;
+	@Autowired
+	private SessionClearanceService sessionClearanceService;
 	
 	@Transactional
 	public UserRegistration registerUser(UserRegDto dto)
@@ -246,31 +252,43 @@ public class AuthService
 		return reg;	
 	}
 
-	public String refreshTokenVerify(RefreshDto dto) throws Exception
+	@Transactional
+	public String refreshTokenVerify(RefreshDto dto)
 	{
 		String token= dto.getRefreshToken();
 		
-		Boolean res=util.verifyRefreshToken(token);
-		
-		if(!res)
+		try
 		{
-			throw new RuntimeException("INVALID REFRESH TOKEN");
-		}
-		else
-		{
-			UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
-			String tok=util.generateToken(usr);
+			util.verifyRefreshToken(token);
 			
-			Optional<SessionManagement> sm= smr.findByAccessTokenJti(util.getUuidFromRefresh(token));
-			if(sm.isPresent())
+			Optional<SessionManagement> sm= smr.findByRefreshTokenJti(util.getUuidFromRefresh(token));
+			
+			if(sm.isPresent() && sm.get().getRevoked()==Boolean.FALSE)
 			{
+				UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
+				String tok=util.generateToken(usr);
+				
 				sm.get().setAccessTokenJti(util.getUuidFromToken(tok));
 				return tok;
 			}
 			else
 			{
 				throw new RuntimeException("NO SESSION FOUND");
-			}
+			}	
+		
+		}
+		catch(RefreshTokenExpiredException e)
+		{
+			sessionClearanceService.clearSession(e.getUuid());
+			throw new RuntimeException("REFRESH TOKEN EXPIRED");
+		}
+		catch(RefreshTokenMalformedException e)
+		{
+			throw new RuntimeException("REFRESH TOKEN MALFORM");
+		}
+		catch(RefreshTokenInvalidException e)
+		{
+			throw new RuntimeException("INVALID REFRESH TOKEN");
 		}
 	}
 	
@@ -290,7 +308,7 @@ public class AuthService
 		sm.setEmployeeID(empId);
 		sm.setExpiresAt(expiryAt);
 		sm.setRefreshTokenJti(refreshUid);
-		sm.setRevoked(null);
+		sm.setRevoked(Boolean.FALSE);
 		sm.setSessionID(sessionUuid);
 		
 		smr.save(sm);
