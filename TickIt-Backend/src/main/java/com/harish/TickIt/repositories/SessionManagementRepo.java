@@ -10,6 +10,8 @@ import com.harish.TickIt.models.SessionManagement;
 public interface SessionManagementRepo extends JpaRepository<SessionManagement, UUID>
 {
 
-	Optional<SessionManagement> findByAccessTokenJti(UUID jti);
+	Optional<SessionManagement> findByRefreshTokenJti(UUID jti);
+	
+	void deleteByRefreshTokenJti(UUID jti);
 	
 }
