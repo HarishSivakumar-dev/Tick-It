@@ -1,13 +1,20 @@
 package com.harish.TickIt.services;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import com.harish.TickIt.Authentication.UserPrincipal;
 import com.harish.TickIt.Exceptions.RefreshTokenExpiredException;
 import com.harish.TickIt.Exceptions.RefreshTokenInvalidException;
 import com.harish.TickIt.Exceptions.RefreshTokenMalformedException;
@@ -49,6 +56,8 @@ public class AuthService
 	private JwtUtil util;
 	@Autowired
 	private SessionManagementRepo smr;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 	
 	BCryptPasswordEncoder bpe= new BCryptPasswordEncoder(12);
 	
@@ -80,10 +89,12 @@ public class AuthService
 		authenticationManager.authenticate(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(dto.getUserName(), dto.getPassword()));
 		UserRegistration ur= rep.findByUserName(dto.getUserName()).get();
 		
-		String token=jwtUtil.generateToken(ur);
-		String refresh= jwtUtil.generateRefreshToken(ur);
+		UUID sessionUuid= UUID.randomUUID();
 		
-		sessionCreation(token, refresh,ur);
+		String token=jwtUtil.generateToken(ur, sessionUuid);	
+		String refresh= jwtUtil.generateRefreshToken(ur, sessionUuid);
+		
+		sessionCreation(token, refresh,ur, sessionUuid);
 		
 		return token+ "REFRESH: "+refresh;
 	}
@@ -266,7 +277,8 @@ public class AuthService
 			if(sm.isPresent() && sm.get().getRevoked()==Boolean.FALSE)
 			{
 				UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
-				String tok=util.generateToken(usr);
+				UUID sessionId= sm.get().getSessionID();
+				String tok=util.generateToken(usr, sessionId);
 				
 				sm.get().setAccessTokenJti(util.getUuidFromToken(tok));
 				return tok;
@@ -292,17 +304,17 @@ public class AuthService
 		}
 	}
 	
-	public void sessionCreation(String token, String refresh, UserRegistration ur)
+	public void sessionCreation(String token, String refresh, UserRegistration ur, UUID sessionUuid)
 	{
 		SessionManagement sm= new SessionManagement();
 		
-		UUID sessionUuid= UUID.randomUUID();
 		UUID accessUid= util.getUuidFromToken(token);
 		UUID refreshUid= util.getUuidFromRefresh(refresh);
 		Long empId= ur.getEmployeeId();
 		LocalDateTime createdAt= LocalDateTime.now();
 		LocalDateTime expiryAt= LocalDateTime.now().plusDays(7);
 		
+		sm.setSessionID(sessionUuid);
 		sm.setAccessTokenJti(accessUid);
 		sm.setCreatedAt(createdAt);
 		sm.setEmployeeID(empId);
@@ -312,5 +324,60 @@ public class AuthService
 		sm.setSessionID(sessionUuid);
 		
 		smr.save(sm);
-	}	
+	}
+
+	@Transactional
+	public String logoutUser()
+	{
+		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
+		String req=servletRequestAttributes.getRequest().getHeader("Authorization");
+		
+		String token= req.substring(7);
+		UUID sessionId= util.getSessionIdFromAccess(token);
+		
+		Optional<SessionManagement> sm= smr.findBySessionId(sessionId);
+		if(sm.isPresent())
+		{
+			sm.get().setRevoked(Boolean.TRUE);
+			
+			Instant expiry= util.getExpirationFromAccess(token);
+			UUID accessUid= util.getUuidFromToken(token);
+			Duration duration = Duration.between(Instant.now(), expiry);
+			redisTemplate.opsForValue().set("blacklist:"+accessUid,"BlackListed", duration);
+			
+			return "LOGOUT SUCCESSFUL";
+		}
+		else
+		{
+			throw new RuntimeException("NO SESSION FOUND");
+		}
+	}
+	
+	@Transactional
+	public String logoutAll()
+	{
+		UserPrincipal userPrincipal = (UserPrincipal) org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		Long employeeId= userPrincipal.getEmployeeId();
+		
+		List<SessionManagement> sessions= smr.findByEmployeeID(employeeId);
+		
+		if(sessions.isEmpty())
+		{
+			throw new RuntimeException("NO SESSIONS FOUND");
+		}
+		
+		for(SessionManagement sm: sessions)
+		{
+			sm.setRevoked(Boolean.TRUE);
+			
+			Instant expiry= sm.getExpiresAt().atZone(java.time.ZoneId.systemDefault()).toInstant();
+			UUID accessUid= sm.getAccessTokenJti();
+			Duration duration = Duration.between(Instant.now(), expiry);
+			redisTemplate.opsForValue().set("blacklist:"+accessUid,"BlackListed", duration);
+		}	
+		
+		return "LOGOUT ALL SUCCESSFUL";
+	}
 }
