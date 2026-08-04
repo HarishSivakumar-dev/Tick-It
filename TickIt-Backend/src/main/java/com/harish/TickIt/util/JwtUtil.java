@@ -1,5 +1,6 @@
 package com.harish.TickIt.util;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class JwtUtil
 	private Long REFRESH_EXPIRATION;
 	
 	
-	public String generateToken(UserRegistration user)
+	public String generateToken(UserRegistration user, UUID sessionId)
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		
@@ -50,6 +51,7 @@ public class JwtUtil
 				.claim("roles", roles)
 				.claim("employeeId", user.getEmployeeId())
 				.claim("uuid", accessUuid)
+				.claim("sessionId", sessionId)
 				.expiration(new java.util.Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.issuedAt(new java.util.Date(System.currentTimeMillis()))
 				.compact();
@@ -86,7 +88,7 @@ public class JwtUtil
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("employeeId", Long.class);
 	}
 	
-	public String generateRefreshToken(UserRegistration user)
+	public String generateRefreshToken(UserRegistration user, UUID sessionId)
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
 		
@@ -99,6 +101,8 @@ public class JwtUtil
 				   .subject(user.getUserName())
 				   .claim("roles", st)
 				   .claim("employeeId", user.getId())
+				   .claim("uuid", UUID.randomUUID())
+				   .claim("sessionId", sessionId)
 				   .signWith(secretKey)
 				   .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
 				   .issuedAt(new Date(System.currentTimeMillis()))
@@ -146,6 +150,34 @@ public class JwtUtil
 		UUID uid= UUID.fromString(uuid);
 		
 		return uid;
+	}
+	
+	public UUID getSessionIdFromRefresh(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
+		String uuid= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sessionId", String.class);
+		
+		UUID uid= UUID.fromString(uuid);
+		
+		return uid;
+	}
+	
+	public UUID getSessionIdFromAccess(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		String uuid= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sessionId", String.class);
+		
+		UUID uid= UUID.fromString(uuid);
+		
+		return uid;
+	}
+	
+	public Instant getExpirationFromAccess(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		Date expiration= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
+		
+		return expiration.toInstant();
 	}
 	
 
