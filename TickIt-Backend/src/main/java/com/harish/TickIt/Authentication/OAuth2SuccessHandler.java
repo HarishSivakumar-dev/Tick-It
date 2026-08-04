@@ -2,6 +2,7 @@ package com.harish.TickIt.Authentication;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
@@ -40,19 +41,22 @@ public class OAuth2SuccessHandler implements org.springframework.security.web.au
 		String token;
 		String refresh;
 		
+		UUID sessionUuid= UUID.randomUUID();
+		
 		if(optionalUser.isPresent())
 		{
 			usr= optionalUser.get();
-			token= jwtUtil.generateToken(usr);
-			refresh= jwtUtil.generateRefreshToken(usr);
-			ser.sessionCreation(token, refresh, usr);
+			
+			token= jwtUtil.generateToken(usr, sessionUuid);
+			refresh= jwtUtil.generateRefreshToken(usr, sessionUuid);
+			ser.sessionCreation(token, refresh, usr, sessionUuid);
 		}
 		else
 		{
 			UserRegistration reg= ser.registerUserOauth(email, name);
-			token= jwtUtil.generateToken(reg);
-			refresh= jwtUtil.generateRefreshToken(reg);
-			ser.sessionCreation(token, refresh, reg);
+			token= jwtUtil.generateToken(reg, sessionUuid);
+			refresh= jwtUtil.generateRefreshToken(reg, sessionUuid);
+			ser.sessionCreation(token, refresh, reg, sessionUuid);
 		}	
 		
 		response.setHeader("Authorization", "Bearer "+token);
