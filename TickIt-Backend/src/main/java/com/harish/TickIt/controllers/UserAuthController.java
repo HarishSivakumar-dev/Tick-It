@@ -47,4 +47,18 @@ public class UserAuthController
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(userService.refreshTokenVerify(dt));
 	}
+	
+	@PostMapping("/user/logout")
+	public ResponseEntity<String> logOut()
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(userService.logoutUser());
+	}
+	
+	@PostMapping("/user/logout/all")
+	public ResponseEntity<String> logOutAll()
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(userService.logoutAll());
+	}
+	
+	
 }
