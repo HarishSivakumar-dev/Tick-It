@@ -1,5 +1,6 @@
 package com.harish.TickIt.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,8 +17,12 @@ public interface SessionManagementRepo extends JpaRepository<SessionManagement, 
 	
 	void deleteByRefreshTokenJti(UUID jti);
 	
+	Optional<SessionManagement> findBySessionId(UUID sessionId);
+	
 	@Modifying
 	@Transactional
 	int deleteByExpiresAtBeforeOrRevokedTrue(java.time.LocalDateTime expirationTime);
+	
+	List<SessionManagement> findByEmployeeID(Long employeeID);
 	
 }
