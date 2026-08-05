@@ -1,6 +1,8 @@
 package com.harish.tickit.notificationService.util;
 
 import java.util.List;
+import java.util.UUID;
+
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,5 +59,15 @@ public class JwtUtil
 							.toList();
 		
 		return res;			
+	}
+
+	public UUID getUuidFromToken(String token) 
+	{
+		SecretKey key= Keys.hmacShaKeyFor(secret.getBytes());
+		String uuidString= Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("uuid", String.class);
+		
+		UUID uuid= UUID.fromString(uuidString);
+		
+		return uuid;
 	}
 }

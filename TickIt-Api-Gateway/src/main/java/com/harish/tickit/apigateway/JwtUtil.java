@@ -1,6 +1,8 @@
 package com.harish.tickit.apigateway;
 
 import java.util.List;
+import java.util.UUID;
+
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -47,6 +49,14 @@ public class JwtUtil
 		
 		Integer res= Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("employeeId", Integer.class);
 		return res;
+	}
+	
+	public UUID getUuidFromToken(String token)
+	{
+		SecretKey key= Keys.hmacShaKeyFor(secretKey.getBytes());
+		
+		String uuidString= Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("uuid", String.class);
+		return UUID.fromString(uuidString);
 	}
 	
 }

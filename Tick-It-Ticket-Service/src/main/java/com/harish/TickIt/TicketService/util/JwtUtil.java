@@ -1,6 +1,8 @@
 package com.harish.TickIt.TicketService.util;
 
 import java.util.List;
+import java.util.UUID;
+
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,6 +42,13 @@ public class JwtUtil
 	{
 		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("employeeId", Long.class);
+	}
+
+	public UUID getUuidFromToken(String token)
+	{
+		SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		String uuidString = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uuid", String.class);
+		return UUID.fromString(uuidString);
 	}
 
 }
