@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Set;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -16,6 +17,8 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 {
 	@Autowired
 	private JwtUtil jwtUtil;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -36,7 +39,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 		if(authHeader != null && authHeader.startsWith("Bearer "))
 		{
 			String token = authHeader.substring(7);
-			if(jwtUtil.validateToken(token))
+			if(jwtUtil.validateToken(token) && !redisTemplate.hasKey("blacklist:"+jwtUtil.getUuidFromToken(token)))
 			{
 				String username = jwtUtil.getUsernameFromToken(token);
 				Set<SimpleGrantedAuthority> auh= jwtUtil.getRolesFromToken(token).stream()

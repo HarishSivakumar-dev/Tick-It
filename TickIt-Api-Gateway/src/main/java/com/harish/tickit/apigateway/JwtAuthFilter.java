@@ -3,6 +3,7 @@ package com.harish.tickit.apigateway;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,8 @@ public class JwtAuthFilter extends OncePerRequestFilter
 {
 	@Autowired
 	private JwtUtil util;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -39,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter
 			{
 				String token= auth.substring(7);
 				
-				if(util.verifyJwt(token))
+				if(util.verifyJwt(token) && !redisTemplate.hasKey("blacklist:"+util.getUuidFromToken(token)))
 				{
 					List<SimpleGrantedAuthority> ls= util.getRoles(token)
 							                             .stream()

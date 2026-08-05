@@ -3,6 +3,7 @@ package com.harish.tickit.notificationService.auth;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +22,8 @@ public class JwtFilter extends OncePerRequestFilter
 {
 	@Autowired
 	private JwtUtil util;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -36,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter
 			if(head.startsWith("Bearer") && head.substring(7)!=null)
 			{
 				String token= util.getUsername(head);
-				if(util.validateToken(token))
+				if(util.validateToken(token) && !redisTemplate.hasKey("blacklist:"+util.getUuidFromToken(token)))
 				{
 					List<String> ls= util.getRolesFromToken(token);
 					
