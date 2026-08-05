@@ -49,6 +49,7 @@ public class SecurityConfig
 	}
 	
 	@Bean 
+	@SuppressWarnings("deprecation")
 	public MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy)
 	{
 		org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler expressionHandler = new org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler();
