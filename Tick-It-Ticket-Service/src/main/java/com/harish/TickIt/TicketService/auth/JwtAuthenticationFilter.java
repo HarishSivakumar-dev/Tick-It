@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
 {
 	@Autowired
 	private JwtUtil jwtUtil;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -31,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
 		{
 			String token = authHeader.substring(7);
 			
-			if(token !=null && jwtUtil.validateToken(token))
+			if(token !=null && jwtUtil.validateToken(token) && !redisTemplate.hasKey("blacklist:"+jwtUtil.getUuidFromToken(token)))
 			{
 				List<String> roles= jwtUtil.getRolesFromToken(token);
 				Set<org.springframework.security.core.authority.SimpleGrantedAuthority> authorities= roles.stream()

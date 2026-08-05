@@ -2,6 +2,8 @@ package com.harish.TickIt.UserService.authentication;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+
 import com.harish.TickIt.UserService.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,8 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 	
 	@Autowired
 	private JwtUtil jwtUtil;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -34,7 +38,7 @@ public class JwtAuthenticationFilter extends org.springframework.web.filter.Once
 			String token = authHeader.substring(7);
 			try
 			{
-				if(jwtUtil.validateToken(token))
+				if(jwtUtil.validateToken(token) && !redisTemplate.hasKey("blacklist:"+jwtUtil.getUuidFromToken(token)))
 				{
 					
 					java.util.Set<org.springframework.security.core.authority.SimpleGrantedAuthority> auh= jwtUtil.getRolesFromToken(token).stream()
