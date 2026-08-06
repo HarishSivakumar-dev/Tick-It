@@ -314,6 +314,7 @@ public class AuthService
 		LocalDateTime createdAt= LocalDateTime.now();
 		LocalDateTime expiryAt= LocalDateTime.now().plusDays(7);
 		
+		System.out.println("SESSION UUID: "+sessionUuid);
 		sm.setSessionId(sessionUuid);
 		sm.setAccessTokenJti(accessUid);
 		sm.setCreatedAt(createdAt);
