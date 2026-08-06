@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class SessionManagement
 {
 	@Id
-	private UUID sessionID;
+	private UUID sessionId;
 	
 	private Long employeeID;
 	private UUID accessTokenJti;
@@ -20,11 +20,11 @@ public class SessionManagement
 	private Boolean revoked;
 	
 	
-	public UUID getSessionID() {
-		return sessionID;
+	public UUID getSessionId() {
+		return sessionId;
 	}
-	public void setSessionID(UUID sessionID) {
-		this.sessionID = sessionID;
+	public void setSessionId(UUID sessionId) {
+		this.sessionId = sessionId;
 	}
 	public Long getEmployeeID() {
 		return employeeID;
