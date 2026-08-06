@@ -277,7 +277,7 @@ public class AuthService
 			if(sm.isPresent() && sm.get().getRevoked()==Boolean.FALSE)
 			{
 				UserRegistration usr= rep.findByEmployeeId(util.getUserId(token)).orElseThrow(()-> new RuntimeException("NO USER FOUND"));
-				UUID sessionId= sm.get().getSessionID();
+				UUID sessionId= sm.get().getSessionId();
 				String tok=util.generateToken(usr, sessionId);
 				
 				sm.get().setAccessTokenJti(util.getUuidFromToken(tok));
@@ -314,14 +314,13 @@ public class AuthService
 		LocalDateTime createdAt= LocalDateTime.now();
 		LocalDateTime expiryAt= LocalDateTime.now().plusDays(7);
 		
-		sm.setSessionID(sessionUuid);
+		sm.setSessionId(sessionUuid);
 		sm.setAccessTokenJti(accessUid);
 		sm.setCreatedAt(createdAt);
 		sm.setEmployeeID(empId);
 		sm.setExpiresAt(expiryAt);
 		sm.setRefreshTokenJti(refreshUid);
 		sm.setRevoked(Boolean.FALSE);
-		sm.setSessionID(sessionUuid);
 		
 		smr.save(sm);
 	}
