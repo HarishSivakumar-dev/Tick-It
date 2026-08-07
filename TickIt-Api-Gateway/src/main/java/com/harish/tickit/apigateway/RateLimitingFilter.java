@@ -38,6 +38,9 @@ public class RateLimitingFilter extends org.springframework.web.filter.OncePerRe
 			
 			redisTemplate.opsForZSet().add(key,time,sec);
 			redisTemplate.expire(key,10, java.util.concurrent.TimeUnit.MINUTES);
+			
+			filterChain.doFilter(request, response);
+			return;
 		}
 		else
 		{
@@ -46,9 +49,9 @@ public class RateLimitingFilter extends org.springframework.web.filter.OncePerRe
 			long rg= sec-600;
 			redisTemplate.opsForZSet().removeRangeByScore(key,0,rg);
 			
-			Long ct=redisTemplate.opsForZSet().zCard(key);
+			Long ct=redisTemplate.opsForZSet().zCard(key)+1;
 			
-			if(ct>=10)
+			if(ct>10)
 			{
 				response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
 				response.getWriter().write("Rate limit exceeded. Please try again later.");
@@ -60,6 +63,9 @@ public class RateLimitingFilter extends org.springframework.web.filter.OncePerRe
 				
 				redisTemplate.opsForZSet().add(key,time,sec);
 				redisTemplate.expire(key,10, java.util.concurrent.TimeUnit.MINUTES);
+				
+				filterChain.doFilter(request, response);
+				return;
 			}
 		}
 		
