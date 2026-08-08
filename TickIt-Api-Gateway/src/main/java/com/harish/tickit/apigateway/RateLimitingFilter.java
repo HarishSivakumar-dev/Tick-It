@@ -2,6 +2,8 @@ package com.harish.tickit.apigateway;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,8 @@ public class RateLimitingFilter extends org.springframework.web.filter.OncePerRe
 {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
+	@Autowired
+	private org.springframework.data.redis.core.script.DefaultRedisScript<Long> redisScript;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -29,46 +33,20 @@ public class RateLimitingFilter extends org.springframework.web.filter.OncePerRe
 		}
 		
 		String key= "rate_limit:"+id+":"+ip;
-		Long rs= redisTemplate.opsForZSet().zCard(key);
+		long sec= Instant.now().getEpochSecond();
+		long time= System.currentTimeMillis();
+		long window= 600;
 		
-		if(rs==0)
+		long count=redisTemplate.execute(redisScript,Collections.singletonList(key),sec,window,time);
+		
+		if(count==0)
 		{
-			long sec= Instant.now().getEpochSecond();
-			long time= System.currentTimeMillis();
-			
-			redisTemplate.opsForZSet().add(key,time,sec);
-			redisTemplate.expire(key,10, java.util.concurrent.TimeUnit.MINUTES);
-			
-			filterChain.doFilter(request, response);
+			response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+			response.getWriter().write("Rate limit exceeded. Please try again later.");
 			return;
 		}
-		else
-		{
-			long sec= Instant.now().getEpochSecond();
-			
-			long rg= sec-600;
-			redisTemplate.opsForZSet().removeRangeByScore(key,0,rg);
-			
-			Long ct=redisTemplate.opsForZSet().zCard(key)+1;
-			
-			if(ct>10)
-			{
-				response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-				response.getWriter().write("Rate limit exceeded. Please try again later.");
-				return;
-			}
-			else
-			{
-				long time= System.currentTimeMillis();
-				
-				redisTemplate.opsForZSet().add(key,time,sec);
-				redisTemplate.expire(key,10, java.util.concurrent.TimeUnit.MINUTES);
-				
-				filterChain.doFilter(request, response);
-				return;
-			}
-		}
 		
+		filterChain.doFilter(request, response);	
 	}
 
 }
