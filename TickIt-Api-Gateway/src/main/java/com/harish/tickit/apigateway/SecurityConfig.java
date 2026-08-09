@@ -13,6 +13,8 @@ public class SecurityConfig
 {
 	@Autowired
 	private JwtAuthFilter auth;
+	@Autowired
+	private RateLimitingFilter rateLimit;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity sec) throws Exception
@@ -23,6 +25,7 @@ public class SecurityConfig
 				  .sessionManagement(r->r.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				  .authorizeHttpRequests(r->r.requestMatchers("/api/login", "/api/register","/oauth2/authorization/google", "/login/oauth2/code/google", "/favicon.ico").permitAll().anyRequest().authenticated())
 				  .addFilterBefore(auth, UsernamePasswordAuthenticationFilter.class)
+				  .addFilterAfter(rateLimit, JwtAuthFilter.class)
 				  .build();
 	}
 
