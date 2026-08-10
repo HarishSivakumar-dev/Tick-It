@@ -21,6 +21,7 @@ else
     	redis.call('ZADD', key,time,member)
     	redis.call('EXPIRE', key, window)
     	return 1
+	end
 end
 
 
