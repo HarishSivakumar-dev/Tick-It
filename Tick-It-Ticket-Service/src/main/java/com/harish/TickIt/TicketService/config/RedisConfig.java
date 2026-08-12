@@ -6,18 +6,19 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 public class RedisConfig
 {
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory)
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper mapper)
 	{
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new JacksonJsonRedisSerializer<>(Object.class));
+		template.setValueSerializer(new JacksonJsonRedisSerializer<>(mapper,Object.class));
 		return template;
 	}
-
+	
 }
