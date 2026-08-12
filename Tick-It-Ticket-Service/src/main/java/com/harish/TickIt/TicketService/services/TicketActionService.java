@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
@@ -37,6 +38,8 @@ public class TicketActionService
 	private UserFeignClient ufc;
 	@Autowired
 	private TicketApprovalAuditRepo trep;
+	@Autowired
+	private RedisTemplate<String,Object> redisTemplate; 
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
@@ -50,6 +53,8 @@ public class TicketActionService
 	public List<TicketResponseDto> getProjectTickets(int projectId)
 	{
 		// This method will return all the tickets of a project
+		
+		Object tk= redisTemplate.opsForValue().get("projectTickets:"+projectId);
 		List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusNotAndAssignedToIsNull(projectId, TicketStatus.RESOLVED);
 		List<TicketResponseDto> responseDtos = tickets.stream()
 													  .map(ticket -> {
