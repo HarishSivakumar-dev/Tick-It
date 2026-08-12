@@ -132,6 +132,7 @@ public class UserService
 		String url=cloud.photoUpdate(profilePicture, userProfile.getEmployeeId());
 		
 		userProfile.setProfilePictureUrl(url);
+		redisTemplate.delete("userProfile:"+userProfile.getEmployeeId());
 		
 		return "Profile picture updated successfully";
 	}
@@ -144,6 +145,7 @@ public class UserService
 		UserProfile user= userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
 		user.setProfilePictureUrl(null);
 		String s=cloud.photoDelete(user.getEmployeeId());
+		redisTemplate.delete("userProfile:"+user.getEmployeeId());
 		
 		return "Profile picture deleted successfully" + s;
 	}
