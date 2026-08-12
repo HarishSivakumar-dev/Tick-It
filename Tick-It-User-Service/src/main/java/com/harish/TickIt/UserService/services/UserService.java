@@ -3,7 +3,6 @@ package com.harish.TickIt.UserService.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -118,6 +117,8 @@ public class UserService
 		}
 		
 		userProfile.setProfileUpdatedAt(LocalDateTime.now());
+		
+		redisTemplate.delete("userProfile:"+userProfile.getEmployeeId());
 		
 		return "Updated !";
 	}
