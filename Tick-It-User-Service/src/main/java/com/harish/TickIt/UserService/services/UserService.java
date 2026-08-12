@@ -28,7 +28,7 @@ public class UserService
 	@Autowired
 	private CloudinaryService cloud;
 	@Autowired
-	private RedisTemplate<String, Object> redisTemplate;
+	private RedisTemplate<String, ProfileResponseDto> redisTemplate;
 	
 	public ProfileResponseDto userProfileRetriever()
 	{
