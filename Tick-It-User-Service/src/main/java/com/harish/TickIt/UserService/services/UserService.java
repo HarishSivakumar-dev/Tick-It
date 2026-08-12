@@ -2,8 +2,10 @@ package com.harish.TickIt.UserService.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,15 +28,15 @@ public class UserService
 	private ResponseWrapperImpl responseWrapper;
 	@Autowired
 	private CloudinaryService cloud;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
 	
 	public ProfileResponseDto userProfileRetriever()
 	{
 		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		ProfileResponseDto userProfile= (ProfileResponseDto) this.getEmployeeDetails(prin.getEmployeeId());
 		
-		UserProfile prof=userProfileRepo.findByEmployeeId(prin.getEmployeeId()).orElseThrow(()->new RuntimeException("User not found"));
-		
-		return responseWrapper.getProfileResponseWrapper(prof);
-		
+		return userProfile;
 	}
 	
 	public String createUserProfile(UserProfileDto dto)
@@ -69,19 +71,15 @@ public class UserService
 
 	public Boolean getUserDetails(long employeeId)
 	{
-		Optional<UserProfile> usr= userProfileRepo.findByEmployeeId(employeeId);
-		
-		if(usr.isEmpty())
+		ProfileResponseDto userProfile= this.getEmployeeDetails(employeeId);
+		if(userProfile.getDesignation().equals("PROJECT_MANAGER"))
 		{
-			return false;
+			return Boolean.TRUE;
 		}
 		else
 		{
-			if(usr.get().getDesignation().equals("PROJECT_MANAGER"))
-				return true;
-			else
-			return false;
-		}	
+			return Boolean.FALSE;
+		}
 	}
 
 	@Transactional
@@ -152,8 +150,22 @@ public class UserService
 
 	public ProfileResponseDto getEmployeeDetails(long employeeId)
 	{
-		UserProfile usr= userProfileRepo.findByEmployeeId(employeeId).orElseThrow(()-> new RuntimeException("NO USER FOUND !"));
-		return responseWrapper.getProfileResponseWrapper(usr);
+		String key= "userProfile:"+employeeId;
+		
+		ProfileResponseDto userProfile= (ProfileResponseDto) redisTemplate.opsForValue().get(key);
+		
+		if(userProfile!=null)
+		{
+			return userProfile;
+		}
+		else
+		{
+			UserProfile usr= userProfileRepo.findByEmployeeId(employeeId).orElseThrow(()-> new RuntimeException("NO USER FOUND !"));
+			ProfileResponseDto profileResponseDto=responseWrapper.getProfileResponseWrapper(usr);
+			redisTemplate.opsForValue().set(key, profileResponseDto,10, TimeUnit.MINUTES);
+			
+			return profileResponseDto;
+		}
 	}
 
 	public List<ProfileDto> searchProfiles(String query)
