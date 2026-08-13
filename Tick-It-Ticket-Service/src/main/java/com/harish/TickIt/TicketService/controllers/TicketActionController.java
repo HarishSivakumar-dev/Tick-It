@@ -46,11 +46,11 @@ public class TicketActionController
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	@DeleteMapping("/delete/{ticketId}")
+	@DeleteMapping("/delete/{ticketId}/{projectId}")
 	@PreAuthorize("hasRole('LEAD')")
-	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId)
+	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId, @PathVariable long projectId)
 	{
-		String response = tcs.deleteTicket(ticketId);
+		String response = tcs.deleteTicket(ticketId, projectId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
