@@ -3,6 +3,7 @@ package com.harish.TickIt.TicketService.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,38 +40,47 @@ public class TicketActionService
 	@Autowired
 	private TicketApprovalAuditRepo trep;
 	@Autowired
-	private RedisTemplate<String,Object> redisTemplate; 
+	private RedisTemplate<String,List<TicketResponseDto>> redisTemplate; 
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
 		// This method will create a ticket
 		Ticket ticket = ticketWrapperImpl.createTicket(dto);
 		ticketRepo.save(ticket);
-		
+		redisTemplate.delete("projectTickets:"+dto.getProjectId());
 		return "Ticket created successfully";
 	}
 	
 	public List<TicketResponseDto> getProjectTickets(int projectId)
 	{
 		// This method will return all the tickets of a project
-		
-		Object tk= redisTemplate.opsForValue().get("projectTickets:"+projectId);
-		List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusNotAndAssignedToIsNull(projectId, TicketStatus.RESOLVED);
-		List<TicketResponseDto> responseDtos = tickets.stream()
-													  .map(ticket -> {
-														  				TicketResponseDto responseDto = ticketWrapperImpl.toDto(ticket);
-														  				return responseDto;
-													  			 	})	
-													 .toList();
-		return responseDtos;
+		List<TicketResponseDto> tk= redisTemplate.opsForValue().get("projectTickets:"+projectId);
+		if(tk==null)
+		{
+			List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusNotAndAssignedToIsNull(projectId, TicketStatus.RESOLVED);
+			List<TicketResponseDto> responseDtos = tickets.stream()
+														  .map(ticket -> {
+															  				TicketResponseDto responseDto = ticketWrapperImpl.toDto(ticket);
+															  				return responseDto;
+														  			 	})	
+														 .toList();
+			
+			redisTemplate.opsForValue().set("projectTickets:"+projectId, responseDtos, 10, TimeUnit.MINUTES);
+			return responseDtos;
+		}
+		else
+		{
+			return tk;
+		}
 	}
 
-	public String deleteTicket(int ticketId)
+	public String deleteTicket(int ticketId, long projectId)
 	{
 		// This method will delete a ticket
 		if(ticketRepo.existsById(ticketId))
 		{
 			ticketRepo.deleteById(ticketId);
+			redisTemplate.delete("projectTickets:"+projectId);
 			return "Ticket deleted successfully";
 		}
 		else
@@ -101,6 +111,7 @@ public class TicketActionService
 			}
 			
 			ticketRepo.save(ticket);
+			redisTemplate.delete("projectTickets:"+ticket.getProjectId());
 			
 			return "Ticket status updated successfully";
 		}
@@ -116,12 +127,18 @@ public class TicketActionService
 		
 		UserFeignDto ufr=  ufc.getUserFromAuthService(Long.valueOf(dto.getEmployeeId())).getBody();
 		
+		if(tk.getAssignedEmployeeId()!=null)
+		{
+			throw new RuntimeException("Already Assigned !");
+		}
+		
 		tk.setAssignedTo(ufr.getUserName());
 		tk.setUpdatedAt(LocalDateTime.now());
 		tk.setAssignedEmployeeId(ufr.getEmployeeId());
 		tk.setStatus(TicketStatus.IN_PROGRESS);
 		
 		ticketRepo.save(tk);
+		redisTemplate.delete("projectTickets:"+tk.getProjectId());
 		
 		return "User Assigned !";
 	}
@@ -189,6 +206,7 @@ public class TicketActionService
 		
 		trep.save(taa);
 		
+		redisTemplate.delete("projectTickets:"+tk.getProjectId());
 		return "Updated Successfully";
 	}
 	
