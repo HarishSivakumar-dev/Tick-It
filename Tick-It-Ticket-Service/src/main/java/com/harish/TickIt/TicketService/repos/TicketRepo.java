@@ -14,13 +14,13 @@ public interface TicketRepo extends org.springframework.data.jpa.repository.JpaR
 {
 	List<com.harish.TickIt.TicketService.model.Ticket> findByProjectIdAndStatusNotAndAssignedToIsNull(int projectId, com.harish.TickIt.TicketService.enums.TicketStatus status);
 	
-	List<com.harish.TickIt.TicketService.model.Ticket> findByProjectIdAndStatusAndPriorityNotInAndAssignedToIsNull(int projectId, TicketStatus ts, List<TicketPriority> tp);
+	List<com.harish.TickIt.TicketService.model.Ticket> findByProjectIdAndStatusInAndPriorityNotInAndAssignedToIsNull(int projectId, List<TicketStatus> ts, List<TicketPriority> tp);
 	
 	@Query("""
 			SELECT t from Ticket t
 			WHERE (:status IS NULL OR t.status =:status)
 			AND
-			(:status IS NULL OR t.priority =:priority)
+			(:priority IS NULL OR t.priority =:priority)
 			AND
 			(:approval IS NULL OR t.approved =:approval)
 			
@@ -28,5 +28,9 @@ public interface TicketRepo extends org.springframework.data.jpa.repository.JpaR
 	List<com.harish.TickIt.TicketService.model.Ticket> filterBySpecs(@Param("status") TicketStatus status, @Param("priority") TicketPriority priority, @Param("approval") TicketApprovalStatus approval);
 
 	List<com.harish.TickIt.TicketService.model.Ticket> findByAssignedEmployeeIdOrderByCreatedAtDesc(long employeeId);
+	
+	List<com.harish.TickIt.TicketService.model.Ticket> findByProjectId(int projectId);
+	
+	List<com.harish.TickIt.TicketService.model.Ticket> findByProjectIdAndApproved(int projectId, TicketApprovalStatus approval);
 	
 }
