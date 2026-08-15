@@ -105,7 +105,7 @@ public class TicketActionController
 	}
 	
 	@GetMapping("/get/all/{projectId}")
-	@PreAuthorize("hasAnyRole('MANAGER', 'LEAD', 'ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<TicketResponseDto>> getAllTicketsForProject(@PathVariable int projectId)
 	{
 		List<TicketResponseDto> res= tcs.getAllTickets(projectId);
