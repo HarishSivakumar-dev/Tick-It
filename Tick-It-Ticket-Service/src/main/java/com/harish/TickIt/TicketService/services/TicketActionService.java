@@ -53,6 +53,8 @@ public class TicketActionService
 		
 		redisTemplate.delete("projectTickets:"+dto.getProjectId());
 		redisTemplate.delete("AvailableTickets:"+dto.getProjectId());
+		redisTemplate.delete("AllTickets:"+dto.getProjectId());
+
 		
 		return "Ticket created successfully";
 	}
@@ -90,7 +92,8 @@ public class TicketActionService
 			
 			redisTemplate.delete("projectTickets:"+projectId);
 			redisTemplate.delete("AvailableTickets:"+ projectId);
-			
+			redisTemplate.delete("AllTickets:"+projectId);
+
 			return "Ticket deleted successfully";
 		}
 		else
@@ -126,6 +129,8 @@ public class TicketActionService
 			
 			redisTemplate.delete("projectTickets:"+ticket.getProjectId());
 			redisTemplate.delete("AvailableTickets:"+ticket.getProjectId());
+			redisTemplate.delete("AllTickets:"+ticket.getProjectId());
+
 			
 			return "Ticket status updated successfully";
 		}
@@ -156,6 +161,7 @@ public class TicketActionService
 		redisTemplate.delete("projectTickets:"+tk.getProjectId());
 		redisTemplate.delete("AvailableTickets:"+tk.getProjectId());
 		redisTemplate.delete("userTickets:"+tk.getAssignedEmployeeId());
+		redisTemplate.delete("AllTickets:"+tk.getProjectId());
 		
 		return "User Assigned !";
 	}
@@ -233,6 +239,7 @@ public class TicketActionService
 		trep.save(taa);
 		
 		redisTemplate.delete("projectTickets:"+tk.getProjectId());
+		redisTemplate.delete("AllTickets:"+tk.getProjectId());
 		
 		return "Updated Successfully";
 	}
@@ -277,13 +284,23 @@ public class TicketActionService
 	{	
 		if(pfc.verifyEmployee(projectId).getBody())
 		{
-			List<TicketResponseDto> res= ticketRepo.findByProjectId(projectId)
-					   .stream()
-					   .map(r->{
-						   return ticketWrapperImpl.toDto(r);
-					   })
-					   .toList();
-			return res;
+			List<TicketResponseDto> rs= redisTemplate.opsForValue().get("AllTickets:"+projectId);
+			if(rs==null)
+			{
+				List<TicketResponseDto> res= ticketRepo.findByProjectId(projectId)
+						   .stream()
+						   .map(r->{
+							   return ticketWrapperImpl.toDto(r);
+						   })
+						   .toList();
+				
+				redisTemplate.opsForValue().set("AllTickets:"+projectId,res,10,TimeUnit.MINUTES);
+				return res;
+			}
+			else
+			{
+				return rs;
+			}
 		}
 		else
 		{
