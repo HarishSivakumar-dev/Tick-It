@@ -23,7 +23,6 @@ import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
-
 import jakarta.transaction.Transactional;
 
 @Component
