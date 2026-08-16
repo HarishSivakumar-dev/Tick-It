@@ -27,7 +27,7 @@ public class CacheConfig
 															 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
 		
 		Map<String, RedisCacheConfiguration> mp= new HashMap<String, RedisCacheConfiguration>();
-		mp.put("projectdetails", json);
+		mp.put("AllProjects", json);
 		
 		return RedisCacheManager.builder(factory)
 								.withInitialCacheConfigurations(mp)
