@@ -23,6 +23,9 @@ import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.transaction.Transactional;
 
 @Component
@@ -35,6 +38,7 @@ public class ProjectService
 	@Autowired
 	private UserInformationFeign uif;
 	
+	@Cacheable(value="AllProjects")
 	public List<ProjectResponseDto> getAllProjects()
 	{
 		List<ProjectResponseDto> pd= pdr.findAll().stream()
@@ -59,6 +63,7 @@ public class ProjectService
 	}
 	
 	@Transactional
+	@CacheEvict(value="AllProjects")
 	public String projectCreation(ProjectCreationDto dto)
 	{
 		ProjectDetails pd= new ProjectDetails();
@@ -89,6 +94,7 @@ public class ProjectService
 	}
 	
 	@Transactional
+	@CacheEvict(value="AllProjects")
 	public String projectDetailsUpdation(ProjectCreationDto dto)
 	{
 		ProjectDetails det= pdr.findByProjectId(dto.getProjectId()).orElseThrow(()-> new RuntimeException("No Project Id found"));
