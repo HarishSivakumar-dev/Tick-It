@@ -1,7 +1,6 @@
 package com.harish.TickIt.ProjectService.controllers;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -65,7 +64,7 @@ public class ProjectHomeController
 	
 	@GetMapping("/project/find")
 	@PreAuthorize("hasRole('USER')")
-	public Optional<ProjectDetDto> findProjectById(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam long projectId)
+	public ProjectDetDto findProjectById(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam long projectId)
 	{
 		System.out.println("Token received: " + token);
 		return ps.findProject(projectId);
