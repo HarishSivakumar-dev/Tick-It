@@ -23,9 +23,10 @@ import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
-
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import jakarta.transaction.Transactional;
 
 @Component
@@ -37,6 +38,8 @@ public class ProjectService
 	private ProjectMembersRepo pmr;
 	@Autowired
 	private UserInformationFeign uif;
+	@Autowired
+	private CacheManager manager;
 	
 	@Cacheable(value="AllProjects")
 	public List<ProjectResponseDto> getAllProjects()
@@ -94,7 +97,8 @@ public class ProjectService
 	}
 	
 	@Transactional
-	@CacheEvict(value="AllProjects")
+	@Caching(evict= {@CacheEvict(value="AllProjects"),
+					 @CacheEvict(value="ProjectId", key="#dto.projectId")})
 	public String projectDetailsUpdation(ProjectCreationDto dto)
 	{
 		ProjectDetails det= pdr.findByProjectId(dto.getProjectId()).orElseThrow(()-> new RuntimeException("No Project Id found"));
@@ -119,6 +123,14 @@ public class ProjectService
 											})
 											.toList();
 				pmr.saveAll(ls);
+				
+				for(ProjectMembers m : ls)
+				{
+					manager.getCache("UserProjects").evict(m.getEmployeeId());
+				}
+				
+				manager.getCache("ProjectMembersUnassigned").clear();
+				manager.getCache("ProjectMembers").evict(det.getProjectId());
 			}
 		}
 		if(dto.isActive() != null)
@@ -130,6 +142,7 @@ public class ProjectService
 		
 	}
 	
+	@Cacheable(value="ProjectMembersUnassigned")
 	public List<UserDetailsDto> getAllEmployeesUnassigned()
 	{
 		List<UserDetailsDto> res= pmr.findByProjectIdIsNull().stream()
@@ -148,6 +161,7 @@ public class ProjectService
 	}
 	
 	@Transactional
+	@CacheEvict(value="ProjectMembersUnassigned")
 	public String userInfoPopulation(UserProjectDto dto)
 	{
 		ProjectMembers pm= new ProjectMembers();
@@ -164,10 +178,10 @@ public class ProjectService
 		return "Saved";
 	}
 	
-	public List<UserProjectDetailsDto> getAllUserProjects()
+	@Cacheable(value="UserProjects", key="#employeeId")
+	public List<UserProjectDetailsDto> getAllUserProjects(long employeeId)
 	{
-		UserPrincipal up =(UserPrincipal) SecurityContextHolder.getContext().getAuthentication();
-		List<ProjectMembers> proj= pmr.findByEmployeeIdAndProjectIdNotNull(up.getEmployeeId());
+		List<ProjectMembers> proj= pmr.findByEmployeeIdAndProjectIdNotNull(employeeId);
 		
 		if(proj.isEmpty())
 		{
@@ -195,6 +209,8 @@ public class ProjectService
 	}
 	
 	@Transactional
+	@Caching(evict= {@CacheEvict(value="ProjectMembersUnassigned"),
+					})	
 	public String addMembersIntoProject(List<MemberDetailsDto> dto)
 	{
 		List<Long> ls= dto.stream()
@@ -217,6 +233,9 @@ public class ProjectService
 			p.setRole(mp.get(p.getEmployeeId()).getRole());
 			p.setProjectId(mp.get(p.getEmployeeId()).getProjectId());
 			p.setRelievedDate(null);
+			
+			manager.getCache("UserProjects").evict(p.getEmployeeId());
+			manager.getCache("ProjectMembers").evict(p.getProjectId());
 		}
 		
 		pmr.saveAll(pm);
@@ -224,9 +243,10 @@ public class ProjectService
 		return "Saved all Details";
 	}
 	
-	public List<UserProjectDetailsDto> getProjectMembers(Long projectid)
+	@Cacheable(value="ProjectMembers", key="#projectId")
+	public List<UserProjectDetailsDto> getProjectMembers(Long projectId)
 	{
-		List<UserProjectDetailsDto> ls= pmr.findByProjectId(projectid)
+		List<UserProjectDetailsDto> ls= pmr.findByProjectId(projectId)
 				                           .stream()
 				                           .map(r->
 				                           {
@@ -246,13 +266,14 @@ public class ProjectService
 		
 	}
 
-	public Optional<ProjectDetDto> findProject(long projectid) 
+	@Cacheable(value="ProjectId", key="#projectId")
+	public ProjectDetDto findProject(long projectId) 
 	{
-		Optional<ProjectDetails> pm= pdr.findByProjectId(projectid);
+		Optional<ProjectDetails> pm= pdr.findByProjectId(projectId);
 		
 		if(pm.isEmpty())
 		{
-			return Optional.empty();
+			throw new RuntimeException("NO PROJECT FOUND !");
 		}
 		else
 		{
@@ -263,7 +284,7 @@ public class ProjectService
 			pdt.setProjectId(pd.getProjectId());
 			pdt.setProjectName(pd.getProjectName());
 			
-			return Optional.of(pdt);
+			return pdt;
 		}	
 	}
 
