@@ -1,6 +1,5 @@
 package com.harish.TickIt.TicketService.wrapperimpl;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.TicketService.dtos.TicketAvailDto;
@@ -35,20 +34,13 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 		ticket.setClosedAt(null);
 		ticket.setPriority(dto.getPriority());
 		
-		Optional<TicketAvailDto> isPre= projectFeignClient.getProjectIdFromService(dto.getProjectId());
+		TicketAvailDto isPre= projectFeignClient.getProjectIdFromService(dto.getProjectId());
 		
-		if(isPre.isEmpty())
-		{
-			throw new RuntimeException("NO PROJECT ID FOUND");
-		}
-		else
-		{
-			if(!isPre.get().isActive())
+			if(!isPre.isActive())
 			{
 				throw new RuntimeException("PROJECT EXPIRED !");
 			}
-			ticket.setProjectId(isPre.get().getProjectId());
-		}
+			ticket.setProjectId(isPre.getProjectId());
 		
 		UserDetailsDto userDetails = userProfileFeignClient.getUserProfile().getBody();
 		
