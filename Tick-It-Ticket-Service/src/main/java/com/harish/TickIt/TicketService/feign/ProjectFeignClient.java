@@ -1,6 +1,5 @@
 package com.harish.TickIt.TicketService.feign;
 
-import java.util.Optional;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,7 @@ import com.harish.TickIt.TicketService.dtos.TicketAvailDto;
 public interface ProjectFeignClient
 {
 	@GetMapping("/app/project/find")
-	Optional<TicketAvailDto> getProjectIdFromService(@RequestParam long projectId);
+	TicketAvailDto getProjectIdFromService(@RequestParam long projectId);
 	
 	@GetMapping("app/projects/get/{projectId}")
 	ResponseEntity<Boolean> verifyEmployee(@PathVariable long projectId);
