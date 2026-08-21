@@ -14,8 +14,8 @@
     </parent>
 
     <groupId>com</groupId>
-    <artifactId>TickIt-Api-Gateway</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>Tick-It-Api-Gateway</artifactId>
+    <version>v1</version>
     <name>TickIt-Api-Gateway</name>
     <description>API Gateway for Tick-It Microservices</description>
 
