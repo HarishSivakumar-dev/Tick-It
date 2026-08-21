@@ -12,7 +12,7 @@
 
     <groupId>com</groupId>
     <artifactId>Tick-It-User-Service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>v1</version>
     <name>Tick-It-User-Service</name>
     <description>User microservice for Tick-It Application</description>
 
