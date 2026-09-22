@@ -3,6 +3,8 @@ services:
          image: apache/kafka:4.0.1
          ports: 
              - "9092:9092"
+         networks:
+             - kafka-network
          environment:
              KAFKA_NODE_ID: 1
              KAFKA_LISTENERS: TEXT://:9092,CONTROLLER://:9093
@@ -16,6 +18,8 @@ services:
         image: apache/kafka:4.0.1
         ports:
             - "9095:9095"
+        networks:
+            - kafka-network
         environment:
            KAFKA_NODE_ID: 2
            KAFKA_LISTENERS: TEXT://:9095,CONTROLLER://:9094
@@ -25,3 +29,7 @@ services:
            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: TEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
            KAFKA_INTER_BROKER_LISTENER_NAME: TEXT
            KAFKA_ADVERTISED_LISTENERS: TEXT://localhost:9095
+
+networks:
+    kafka-network:
+       driver: bridge
