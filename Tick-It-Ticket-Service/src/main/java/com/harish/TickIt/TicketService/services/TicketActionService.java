@@ -21,6 +21,7 @@ import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
+import com.harish.TickIt.TicketService.kafka.events.TicketCreatedEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketApprovalAudit;
 import com.harish.TickIt.TicketService.repos.TicketApprovalAuditRepo;
@@ -58,7 +59,9 @@ public class TicketActionService
 		redisTemplate.delete("AvailableTickets:"+dto.getProjectId());
 		redisTemplate.delete("AllTickets:"+dto.getProjectId());
 		
-		kafkaTemplate.send("Ticket-Events","ProjectId: "+ticket.getProjectId(), ticket);
+		TicketCreatedEvent event= ticketWrapperImpl.createTicketEvent(ticket);
+		kafkaTemplate.send("Ticket-Events","ProjectId: "+ticket.getProjectId(), event);
+		
 		return "Ticket created successfully";
 	}
 	
