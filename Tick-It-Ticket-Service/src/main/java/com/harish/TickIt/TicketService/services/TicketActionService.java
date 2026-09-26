@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
@@ -44,6 +45,8 @@ public class TicketActionService
 	private TicketApprovalAuditRepo trep;
 	@Autowired
 	private RedisTemplate<String,List<TicketResponseDto>> redisTemplate; 
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	public String createTicket(TicketDetailsDto dto)
 	{
@@ -54,8 +57,8 @@ public class TicketActionService
 		redisTemplate.delete("projectTickets:"+dto.getProjectId());
 		redisTemplate.delete("AvailableTickets:"+dto.getProjectId());
 		redisTemplate.delete("AllTickets:"+dto.getProjectId());
-
 		
+		kafkaTemplate.send("Ticket-Events","ProjectId: "+ticket.getProjectId(), ticket);
 		return "Ticket created successfully";
 	}
 	
