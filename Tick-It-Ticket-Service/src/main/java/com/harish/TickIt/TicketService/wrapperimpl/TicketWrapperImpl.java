@@ -3,12 +3,14 @@ package com.harish.TickIt.TicketService.wrapperimpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.TicketService.dtos.TicketAvailDto;
+import com.harish.TickIt.TicketService.dtos.TicketCreationDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.dtos.UserDetailsDto;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
+import com.harish.TickIt.TicketService.kafka.events.TicketCreatedEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
 
 @Component
@@ -71,6 +73,22 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 			responseDto.setCreatorProfilePictureUrl(ticket.getCreatorProfilePictureUrl());
 			
 			return responseDto;
+	}
+
+
+	@Override
+	public TicketCreatedEvent createTicketEvent(Ticket ticket)
+	{
+		TicketCreationDto dt= new TicketCreationDto();
+		dt.setPriority(ticket.getPriority());
+		dt.setProjectId(ticket.getProjectId());
+		dt.setTitle(ticket.getTitle());
+		
+		TicketCreatedEvent event= new TicketCreatedEvent();
+		event.setMessage("Ticket: "+ticket.getId()+"Created");
+		event.setDetails(dt);
+		
+		return event;
 	}
 
 }
