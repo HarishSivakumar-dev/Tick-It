@@ -18,7 +18,7 @@ public class Notification
 	private boolean deleted;
 	private String message;
 	private NotificationType type;
-	private Boolean read;
+	private Boolean isRead;
 	private LocalDate createdAt;
 	
 	
@@ -52,11 +52,11 @@ public class Notification
 	public void setType(NotificationType type) {
 		this.type = type;
 	}
-	public Boolean getRead() {
-		return read;
+	public Boolean getIsRead() {
+		return isRead;
 	}
-	public void setRead(Boolean read) {
-		this.read = read;
+	public void setIsRead(Boolean isRead) {
+		this.isRead = isRead;
 	}
 	public LocalDate getCreatedAt() {
 		return createdAt;
