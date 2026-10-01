@@ -3,12 +3,14 @@ package com.harish.tickit.notificationService.services;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.tickit.notificationService.auth.UserPrincipal;
 import com.harish.tickit.notificationService.dtos.NotificationResponseDto;
 import com.harish.tickit.notificationService.dtos.NotificationUpdateDto;
 import com.harish.tickit.notificationService.events.NotificationEvent;
+import com.harish.tickit.notificationService.events.TicketCreationEvent;
 import com.harish.tickit.notificationService.models.Notification;
 import com.harish.tickit.notificationService.repos.NotificationRepo;
 import jakarta.transaction.Transactional;
@@ -24,7 +26,7 @@ public class NotificationService
 		Notification nt= new Notification();
 		nt.setCreatedAt(LocalDate.now());
 		nt.setMessage(ndto.getMessage());
-		nt.setRead(false);
+		nt.setIsRead(false);
 		nt.setTitle(ndto.getTitle());
 		nt.setType(ndto.getType());
 		nt.setEmployeeId(ndto.getEmployeeId());
@@ -45,7 +47,7 @@ public class NotificationService
 			throw new RuntimeException("ACCESS DENIED");
 		}
 	
-		nt.setRead(true);
+		nt.setIsRead(true);
 		
 		return "Notification updated !";
 	}
@@ -55,8 +57,8 @@ public class NotificationService
 	{
 		long userId= getEmployeeId();
 		
-		List<Notification> nt=nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
-		nt.forEach(r->r.setRead(true));
+		List<Notification> nt=nr.findByEmployeeIdAndIsReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId);
+		nt.forEach(r->r.setIsRead(true));
 		
 		return "Updated";
 								
@@ -66,7 +68,7 @@ public class NotificationService
 	{
 		long userId= getEmployeeId();
 		
-		int count= nr.countByEmployeeIdAndReadFalseAndDeletedFalse(userId);
+		int count= nr.countByEmployeeIdAndIsReadFalseAndDeletedFalse(userId);
 		return count;
 	}
 	
@@ -74,7 +76,7 @@ public class NotificationService
 	{
 		
 		long userId= getEmployeeId();
-		List<NotificationResponseDto> res = nr.findByEmployeeIdAndReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId)
+		List<NotificationResponseDto> res = nr.findByEmployeeIdAndIsReadFalseAndDeletedFalseOrderByCreatedAtDesc(userId)
 										     .stream()
 										     .map(r->{
 										    	 NotificationResponseDto dto= new NotificationResponseDto();
@@ -144,6 +146,15 @@ public class NotificationService
 		long userId=up.getEmployeeId();
 		
 		return userId;
+	}
+	
+	@KafkaListener(
+			topics="Ticket-Events",
+			groupId="ticket-creation")
+	public void kafkaListener(TicketCreationEvent event)
+	{
+		String msg= event.getMessage();
+		System.out.println(msg);
 	}
 	
 	
