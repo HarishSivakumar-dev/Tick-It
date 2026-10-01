@@ -23,7 +23,7 @@ public class SecurityConfig
 				  .httpBasic(r->r.disable())
 				  .formLogin(r->r.disable())
 				  .sessionManagement(r->r.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				  .authorizeHttpRequests(r->r.requestMatchers(" ").permitAll().anyRequest().authenticated())
+				  .authorizeHttpRequests(r->r.requestMatchers("/").permitAll().anyRequest().authenticated())
 				  .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
 				  .build();
 	}
