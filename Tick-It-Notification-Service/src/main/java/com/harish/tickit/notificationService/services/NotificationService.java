@@ -21,19 +21,11 @@ public class NotificationService
 	@Autowired
 	private NotificationRepo nr;
 	
-	public String createNotification(NotificationEvent ndto)
+	public void createNotification(TicketCreationEvent ndto)
 	{
-		Notification nt= new Notification();
-		nt.setCreatedAt(LocalDate.now());
-		nt.setMessage(ndto.getMessage());
-		nt.setIsRead(false);
-		nt.setTitle(ndto.getTitle());
-		nt.setType(ndto.getType());
-		nt.setEmployeeId(ndto.getEmployeeId());
-		
-		nr.save(nt);
-		
-		return "Notification sent/saved";
+		String msg= ndto.getMessage();
+		String title= ndto.getDetails().getTitle();
+		System.out.println("Notification received: "+msg+" "+title+" "+ndto.getDetails().getPriority()+" "+ndto.getDetails().getProjectId());
 	}
 	
 	@Transactional
