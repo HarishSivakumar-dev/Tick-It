@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.mapping.DefaultJacksonJavaTypeMapper;
 import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+import com.harish.TickIt.TicketService.kafka.events.TicketCreatedEvent;
 
 @Configuration
 public class KafkaConfig
@@ -19,11 +21,15 @@ public class KafkaConfig
 	{
 		Map<String, Object> mp= new HashMap<String, Object>();
 		
-		mp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"http://localhost:19092");
-		mp.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		mp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
+		DefaultJacksonJavaTypeMapper typeMapper= new DefaultJacksonJavaTypeMapper();
+		typeMapper.setIdClassMapping(Map.of("TicketCreationEvent", TicketCreatedEvent.class));
 		
-		return new DefaultKafkaProducerFactory<>(mp);
+		JacksonJsonSerializer<Object> serializer= new JacksonJsonSerializer<>();
+		serializer.setTypeMapper(typeMapper);
+		
+		mp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:19092");
+		
+		return new DefaultKafkaProducerFactory<>(mp,new StringSerializer(), serializer);
 	}
 	
 	@Bean
