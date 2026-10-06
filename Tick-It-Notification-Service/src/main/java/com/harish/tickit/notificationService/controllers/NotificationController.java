@@ -76,6 +76,5 @@ public class NotificationController
 	{
 		String res= ns.deleteAllNotifications();
 		return ResponseEntity.status(HttpStatus.OK).body(res);
-	}
-		
+	}	
 }
