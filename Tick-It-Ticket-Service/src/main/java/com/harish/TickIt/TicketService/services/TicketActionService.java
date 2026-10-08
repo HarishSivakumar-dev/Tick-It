@@ -117,6 +117,7 @@ public class TicketActionService
 	{
 		// This method will update the status of a ticket
 		Ticket ticket = ticketRepo.findById(dto.getTicketId()).orElse(null);
+		Boolean upd=false;
 		if(ticket != null)
 		{
 			TicketStatus status=dto.getStatus();
@@ -125,11 +126,13 @@ public class TicketActionService
 			
 			if(status == TicketStatus.RESOLVED)
 			{
+				upd=true;
 				ticket.setClosedAt(java.time.LocalDateTime.now());
 				ticket.setApproved(TicketApprovalStatus.PENDING);
 			}
 			else if(status == TicketStatus.REOPENED)
 			{
+				upd=true;
 				ticket.setAssignedTo(null);
 				ticket.setClosedAt(null);
 				redisTemplate.delete("userTickets:"+ticket.getAssignedEmployeeId());
@@ -141,7 +144,11 @@ public class TicketActionService
 			redisTemplate.delete("projectTickets:"+ticket.getProjectId());
 			redisTemplate.delete("AvailableTickets:"+ticket.getProjectId());
 			redisTemplate.delete("AllTickets:"+ticket.getProjectId());
-
+			
+			if(upd)
+			{
+				//publish event to kafka
+			}
 			
 			return "Ticket status updated successfully";
 		}
