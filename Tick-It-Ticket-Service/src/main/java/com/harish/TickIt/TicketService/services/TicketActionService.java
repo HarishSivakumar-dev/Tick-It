@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
+import com.harish.TickIt.TicketService.dtos.TicketDeletionDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.dtos.TicketStatusUpdateDto;
@@ -22,6 +23,7 @@ import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
 import com.harish.TickIt.TicketService.kafka.events.TicketCreatedEvent;
+import com.harish.TickIt.TicketService.kafka.events.TicketDeletedEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketApprovalAudit;
 import com.harish.TickIt.TicketService.repos.TicketApprovalAuditRepo;
@@ -92,14 +94,17 @@ public class TicketActionService
 	public String deleteTicket(int ticketId, long projectId)
 	{
 		// This method will delete a ticket
-		if(ticketRepo.existsById(ticketId))
+		
+		Ticket ticket = ticketRepo.findById(ticketId).orElse(null);
+		if(ticket != null)
 		{
 			ticketRepo.deleteById(ticketId);
 			
 			redisTemplate.delete("projectTickets:"+projectId);
 			redisTemplate.delete("AvailableTickets:"+ projectId);
 			redisTemplate.delete("AllTickets:"+projectId);
-
+			
+			kafkaTemplate.send("Ticket-Events","ProjectId: "+projectId, new TicketDeletedEvent("DELETED", new TicketDeletionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
 			return "Ticket deleted successfully";
 		}
 		else
