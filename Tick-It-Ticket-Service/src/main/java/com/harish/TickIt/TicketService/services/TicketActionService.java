@@ -11,21 +11,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
+import com.harish.TickIt.TicketService.dtos.TicketActionDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
-import com.harish.TickIt.TicketService.dtos.TicketDeletionDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketResponseDto;
 import com.harish.TickIt.TicketService.dtos.TicketStatusUpdateDto;
-import com.harish.TickIt.TicketService.dtos.TicketUpdationDto;
 import com.harish.TickIt.TicketService.dtos.UserFeignDto;
 import com.harish.TickIt.TicketService.enums.TicketApprovalStatus;
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 import com.harish.TickIt.TicketService.enums.TicketStatus;
 import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
 import com.harish.TickIt.TicketService.feign.UserFeignClient;
-import com.harish.TickIt.TicketService.kafka.events.TicketCreatedEvent;
-import com.harish.TickIt.TicketService.kafka.events.TicketDeletedEvent;
-import com.harish.TickIt.TicketService.kafka.events.TicketUpdatedEvent;
+import com.harish.TickIt.TicketService.kafka.events.TicketActionEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketApprovalAudit;
 import com.harish.TickIt.TicketService.repos.TicketApprovalAuditRepo;
@@ -63,7 +60,7 @@ public class TicketActionService
 		redisTemplate.delete("AvailableTickets:"+dto.getProjectId());
 		redisTemplate.delete("AllTickets:"+dto.getProjectId());
 		
-		TicketCreatedEvent event= ticketWrapperImpl.createTicketEvent(ticket);
+		TicketActionEvent event= ticketWrapperImpl.TicketEvent("CREATED",ticket);
 		kafkaTemplate.send("Ticket-Events","ProjectId: "+ticket.getProjectId(), event);
 		
 		return "Ticket created successfully";
@@ -106,7 +103,7 @@ public class TicketActionService
 			redisTemplate.delete("AvailableTickets:"+ projectId);
 			redisTemplate.delete("AllTickets:"+projectId);
 			
-			kafkaTemplate.send("Ticket-Events","ProjectId:"+projectId, new TicketDeletedEvent("DELETED", new TicketDeletionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
+			kafkaTemplate.send("Ticket-Events","ProjectId:"+projectId, new TicketActionEvent("DELETED", new TicketActionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
 			return "Ticket deleted successfully";
 		}
 		else
@@ -149,7 +146,7 @@ public class TicketActionService
 			
 			if(upd)
 			{
-				kafkaTemplate.send("Ticket-Events","ProjectId:"+ticket.getProjectId(), new TicketUpdatedEvent("UPDATED", new TicketUpdationDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
+				kafkaTemplate.send("Ticket-Events","ProjectId:"+ticket.getProjectId(), new TicketActionEvent("UPDATED", new TicketActionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
 			}
 			
 			return "Ticket status updated successfully";
