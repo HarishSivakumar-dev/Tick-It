@@ -1,22 +1,27 @@
 package com.harish.TickIt.TicketService.kafka.events;
 
-import com.harish.TickIt.TicketService.dtos.TicketCreationDto;
+import com.harish.TickIt.TicketService.dtos.TicketActionDto;
 
-public class TicketCreatedEvent 
+public class TicketActionEvent 
 {
 	private String message;
-	private TicketCreationDto details;
+	private TicketActionDto details;
 	
+	public TicketActionEvent(String message, TicketActionDto details) {
+		super();
+		this.message = message;
+		this.details = details;
+	}
 	public String getMessage() {
 		return message;
 	}
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public TicketCreationDto getDetails() {
+	public TicketActionDto getDetails() {
 		return details;
 	}
-	public void setDetails(TicketCreationDto details) {
+	public void setDetails(TicketActionDto details) {
 		this.details = details;
 	}
 }
