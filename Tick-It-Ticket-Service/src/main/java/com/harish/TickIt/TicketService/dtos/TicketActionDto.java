@@ -1,13 +1,23 @@
 package com.harish.TickIt.TicketService.dtos;
 
+import java.time.LocalDateTime;
+
 import com.harish.TickIt.TicketService.enums.TicketPriority;
 
-public class TicketCreationDto
+public class TicketActionDto
 {
 	private String title;
 	private TicketPriority priority;
 	private Long projectId;
+	private LocalDateTime timeStamp;
 	
+	public TicketActionDto(String title, TicketPriority priority, Long projectId, LocalDateTime timeStamp) {
+		super();
+		this.title = title;
+		this.priority = priority;
+		this.projectId = projectId;
+		this.timeStamp = timeStamp;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -25,6 +35,12 @@ public class TicketCreationDto
 	}
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+	public LocalDateTime getTimeStamp() {
+		return timeStamp;
+	}
+	public void setTimeStamp(LocalDateTime timeStamp) {
+		this.timeStamp = timeStamp;
 	}
 	
 }
