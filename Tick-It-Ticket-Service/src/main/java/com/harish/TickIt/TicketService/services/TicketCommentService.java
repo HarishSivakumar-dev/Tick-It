@@ -113,6 +113,7 @@ public class TicketCommentService
 			throw new RuntimeException("This action is not allowed");
 		}
 		
+		kafkaTemplate.send("Ticket-Comments","ProjectId:"+tc.getProjectId(), new TicketCommentsEvent("Ticket Comment Updated", new TicketCommentPayloadDto(tc.getTicketId(),tc.getProjectId(), tc.getId(), tc.getMessage(), tc.getCreatedAt(), tc.getEmployeeId(), tc.getEmployeeName())));
 		return "Comment updated";
 	}
 	
@@ -131,6 +132,7 @@ public class TicketCommentService
 			throw new RuntimeException("This action is not allowed");
 		}
 		
+		kafkaTemplate.send("Ticket-Comments","ProjectId:"+tc.getProjectId(), new TicketCommentsEvent("Ticket Comment Deleted", new TicketCommentPayloadDto(tc.getTicketId(),tc.getProjectId(), tc.getId(), tc.getMessage(), tc.getCreatedAt(), tc.getEmployeeId(), tc.getEmployeeName())));
 		return "Comment updated";
 	}
 	
