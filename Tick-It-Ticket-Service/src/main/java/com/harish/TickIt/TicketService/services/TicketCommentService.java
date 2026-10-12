@@ -3,13 +3,16 @@ package com.harish.TickIt.TicketService.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.TicketCommentDto;
+import com.harish.TickIt.TicketService.dtos.TicketCommentPayloadDto;
 import com.harish.TickIt.TicketService.dtos.TicketCommentResponseDto;
 import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
+import com.harish.TickIt.TicketService.kafka.events.TicketCommentsEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
 import com.harish.TickIt.TicketService.model.TicketComments;
 import com.harish.TickIt.TicketService.repos.TicketCommentsRepo;
@@ -25,6 +28,8 @@ public class TicketCommentService
 	private ProjectFeignClient pfc;
 	@Autowired
 	private TicketRepo tr;
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	public String createComment(int ticketId, TicketCommentDto dto)
 	{
@@ -69,6 +74,7 @@ public class TicketCommentService
 		
 		tcr.save(tc);
 		
+		kafkaTemplate.send("Ticket-Comments","ProjectId:"+tk.get().getProjectId(), new TicketCommentsEvent("Ticket Comment Created", new TicketCommentPayloadDto(ticketId, tk.get().getProjectId(), tc.getId(), tc.getMessage(), tc.getCreatedAt(), tc.getEmployeeId(), tc.getEmployeeName())));
 		return "Comment posted Successfull";
 	}
 	
