@@ -17,6 +17,7 @@ public class TicketComments
 	private String employeeName;
 	private int ticketId;
 	private String message;
+	private Long projectId;
 	private Integer parentCommentId;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -75,6 +76,12 @@ public class TicketComments
 	}
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+	public Long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 	
 }
