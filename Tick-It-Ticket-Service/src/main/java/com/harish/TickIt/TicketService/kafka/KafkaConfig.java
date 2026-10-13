@@ -12,6 +12,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.mapping.DefaultJacksonJavaTypeMapper;
 import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 import com.harish.TickIt.TicketService.kafka.events.TicketActionEvent;
+import com.harish.TickIt.TicketService.kafka.events.TicketCommentsEvent;
 
 @Configuration
 public class KafkaConfig
@@ -22,7 +23,7 @@ public class KafkaConfig
 		Map<String, Object> mp= new HashMap<String, Object>();
 		
 		DefaultJacksonJavaTypeMapper typeMapper= new DefaultJacksonJavaTypeMapper();
-		typeMapper.setIdClassMapping(Map.of("TicketActionEvent", TicketActionEvent.class));
+		typeMapper.setIdClassMapping(Map.of("TicketActionEvent", TicketActionEvent.class, "TicketCommentsEvent", TicketCommentsEvent.class));
 		
 		JacksonJsonSerializer<Object> serializer= new JacksonJsonSerializer<>();
 		serializer.setTypeMapper(typeMapper);
