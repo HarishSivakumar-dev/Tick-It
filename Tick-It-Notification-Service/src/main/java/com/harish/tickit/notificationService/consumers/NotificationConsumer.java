@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import org.springframework.kafka.annotation.KafkaListener;
 import com.harish.tickit.notificationService.events.NotificationEvent;
+import com.harish.tickit.notificationService.events.TicketCommentsEvents;
 import com.harish.tickit.notificationService.events.TicketCreationEvent;
 import com.harish.tickit.notificationService.services.NotificationService;
 
@@ -21,6 +22,15 @@ public class NotificationConsumer
 	public void consume(TicketCreationEvent event)
 	{
 		service.createNotification(event);
+	}
+	
+	@KafkaListener(
+			topics="Ticket-Comments",
+			groupId="tickit-debug-comments"
+			)
+	public void consumeCommentEvents(TicketCommentsEvents event)
+	{
+		service.createCommentNotification(event);
 	}
 	
 }
