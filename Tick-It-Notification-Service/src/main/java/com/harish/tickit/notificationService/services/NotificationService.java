@@ -1,15 +1,13 @@
 package com.harish.tickit.notificationService.services;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.tickit.notificationService.auth.UserPrincipal;
 import com.harish.tickit.notificationService.dtos.NotificationResponseDto;
 import com.harish.tickit.notificationService.dtos.NotificationUpdateDto;
-import com.harish.tickit.notificationService.events.NotificationEvent;
+import com.harish.tickit.notificationService.events.TicketCommentsEvents;
 import com.harish.tickit.notificationService.events.TicketCreationEvent;
 import com.harish.tickit.notificationService.models.Notification;
 import com.harish.tickit.notificationService.repos.NotificationRepo;
@@ -139,14 +137,11 @@ public class NotificationService
 		
 		return userId;
 	}
-	
-	@KafkaListener(
-			topics="Ticket-Events",
-			groupId="ticket-creation")
-	public void kafkaListener(TicketCreationEvent event)
+
+	public void createCommentNotification(TicketCommentsEvents event)
 	{
-		String msg= event.getMessage();
-		System.out.println(msg);
+		// TODO Auto-generated method stub
+		System.out.println("Comment Notification received: "+event.getMessage()+" "+event.getDetails().getMessage()+" "+event.getDetails().getProjectId());
 	}
 	
 	
