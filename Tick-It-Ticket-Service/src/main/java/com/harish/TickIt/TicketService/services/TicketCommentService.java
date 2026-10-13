@@ -135,6 +135,5 @@ public class TicketCommentService
 		kafkaTemplate.send("Ticket-Comments","ProjectId:"+tc.getProjectId(), new TicketCommentsEvent("Ticket Comment Deleted", new TicketCommentPayloadDto(tc.getTicketId(),tc.getProjectId(), tc.getId(), tc.getMessage(), tc.getCreatedAt(), tc.getEmployeeId(), tc.getEmployeeName())));
 		return "Comment updated";
 	}
-	
 
 }
