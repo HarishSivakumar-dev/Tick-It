@@ -12,6 +12,7 @@ import com.harish.TickIt.TicketService.feign.ProjectFeignClient;
 import com.harish.TickIt.TicketService.feign.UserProfileFeignClient;
 import com.harish.TickIt.TicketService.kafka.events.TicketActionEvent;
 import com.harish.TickIt.TicketService.model.Ticket;
+import com.harish.TickIt.TicketService.dtos.MemberDetailsDto;
 
 @Component
 public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrapper.TicketWrappers
@@ -26,6 +27,19 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 	@Override
 	public Ticket createTicket(TicketDetailsDto dto)
 	{
+		MemberDetailsDto userDetails= projectFeignClient.verifyEmployee(dto.getProjectId()).getBody();
+		if(!userDetails.getRole().equals("TEAM_LEAD"))
+		{
+			throw new RuntimeException("ONLY TEAM LEAD CAN CREATE TICKET !");
+		}
+		
+		TicketAvailDto isPre= projectFeignClient.getProjectIdFromService(dto.getProjectId());
+		
+		if(!isPre.isActive())
+		{
+			throw new RuntimeException("PROJECT EXPIRED !");
+		}
+		
 		Ticket ticket = new Ticket();
 		ticket.setTitle(dto.getTitle());
 		ticket.setDescription(dto.getDescription());
@@ -35,21 +49,11 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 		ticket.setUpdatedAt(null);
 		ticket.setClosedAt(null);
 		ticket.setPriority(dto.getPriority());
-		
-		TicketAvailDto isPre= projectFeignClient.getProjectIdFromService(dto.getProjectId());
-		
-			if(!isPre.isActive())
-			{
-				throw new RuntimeException("PROJECT EXPIRED !");
-			}
-			ticket.setProjectId(isPre.getProjectId());
-		
-		UserDetailsDto userDetails = userProfileFeignClient.getUserProfile().getBody();
-		
-		ticket.setCreatedBy(userDetails.getName());
+		ticket.setProjectId(isPre.getProjectId());
+		ticket.setCreatedBy(userDetails.getUserName());
 		ticket.setCreatorId(userDetails.getEmployeeId());
-		ticket.setCreatorMail(userDetails.getEmail());
-		ticket.setCreatorProfilePictureUrl(userDetails.getProfilePictureUrl());
+		ticket.setCreatorMail(userDetails.getMailId());
+		ticket.setCreatorProfilePictureUrl(null);
 		
 		return ticket;
 	}
