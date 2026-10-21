@@ -31,7 +31,7 @@ public class TicketActionController
 	private TicketActionService tcs;
 	
 	@PostMapping("/create")
-	@PreAuthorize("hasRole('LEAD')")
+	@PreAuthorize("hasRole('USER')")//LEAD
 	public ResponseEntity<String> createTicket(@RequestBody TicketDetailsDto dto)
 	{
 		String response = tcs.createTicket(dto);
@@ -39,7 +39,7 @@ public class TicketActionController
 	}
 	
 	@GetMapping("/project/{projectId}")
-	@PreAuthorize("hasRole('LEAD')")
+	@PreAuthorize("hasRole('USER')")//LEAD
 	public ResponseEntity<List<TicketResponseDto>> getProjectTickets(@PathVariable int projectId)
 	{
 		List<TicketResponseDto> response = tcs.getProjectTickets(projectId);
@@ -47,7 +47,7 @@ public class TicketActionController
 	}
 	
 	@DeleteMapping("/delete/{ticketId}/{projectId}")
-	@PreAuthorize("hasRole('LEAD')")
+	@PreAuthorize("hasRole('USER')")//LEAD
 	public ResponseEntity<String> deleteTicket(@PathVariable int ticketId, @PathVariable long projectId)
 	{
 		String response = tcs.deleteTicket(ticketId, projectId);
@@ -71,7 +71,7 @@ public class TicketActionController
 	}
 	
 	@PostMapping("/ticket/update/approval/status")
-	@PreAuthorize("hasRole('LEAD')")
+	@PreAuthorize("hasRole('USER')")//LEAD
 	public ResponseEntity<String> updateTicketApproval(@RequestBody TicketApprovalDto dto)
 	{
 		String str= tcs.updateTicketApprovalStatus(dto);
@@ -82,9 +82,10 @@ public class TicketActionController
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<TicketResponseDto>> getFilteredTickets(@RequestParam(required=false) TicketStatus status,
 																	  @RequestParam(required=false) TicketPriority priority, 
-																	  @RequestParam(required=false) TicketApprovalStatus appStat)
+																	  @RequestParam(required=false) TicketApprovalStatus appStat,
+																	  @RequestParam(required=true) Long projectId)
 	{
-		List<TicketResponseDto> res= tcs.getTicketBasedOnFilter(status, priority, appStat);
+		List<TicketResponseDto> res= tcs.getTicketBasedOnFilter(status, priority, appStat, projectId);
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 	}
 	
@@ -98,7 +99,7 @@ public class TicketActionController
 	
 	@GetMapping("/get/my")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<List<TicketResponseDto>> getFilteredTickets()
+	public ResponseEntity<List<TicketResponseDto>> getMyTickets()
 	{
 		List<TicketResponseDto> res= tcs.getUserTickets();
 		return ResponseEntity.status(HttpStatus.OK).body(res);
@@ -113,7 +114,7 @@ public class TicketActionController
 	}
 	
 	@GetMapping("/get/all/unapproved/{projectId}")
-	@PreAuthorize("hasAnyRole('MANAGER', 'LEAD')")
+	@PreAuthorize("hasAnyRole('USER')")//LEAD
 	public ResponseEntity<List<TicketResponseDto>> getUnapprovedTicketsForProject(@PathVariable int projectId, @RequestParam("approval") TicketApprovalStatus status)
 	{
 		List<TicketResponseDto> res= tcs.getUnapprovedTickets(projectId, status);
