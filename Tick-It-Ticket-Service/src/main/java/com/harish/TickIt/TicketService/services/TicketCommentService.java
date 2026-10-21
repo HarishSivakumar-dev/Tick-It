@@ -41,7 +41,7 @@ public class TicketCommentService
 			throw new RuntimeException("TICKET NOT FOUND");
 		}
 		
-		if(!pfc.verifyEmployee(tk.get().getProjectId()).getBody())
+		if(pfc.verifyEmployee(tk.get().getProjectId()).getBody()==null)
 		{
 			throw new RuntimeException("COULD NOT ACCESS");
 		}
