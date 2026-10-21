@@ -3,6 +3,7 @@ package com.harish.TickIt.TicketService.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.TickIt.TicketService.auth.UserPrincipal;
 import com.harish.TickIt.TicketService.dtos.AssignUserDto;
+import com.harish.TickIt.TicketService.dtos.MemberDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketActionDto;
 import com.harish.TickIt.TicketService.dtos.TicketApprovalDto;
 import com.harish.TickIt.TicketService.dtos.TicketDetailsDto;
@@ -50,6 +52,7 @@ public class TicketActionService
 	@Autowired
 	private KafkaTemplate<String, Object> kafkaTemplate;
 	
+	//refarctored, only pending is, Project Status should be fetched within one single Feign call, instead of multiple calls for each ticket.
 	public String createTicket(TicketDetailsDto dto)
 	{
 		// This method will create a ticket
@@ -61,19 +64,24 @@ public class TicketActionService
 		redisTemplate.delete("AllTickets:"+dto.getProjectId());
 		
 		TicketActionEvent event= ticketWrapperImpl.TicketEvent("CREATED",ticket);
-		kafkaTemplate.send("Ticket-Events","ProjectId: "+ticket.getProjectId(), event);
+		kafkaTemplate.send("Ticket-Events","ProjectId:"+ticket.getProjectId(), event);
 		
 		return "Ticket created successfully";
 	}
 	
+	//subjected for removal, as it is not used anywhere in the code., but just duplicating the functionality of getProjectTickets, but with a different name.
 	public List<TicketResponseDto> getProjectTickets(int projectId)
 	{
 		// This method will return all the tickets of a project
+		
+		boolean ver=verifyEmployeeProjectId(projectId, Set.of("TEAM_LEAD","PROJECT_MANAGER"));
+		if(!ver)
+			throw new RuntimeException("UNAUTHORIZED");
 		List<TicketResponseDto> tk= redisTemplate.opsForValue().get("projectTickets:"+projectId);
 		
 		if(tk==null)
 		{
-			List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusNotAndAssignedToIsNull(projectId, TicketStatus.RESOLVED);
+			List<Ticket> tickets = ticketRepo.findByProjectIdAndStatusAndAssignedToIsNull(projectId, TicketStatus.OPEN);
 			List<TicketResponseDto> responseDtos = tickets.stream()
 														  .map(ticket -> {
 															  				TicketResponseDto responseDto = ticketWrapperImpl.toDto(ticket);
@@ -89,13 +97,17 @@ public class TicketActionService
 			return tk;
 		}
 	}
-
+	
+	//
 	public String deleteTicket(int ticketId, long projectId)
 	{
 		// This method will delete a ticket
+		boolean ver=verifyEmployeeProjectId(projectId, Set.of("TEAM_LEAD","PROJECT_MANAGER"));
+		if(!ver)
+			throw new RuntimeException("UNAUTHORIZED");
 		
 		Ticket ticket = ticketRepo.findById(ticketId).orElse(null);
-		if(ticket != null)
+		if(ticket != null && ticket.getProjectId() == projectId)
 		{
 			ticketRepo.deleteById(ticketId);
 			
@@ -112,56 +124,109 @@ public class TicketActionService
 		}
 	}
 	
+	//
 	public String updateTicketStatus(TicketStatusUpdateDto dto)
 	{
 		// This method will update the status of a ticket
 		Ticket ticket = ticketRepo.findById(dto.getTicketId()).orElse(null);
-		Boolean upd=false;
-		if(ticket != null)
+		if(ticket==null || ticket.getProjectId()!=dto.getProjectId())
+			throw new RuntimeException("Ticket not found");
+		
+		boolean ap=true;
+		MemberDetailsDto dt= pfc.verifyEmployee(ticket.getProjectId()).getBody();
+		if(dt==null || !Set.of("TEAM_LEAD","PROJECT_MANAGER", "DEVELOPER").contains(dt.getRole()))
+			ap=false;
+		
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(!ap || !(ticket.getAssignedEmployeeId()==up.getEmployeeId()))
 		{
-			TicketStatus status=dto.getStatus();
-			ticket.setStatus(status);
-			ticket.setUpdatedAt(java.time.LocalDateTime.now());
+			if(!Set.of("TEAM_LEAD", "PROJECT_MANAGER").contains(dt.getRole()))
+				throw new RuntimeException("UNAUTHORIZED");		
+		}
+		
+		Boolean upd=false;
+		TicketStatus status=dto.getStatus();
+		ticket.setStatus(status);
+		ticket.setUpdatedAt(java.time.LocalDateTime.now());
 			
-			if(status == TicketStatus.RESOLVED)
-			{
+		if(status == TicketStatus.RESOLVED)
+		{
 				upd=true;
 				ticket.setClosedAt(java.time.LocalDateTime.now());
 				ticket.setApproved(TicketApprovalStatus.PENDING);
-			}
-			else if(status == TicketStatus.REOPENED)
-			{
+		}
+		else if(status == TicketStatus.REOPENED && Set.of("TEAM_LEAD", "PROJECT_MANAGER").contains(dt.getRole()))
+		{
+				
 				upd=true;
 				ticket.setAssignedTo(null);
 				ticket.setClosedAt(null);
 				redisTemplate.delete("userTickets:"+ticket.getAssignedEmployeeId());
 				ticket.setAssignedEmployeeId(null);
-			}
-			
-			ticketRepo.save(ticket);
-			
-			redisTemplate.delete("projectTickets:"+ticket.getProjectId());
-			redisTemplate.delete("AvailableTickets:"+ticket.getProjectId());
-			redisTemplate.delete("AllTickets:"+ticket.getProjectId());
-			
-			if(upd)
-			{
-				kafkaTemplate.send("Ticket-Events","ProjectId:"+ticket.getProjectId(), new TicketActionEvent("UPDATED", new TicketActionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
-			}
-			
-			return "Ticket status updated successfully";
 		}
 		else
 		{
-			return "Ticket not found";
+			throw new RuntimeException("INVALID/UNAUTHORIZED");
 		}
+			
+		ticketRepo.save(ticket);
+			
+		redisTemplate.delete("projectTickets:"+ticket.getProjectId());
+		redisTemplate.delete("AvailableTickets:"+ticket.getProjectId());
+		redisTemplate.delete("AllTickets:"+ticket.getProjectId());
+			
+		if(upd)
+		{
+				kafkaTemplate.send("Ticket-Events","ProjectId:"+ticket.getProjectId(), new TicketActionEvent("UPDATED", new TicketActionDto(ticket.getTitle(),ticket.getPriority(),ticket.getProjectId(),LocalDateTime.now())));
+		}
+			
+		return "Ticket status updated successfully";
 	}
-	
+		
+	//
 	public String assignUserTicket(AssignUserDto dto) throws Exception
 	{
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new Exception("TICKET NOT FOUND !"));
-		
 		UserFeignDto ufr=  ufc.getUserFromAuthService(Long.valueOf(dto.getEmployeeId())).getBody();
+		
+		if(!tk.getStatus().equals(TicketStatus.REOPENED) || !tk.getStatus().equals(TicketStatus.OPEN))
+		{
+			throw new RuntimeException("Ticket Already Assigned");
+		}
+		if(ufr==null)
+		{
+			throw new RuntimeException("No User Found !");
+		}
+		
+		MemberDetailsDto dt= pfc.verifyEmployee(tk.getProjectId()).getBody();
+		
+		boolean rp=false;
+		if(ufr.getEmployeeId()!=up.getEmployeeId())
+		{
+			rp=true;
+			if(Set.of("PROJECT_MANAGER", "TEAM_LEAD").contains(dt.getRole()))
+			{
+				boolean r= verifyEmployeeProjectId(tk.getProjectId(),dto.getEmployeeId(),Set.of("TEAM_LEAD","PROJECT_MANAGER", "DEVELOPER"));
+				if(!r)
+					throw new RuntimeException("UNAUTHORIZED");
+			}
+			else
+			{
+				throw new RuntimeException("UNAUTHORIZED");
+			}
+		}
+		
+		if(!rp)
+		{
+			boolean rs=true;
+			if(dt==null || !Set.of("PROJECT_MANAGER", "TEAM_LEAD", "DEVELOPER").contains(dt.getRole()))
+			{
+				rs=false;
+			}
+			if(!rs)
+				throw new RuntimeException("UNAUTHORIZED");
+		}
 		
 		if(tk.getAssignedEmployeeId()!=null)
 		{
@@ -183,8 +248,12 @@ public class TicketActionService
 		return "User Assigned !";
 	}
 	
+	//
 	public List<TicketResponseDto> getAvailableTicketsForUser(int projectId)
 	{
+		boolean rs= verifyEmployeeProjectId(projectId, Set.of("DEVELOPER"));
+		if(!rs)
+			throw new RuntimeException("UNAUTHORIZED");
 		
 		List<TicketResponseDto> res= redisTemplate.opsForValue().get("AvailableTickets:"+projectId);
 		
@@ -215,17 +284,28 @@ public class TicketActionService
 		
 	}
 	
+	//
 	@Transactional
 	public String updateTicketApprovalStatus(TicketApprovalDto dto)
 	{
-		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Ticket tk= ticketRepo.findByIdAndApproved(dto.getTicketId(), TicketApprovalStatus.PENDING).orElseThrow(()-> new RuntimeException("NO TICKET FOUND"));
 		
-		if(dto.getStatus().equals(TicketApprovalStatus.PENDING))
+		MemberDetailsDto userDetails= pfc.verifyEmployee(tk.getProjectId()).getBody();
+		if(userDetails==null || !userDetails.getRole().equals("TEAM_LEAD"))
 		{
-			return "Same State !"; 
+			throw new RuntimeException("UNAUTHORIZED");
 		}
 		
-		Ticket tk= ticketRepo.findById(dto.getTicketId()).orElseThrow(()-> new RuntimeException("No Ticket Found !"));
+		if(tk.getProjectId()!=dto.getProjectId())
+		{
+			throw new RuntimeException("No Ticket Found !");
+		}
+		
+		if(dto.getStatus().equals(TicketApprovalStatus.PENDING) || !tk.getStatus().equals(TicketStatus.RESOLVED))
+		{
+			return "State Contradicts"; 
+		}
+		
 		
 		if(dto.getStatus().equals(TicketApprovalStatus.NOT_APPROVED))
 		{
@@ -244,8 +324,9 @@ public class TicketActionService
 		{
 			tk.setApproved(dto.getStatus());
 		}
-		
 		tk.setUpdatedAt(LocalDateTime.now());
+		
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		TicketApprovalAudit taa= new TicketApprovalAudit();
 		taa.setDescription(dto.getDescription());
@@ -261,9 +342,14 @@ public class TicketActionService
 		return "Updated Successfully";
 	}
 	
-	public List<TicketResponseDto> getTicketBasedOnFilter(TicketStatus stat, TicketPriority prior, TicketApprovalStatus status)
+	//
+	public List<TicketResponseDto> getTicketBasedOnFilter(TicketStatus stat, TicketPriority prior, TicketApprovalStatus status, Long projectId)
 	{
-		List<TicketResponseDto> res= ticketRepo.filterBySpecs(stat, prior, status)
+		Boolean rs= verifyEmployeeProjectId(projectId, Set.of("TEAM_LEAD","PROJECT_MANAGER"));
+		if(!rs)
+			throw new RuntimeException("UNAUTHORIZED");
+		
+		List<TicketResponseDto> res= ticketRepo.filterBySpecs(stat, prior, status, projectId)
 											   .stream()
 											   .map(r->{
 												   return ticketWrapperImpl.toDto(r);
@@ -272,15 +358,15 @@ public class TicketActionService
 		return res;
 	}
 	
+	//
 	public List<TicketResponseDto> getUserTickets()
 	{
 		UserPrincipal prin= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
 		List<TicketResponseDto> dt=redisTemplate.opsForValue().get("userTickets:"+prin.getEmployeeId());
 		
 		if(dt==null)
 		{
-			List<TicketResponseDto> res= ticketRepo.findByAssignedEmployeeIdOrderByCreatedAtDesc((long)prin.getEmployeeId())
+			List<TicketResponseDto> res= ticketRepo.findByAssignedEmployeeIdOrderByCreatedAtDesc(prin.getEmployeeId())
 					   .stream()
 					   .map(r->{
 						   return ticketWrapperImpl.toDto(r);
@@ -296,11 +382,13 @@ public class TicketActionService
 			return dt;
 		}
 	}
-	
+	//
 	public List<TicketResponseDto> getAllTickets(int projectId)
 	{	
-		if(pfc.verifyEmployee(projectId).getBody())
-		{
+			boolean ver= verifyEmployeeProjectId(projectId, Set.of("TEAM_LEAD","PROJECT_MANAGER"));
+			if(!ver)
+				throw new RuntimeException("UNAUTHORIZED");
+			
 			List<TicketResponseDto> rs= redisTemplate.opsForValue().get("AllTickets:"+projectId);
 			if(rs==null)
 			{
@@ -318,18 +406,16 @@ public class TicketActionService
 			{
 				return rs;
 			}
-		}
-		else
-		{
-			throw new RuntimeException("UNAUTHORIZED");
-		}
 		
 	}
 	
+	//
 	public List<TicketResponseDto> getUnapprovedTickets(int projectid, TicketApprovalStatus status)
-	{	
-		if(pfc.verifyEmployee(projectid).getBody())
-		{
+	{
+			Boolean rs= verifyEmployeeProjectId(projectid, Set.of("TEAM_LEAD","PROJECT_MANAGER"));
+			if(!rs)
+				throw new RuntimeException("UNAUTHORIZED");
+			
 			List<TicketResponseDto> dto= ticketRepo.findByProjectIdAndApproved(projectid,status)
 					  .stream()
 					  .map(r->{
@@ -337,11 +423,26 @@ public class TicketActionService
 					  })
 					  .toList();
 			return dto;
-		}
-		else
+	}
+	
+	public Boolean verifyEmployeeProjectId(long projectId, Set<String> allowedRoles)
+	{
+		MemberDetailsDto dt= pfc.verifyEmployee(projectId).getBody();
+		if(dt==null || !allowedRoles.contains(dt.getRole()) || !dt.getIsProjectActive())
 		{
-			throw new RuntimeException("UNAUTHORIZED");
+			return false;
 		}
+		return true;
+	}
+	
+	public Boolean verifyEmployeeProjectId(long projectId, long employeeId, Set<String> allowedRoles)
+	{
+		MemberDetailsDto dt= pfc.verifyEmployee(projectId, employeeId).getBody();
+		if(dt==null || !allowedRoles.contains(dt.getRole()))
+		{
+			return false;
+		}
+		return true;
 	}
 	
 }
