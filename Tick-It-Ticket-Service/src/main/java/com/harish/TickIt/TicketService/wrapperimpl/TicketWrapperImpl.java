@@ -28,7 +28,7 @@ public class TicketWrapperImpl implements com.harish.TickIt.TicketService.wrappe
 	public Ticket createTicket(TicketDetailsDto dto)
 	{
 		MemberDetailsDto userDetails= projectFeignClient.verifyEmployee(dto.getProjectId()).getBody();
-		if(!userDetails.getRole().equals("TEAM_LEAD"))
+		if( userDetails==null || !userDetails.getRole().equals("TEAM_LEAD"))
 		{
 			throw new RuntimeException("ONLY TEAM LEAD CAN CREATE TICKET !");
 		}
