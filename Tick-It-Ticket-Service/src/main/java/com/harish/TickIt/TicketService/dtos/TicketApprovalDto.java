@@ -7,7 +7,7 @@ public class TicketApprovalDto
 	private int ticketId;
 	private TicketApprovalStatus status;
 	private String description;
-	
+	private Long projectId;
 	
 	public int getTicketId() {
 		return ticketId;
@@ -27,6 +27,11 @@ public class TicketApprovalDto
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+	public Long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
 
 }
