@@ -195,25 +195,18 @@ public class AuthService
 	
 	public UserRegistration assignRole(UserRegistration reg, EmployeeManagement employee)
 	{
-		if(employee.getDesignation().equals(Designation.PROJECT_MANAGER))
+		if(employee.getDesignation().equals(Designation.PLATFORM_MANAGER))
 		{
 			reg.setDepartment(employee.getDepartment());
 			reg.setDesignation(employee.getDesignation());
 			Roles role= rolerep.findByRoleName("ROLE_MANAGER").get();
 			reg.getRoles().add(role);	
 		}	
-		else if(employee.getDesignation().equals(Designation.PROJECT_ADMINISTRATOR))
+		else if(employee.getDesignation().equals(Designation.PLATFORM_ADMINISTRATOR))
 		{
 			reg.setDepartment(employee.getDepartment());
 			reg.setDesignation(employee.getDesignation());
 			Roles role= rolerep.findByRoleName("ROLE_ADMIN").get();
-			reg.getRoles().add(role);	
-		}
-		else if(employee.getDesignation().equals(Designation.TEAM_LEAD))
-		{
-			reg.setDepartment(employee.getDepartment());
-			reg.setDesignation(employee.getDesignation());
-			Roles role= rolerep.findByRoleName("ROLE_LEAD").get();
 			reg.getRoles().add(role);	
 		}
 		else
