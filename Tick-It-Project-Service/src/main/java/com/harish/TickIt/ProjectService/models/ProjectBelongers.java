@@ -15,7 +15,6 @@ public class ProjectBelongers
 	private ProjectRole role;
 	private boolean isActive;
 	
-	
 	public Long getEmployeeId() {
 		return employeeId;
 	}
