@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.harish.TickIt.ProjectService.auth.UserPrincipal;
+import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
@@ -49,8 +50,15 @@ public class ProjectMemberController
 	
 	@GetMapping("/projects/get/{projectId}")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<Boolean> verifyEmployeeProjectId(@PathVariable long projectId)
+	public ResponseEntity<MemberDetailsDto> verifyEmployeeProjectId(@PathVariable long projectId)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(ps.verifyEmployeeProjectId(projectId));
+	}
+	
+	@GetMapping("/projects/get//{projectId}/{employeeId}")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<MemberDetailsDto> verifyEmployeeProjectId(@PathVariable long projectId, @PathVariable long employeeId)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(ps.verifyEmployeeProjectId(projectId, employeeId));
 	}
 }

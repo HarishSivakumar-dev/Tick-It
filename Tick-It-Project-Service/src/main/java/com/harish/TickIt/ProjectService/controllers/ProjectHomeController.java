@@ -70,4 +70,11 @@ public class ProjectHomeController
 		return ps.findProject(projectId);
 	}
 	
+	@PostMapping("/projects/members/manager/add")
+	@PreAuthorize("hasAnyRole('USER')")
+	public ResponseEntity<String> addOthersIntoProject(@RequestBody List<MemberDetailsDto> dto)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
+	}
+
 }
