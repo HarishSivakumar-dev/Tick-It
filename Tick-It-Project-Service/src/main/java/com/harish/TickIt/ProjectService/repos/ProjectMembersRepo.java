@@ -12,5 +12,5 @@ public interface ProjectMembersRepo extends JpaRepository<ProjectMembers, Intege
 	List<ProjectMembers> findByEmployeeIdAndProjectIdNotNull(Long id);
 	List<ProjectMembers> findByProjectId(Long id);
 	List<ProjectMembers> findByEmployeeIdIn(List<Long> ls);
-	Boolean existsByEmployeeIdAndProjectId(Long employeeId, long projectId);
+	ProjectMembers findByEmployeeIdAndProjectId(Long employeeId, long projectId);
 }
