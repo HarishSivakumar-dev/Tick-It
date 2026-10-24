@@ -8,4 +8,5 @@ import com.harish.TickIt.ProjectService.models.ProjectBelongers;
 public interface ProjectMembershipRepo extends JpaRepository<ProjectBelongers, Integer>
 {
 	List<ProjectBelongers> findByProjectId(long id);
+	List<ProjectBelongers> findByEmployeeId(long id);
 }
