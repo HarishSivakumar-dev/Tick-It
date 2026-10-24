@@ -1,7 +1,6 @@
 package com.harish.TickIt.ProjectService.dtos;
 
-import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 import com.harish.TickIt.ProjectService.enums.ProjectRole;
 
 public class UserProjectDetailsDto 
@@ -10,8 +9,8 @@ public class UserProjectDetailsDto
 	private Long employeeId;
 	private String mailId;
 	private String userName;
-	private LocalDate assignedDate;
-	private LocalDate relievedDate;
+	private LocalDateTime assignedDate;
+	private LocalDateTime relievedDate;
 	private ProjectRole role;
 	
 	
@@ -39,16 +38,16 @@ public class UserProjectDetailsDto
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public LocalDate getAssignedDate() {
+	public LocalDateTime getAssignedDate() {
 		return assignedDate;
 	}
-	public void setAssignedDate(LocalDate assignedDate) {
-		this.assignedDate = assignedDate;
+	public void setAssignedDate(LocalDateTime localDateTime) {
+		this.assignedDate = localDateTime;
 	}
-	public LocalDate getRelievedDate() {
+	public LocalDateTime getRelievedDate() {
 		return relievedDate;
 	}
-	public void setRelievedDate(LocalDate relievedDate) {
+	public void setRelievedDate(LocalDateTime relievedDate) {
 		this.relievedDate = relievedDate;
 	}
 	public ProjectRole getRole() {
