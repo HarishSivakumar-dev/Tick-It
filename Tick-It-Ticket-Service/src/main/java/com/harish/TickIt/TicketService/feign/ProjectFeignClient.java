@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.harish.TickIt.TicketService.dtos.MemberDetailsDto;
 import com.harish.TickIt.TicketService.dtos.TicketAvailDto;
 
 @FeignClient("Tick-It-Project-Service")
@@ -14,6 +16,9 @@ public interface ProjectFeignClient
 	TicketAvailDto getProjectIdFromService(@RequestParam long projectId);
 	
 	@GetMapping("app/projects/get/{projectId}")
-	ResponseEntity<Boolean> verifyEmployee(@PathVariable long projectId);
+	ResponseEntity<MemberDetailsDto> verifyEmployee(@PathVariable long projectId);
+	
+	@GetMapping("app/projects/get/{projectId}/{employeeId}")
+	ResponseEntity<MemberDetailsDto> verifyEmployee(@PathVariable long projectId, @PathVariable long employeeId);
 	
 }
