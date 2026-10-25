@@ -1,10 +1,8 @@
 package com.harish.TickIt.ProjectService.services;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,10 +17,13 @@ import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TickIt.ProjectService.enums.ProjectStatus;
 import com.harish.TickIt.ProjectService.feign.UserInformationFeign;
+import com.harish.TickIt.ProjectService.models.ProjectBelongers;
 import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
+import com.harish.TickIt.ProjectService.repos.ProjectMembershipRepo;
+
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,7 +41,10 @@ public class ProjectService
 	private UserInformationFeign uif;
 	@Autowired
 	private CacheManager manager;
+	@Autowired
+	private ProjectMembershipRepo rep;
 	
+	//
 	@Cacheable(value="AllProjects")
 	public List<ProjectResponseDto> getAllProjects()
 	{
@@ -65,6 +69,7 @@ public class ProjectService
 		
 	}
 	
+	//
 	@Transactional
 	@CacheEvict(value="AllProjects")
 	public String projectCreation(ProjectCreationDto dto)
@@ -113,18 +118,18 @@ public class ProjectService
 			det.setStatus(dto.getStatus());
 			if(dto.getStatus()==ProjectStatus.CANCELLED || dto.getStatus()==ProjectStatus.COMPLETED)
 			{
-				List<ProjectMembers> ls= pmr.findByProjectId(det.getProjectId())
+				List<ProjectBelongers> ls= rep.findByProjectId(det.getProjectId())
 											.stream()
 											.map(r->{
 												r.setProjectId(null);
 												r.setRole(null);
-												r.setRelievedDate(LocalDate.now());
+												r.setRelievedDate(LocalDateTime.now());
 												return r;
 											})
 											.toList();
-				pmr.saveAll(ls);
+				rep.saveAll(ls);
 				
-				for(ProjectMembers m : ls)
+				for(ProjectBelongers m : ls)
 				{
 					manager.getCache("UserProjects").evict(m.getEmployeeId());
 				}
@@ -145,17 +150,16 @@ public class ProjectService
 	@Cacheable(value="ProjectMembersUnassigned")
 	public List<UserDetailsDto> getAllEmployeesUnassigned()
 	{
-		List<UserDetailsDto> res= pmr.findByProjectIdIsNull().stream()
-															 .map(r->{
-																 UserDetailsDto dto= new UserDetailsDto();
-																 dto.setMailId(r.getMailId());
-																 dto.setProjectId(r.getProjectId());
-																 dto.setEmployeeId(r.getEmployeeId());
-																 dto.setUserName(r.getUserName());
+		List<UserDetailsDto> res= pmr.findAll().stream()
+											   .map(r->{
+															UserDetailsDto dto= new UserDetailsDto();
+															dto.setMailId(r.getMailId());
+															dto.setEmployeeId(r.getEmployeeId());
+															dto.setUserName(r.getUserName());
 																 
-																 return dto;
-															 })
-															 .toList();
+															return dto;
+														})
+											   .toList();
 		
 		return res;
 	}
@@ -167,11 +171,7 @@ public class ProjectService
 		ProjectMembers pm= new ProjectMembers();
 		pm.setEmployeeId(dto.getEmployeeId());
 		pm.setUserName(dto.getUserName());
-		pm.setProjectId(null);
 		pm.setMailId(dto.getEmail());
-		pm.setAssignedDate(null);
-		pm.setRole(null);
-		pm.setRelievedDate(null);
 		
 		pmr.save(pm);
 		
@@ -181,7 +181,8 @@ public class ProjectService
 	@Cacheable(value="UserProjects", key="#employeeId")
 	public List<UserProjectDetailsDto> getAllUserProjects(long employeeId)
 	{
-		List<ProjectMembers> proj= pmr.findByEmployeeIdAndProjectIdNotNull(employeeId);
+		List<ProjectBelongers> proj= rep.findByEmployeeId(employeeId);
+								
 		
 		if(proj.isEmpty())
 		{
@@ -213,32 +214,51 @@ public class ProjectService
 					})	
 	public String addMembersIntoProject(List<MemberDetailsDto> dto)
 	{
+		
+		List<String> lt=dto.stream()
+						   .map(r->{
+							   String role=r.getRole().toString();
+							   return role;
+						   })
+						   .toList();
+		
+		if(!lt.contains("TEAM_LEAD") && !lt.contains("PROJECT_MANAGER"))
+		{
+			return "Should contain atleast 1 teamlead/project_manager"; 
+		}
+		
 		List<Long> ls= dto.stream()
 						  .map(r->{
 								return r.getEmployeeId();
 						   })
 						  .toList();
 		
-		List<ProjectMembers> pm= pmr.findByEmployeeIdIn(ls);
-		Map<Long, MemberDetailsDto> mp= new HashMap<Long, MemberDetailsDto>();
+		List<ProjectMembers> bel= pmr.findByEmployeeIdIn(ls);
 		
+		if(bel.size()!=dto.size())
+		{
+			throw new RuntimeException("SOME EMPLOYEES NOT FOUND");
+		}
+		
+		List<ProjectBelongers> bl= new ArrayList<ProjectBelongers>();
 		for(MemberDetailsDto dt : dto)
 		{
-			mp.put(dt.getEmployeeId(), dt);
-		}
-		
-		for(ProjectMembers p : pm)
-		{
-			p.setAssignedDate(LocalDate.now());
-			p.setRole(mp.get(p.getEmployeeId()).getRole());
-			p.setProjectId(mp.get(p.getEmployeeId()).getProjectId());
-			p.setRelievedDate(null);
+			ProjectBelongers b= new ProjectBelongers();
+			b.setActive(true);
+			b.setAssignedDate(LocalDateTime.now());
+			b.setEmployeeId(dt.getEmployeeId());
+			b.setProjectId(dt.getProjectId());
+			b.setRole(dt.getRole());
+			b.setUserName(dt.getUserName());
+			b.setMailId(dt.getMailId());
 			
-			manager.getCache("UserProjects").evict(p.getEmployeeId());
-			manager.getCache("ProjectMembers").evict(p.getProjectId());
+			bl.add(b);
+			
+			manager.getCache("UserProjects").evict(dt.getEmployeeId());
+			manager.getCache("ProjectMembers").evict(dt.getProjectId());
 		}
 		
-		pmr.saveAll(pm);
+		rep.saveAll(bl);
 		
 		return "Saved all Details";
 	}
@@ -246,7 +266,7 @@ public class ProjectService
 	@Cacheable(value="ProjectMembers", key="#projectId")
 	public List<UserProjectDetailsDto> getProjectMembers(Long projectId)
 	{
-		List<UserProjectDetailsDto> ls= pmr.findByProjectId(projectId)
+		List<UserProjectDetailsDto> ls= rep.findByProjectId(projectId)
 				                           .stream()
 				                           .map(r->
 				                           {
@@ -288,13 +308,32 @@ public class ProjectService
 		}	
 	}
 
-	public Boolean verifyEmployeeProjectId(long projectId)
+	public MemberDetailsDto verifyEmployeeProjectId(long projectId)
 	{
 		UserPrincipal usr= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Boolean pm= pmr.existsByEmployeeIdAndProjectId(usr.getEmployeeId(), projectId);
+		ProjectBelongers pm= rep.findByProjectIdAndEmployeeId(projectId, usr.getEmployeeId());
 		
-		return pm.booleanValue();
+		MemberDetailsDto dto= new MemberDetailsDto();
+		dto.setEmployeeId(pm.getEmployeeId());
+		dto.setMailId(pm.getMailId());
+		dto.setProjectId(pm.getProjectId());
+		dto.setRole(pm.getRole());
+		dto.setUserName(pm.getUserName());
+		
+		return dto;
 	}
-	
 
+	public MemberDetailsDto verifyEmployeeProjectId(long projectId, long employeeId)
+	{	
+		ProjectBelongers pm= rep.findByProjectIdAndEmployeeId(projectId, employeeId);
+		
+		MemberDetailsDto dto= new MemberDetailsDto();
+		dto.setEmployeeId(pm.getEmployeeId());
+		dto.setMailId(pm.getMailId());
+		dto.setProjectId(pm.getProjectId());
+		dto.setRole(pm.getRole());
+		dto.setUserName(pm.getUserName());
+		
+		return dto;
+	}
 }
