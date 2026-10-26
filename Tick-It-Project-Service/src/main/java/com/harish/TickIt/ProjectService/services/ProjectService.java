@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import com.harish.TickIt.ProjectService.auth.UserPrincipal;
+import com.harish.TickIt.ProjectService.dtos.AddMembersDto;
 import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectDetDto;
@@ -15,6 +16,7 @@ import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
 import com.harish.TickIt.ProjectService.dtos.UserDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
+import com.harish.TickIt.ProjectService.enums.ProjectRole;
 import com.harish.TickIt.ProjectService.enums.ProjectStatus;
 import com.harish.TickIt.ProjectService.feign.UserInformationFeign;
 import com.harish.TickIt.ProjectService.models.ProjectBelongers;
@@ -212,8 +214,24 @@ public class ProjectService
 	@Transactional
 	@Caching(evict= {@CacheEvict(value="ProjectMembersUnassigned"),
 					})	
-	public String addMembersIntoProject(List<MemberDetailsDto> dto)
+	public String addMembersIntoProject(List<AddMembersDto> dto, Long projectId)
 	{
+		List<String> roles= SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+																				  .stream()
+																				  .map(r->{
+																					  String s= r.getAuthority();
+																					  return s;
+																				  })
+																				  .toList();
+		
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		boolean res = rep.existsByProjectIdAndEmployeeIdAndProjectRole(projectId, up.getEmployeeId(), ProjectRole.PROJECT_MANAGER);
+		boolean rl= roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER");
+		
+		if(!rl && !res)
+		{
+			throw new RuntimeException("ACCESS DENIED");
+		}
 		
 		List<String> lt=dto.stream()
 						   .map(r->{
@@ -222,7 +240,7 @@ public class ProjectService
 						   })
 						   .toList();
 		
-		if(!lt.contains("TEAM_LEAD") && !lt.contains("PROJECT_MANAGER"))
+		if(!(lt.contains("TEAM_LEAD") && lt.contains("PROJECT_MANAGER")))
 		{
 			return "Should contain atleast 1 teamlead/project_manager"; 
 		}
@@ -241,13 +259,13 @@ public class ProjectService
 		}
 		
 		List<ProjectBelongers> bl= new ArrayList<ProjectBelongers>();
-		for(MemberDetailsDto dt : dto)
+		for(AddMembersDto dt : dto)
 		{
 			ProjectBelongers b= new ProjectBelongers();
 			b.setActive(true);
 			b.setAssignedDate(LocalDateTime.now());
 			b.setEmployeeId(dt.getEmployeeId());
-			b.setProjectId(dt.getProjectId());
+			b.setProjectId(projectId);
 			b.setRole(dt.getRole());
 			b.setUserName(dt.getUserName());
 			b.setMailId(dt.getMailId());
@@ -255,7 +273,7 @@ public class ProjectService
 			bl.add(b);
 			
 			manager.getCache("UserProjects").evict(dt.getEmployeeId());
-			manager.getCache("ProjectMembers").evict(dt.getProjectId());
+			manager.getCache("ProjectMembers").evict(projectId);
 		}
 		
 		rep.saveAll(bl);
