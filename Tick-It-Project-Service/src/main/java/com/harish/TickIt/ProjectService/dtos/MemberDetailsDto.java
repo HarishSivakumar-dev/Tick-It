@@ -1,5 +1,6 @@
 package com.harish.TickIt.ProjectService.dtos;
 
+import java.time.LocalDateTime;
 import com.harish.TickIt.ProjectService.enums.ProjectRole;
 
 public class MemberDetailsDto
@@ -9,6 +10,9 @@ public class MemberDetailsDto
 	private String mailId;
 	private String userName;
 	private ProjectRole role;
+	private boolean isActive;
+	private LocalDateTime assignedDate;
+	private LocalDateTime relievedDate;
 	
 	public Long getProjectId() {
 		return projectId;
@@ -40,6 +44,23 @@ public class MemberDetailsDto
 	public void setRole(ProjectRole role) {
 		this.role = role;
 	}
-	
+	public boolean isActive() {
+		return isActive;
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+	public LocalDateTime getAssignedDate() {
+		return assignedDate;
+	}
+	public void setAssignedDate(LocalDateTime assignedDate) {
+		this.assignedDate = assignedDate;
+	}
+	public LocalDateTime getRelievedDate() {
+		return relievedDate;
+	}
+	public void setRelievedDate(LocalDateTime relievedDate) {
+		this.relievedDate = relievedDate;
+	}
 	
 }
