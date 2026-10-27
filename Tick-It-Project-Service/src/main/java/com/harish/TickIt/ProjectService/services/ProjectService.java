@@ -337,6 +337,9 @@ public class ProjectService
 		dto.setProjectId(pm.getProjectId());
 		dto.setRole(pm.getRole());
 		dto.setUserName(pm.getUserName());
+		dto.setAssignedDate(pm.getAssignedDate());
+		dto.setRelievedDate(pm.getRelievedDate());
+		dto.setActive(pm.isActive());
 		
 		return dto;
 	}
@@ -351,6 +354,9 @@ public class ProjectService
 		dto.setProjectId(pm.getProjectId());
 		dto.setRole(pm.getRole());
 		dto.setUserName(pm.getUserName());
+		dto.setAssignedDate(pm.getAssignedDate());
+		dto.setRelievedDate(pm.getRelievedDate());
+		dto.setActive(pm.isActive());
 		
 		return dto;
 	}
