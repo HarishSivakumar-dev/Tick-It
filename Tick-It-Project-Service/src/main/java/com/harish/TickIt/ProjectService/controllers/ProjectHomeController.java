@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.harish.TickIt.ProjectService.dtos.MemberDetailsDto;
+import com.harish.TickIt.ProjectService.dtos.AddMembersDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectCreationDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectDetDto;
 import com.harish.TickIt.ProjectService.dtos.ProjectResponseDto;
@@ -50,9 +50,9 @@ public class ProjectHomeController
 	
 	@PostMapping("/projects/members/add")
 	@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<MemberDetailsDto> dto)
+	public ResponseEntity<String> addMembersIntoProject(@RequestBody List<AddMembersDto> dto, @RequestParam(required=false) long projectId)
 	{	
-		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
+		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto, projectId));
 	}
 	
 	@GetMapping("/projects/members/get/{projectId}")
@@ -70,11 +70,11 @@ public class ProjectHomeController
 		return ps.findProject(projectId);
 	}
 	
-	@PostMapping("/projects/members/manager/add")
+	@PostMapping("/projects/members/manager/add/{projectId}")
 	@PreAuthorize("hasAnyRole('USER')")
-	public ResponseEntity<String> addOthersIntoProject(@RequestBody List<MemberDetailsDto> dto)
+	public ResponseEntity<String> addOthersIntoProject(@RequestBody List<AddMembersDto> dto, @PathVariable long projectId)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto));
+		return ResponseEntity.status(HttpStatus.OK).body(ps.addMembersIntoProject(dto, projectId));
 	}
 
 }
