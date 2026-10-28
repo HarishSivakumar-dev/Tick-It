@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.harish.tickit.notificationService.auth.UserPrincipal;
 import com.harish.tickit.notificationService.dtos.NotificationResponseDto;
 import com.harish.tickit.notificationService.dtos.NotificationUpdateDto;
-import com.harish.tickit.notificationService.events.TicketCommentsEvents;
-import com.harish.tickit.notificationService.events.TicketCreationEvent;
+import com.harish.tickit.notificationService.events.TicketCommentsEvent;
+import com.harish.tickit.notificationService.events.TicketActionEvent;
 import com.harish.tickit.notificationService.models.Notification;
 import com.harish.tickit.notificationService.repos.NotificationRepo;
 import jakarta.transaction.Transactional;
@@ -19,7 +19,7 @@ public class NotificationService
 	@Autowired
 	private NotificationRepo nr;
 	
-	public void createNotification(TicketCreationEvent ndto)
+	public void createNotification(TicketActionEvent ndto)
 	{
 		String msg= ndto.getMessage();
 		String title= ndto.getDetails().getTitle();
@@ -138,7 +138,7 @@ public class NotificationService
 		return userId;
 	}
 
-	public void createCommentNotification(TicketCommentsEvents event)
+	public void createCommentNotification(TicketCommentsEvent event)
 	{
 		// TODO Auto-generated method stub
 		System.out.println("Comment Notification received: "+event.getMessage()+" "+event.getDetails().getMessage()+" "+event.getDetails().getProjectId());
