@@ -1,9 +1,10 @@
 package com.harish.TickIt.ProjectService.models;
 
 import java.time.LocalDateTime;
-
+import jakarta.persistence.EnumType;
 import com.harish.TickIt.ProjectService.enums.ProjectRole;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -14,7 +15,10 @@ public class ProjectBelongers
 	@Id
 	private Long employeeId;
 	private Long projectId;
+	
+	@Enumerated(EnumType.STRING)
 	private ProjectRole role;
+	
 	private boolean isActive;
 	private LocalDateTime assignedDate;
 	private LocalDateTime relievedDate;
