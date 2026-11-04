@@ -225,7 +225,7 @@ public class ProjectService
 																				  .toList();
 		
 		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		boolean res = rep.existsByProjectIdAndEmployeeIdAndProjectRole(projectId, up.getEmployeeId(), ProjectRole.PROJECT_MANAGER);
+		boolean res = rep.existsByProjectIdAndEmployeeIdAndRole(projectId, up.getEmployeeId(), ProjectRole.PROJECT_MANAGER);
 		boolean rl= roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER");
 		
 		if(!rl && !res)
