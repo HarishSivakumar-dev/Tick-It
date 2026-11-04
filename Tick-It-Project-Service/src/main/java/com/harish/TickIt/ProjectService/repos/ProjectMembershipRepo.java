@@ -10,5 +10,5 @@ public interface ProjectMembershipRepo extends JpaRepository<ProjectBelongers, I
 	List<ProjectBelongers> findByProjectId(long id);
 	List<ProjectBelongers> findByEmployeeId(long id);
 	ProjectBelongers findByProjectIdAndEmployeeId(long projectId, long usr);
-	boolean existsByProjectIdAndEmployeeIdAndProjectRole(long projectId, long employeeId, ProjectRole role);
+	boolean existsByProjectIdAndEmployeeIdAndRole(long projectId, long employeeId, ProjectRole role);
 }
