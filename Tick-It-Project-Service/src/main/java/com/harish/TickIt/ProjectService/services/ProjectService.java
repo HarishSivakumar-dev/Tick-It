@@ -25,7 +25,6 @@ import com.harish.TickIt.ProjectService.models.ProjectMembers;
 import com.harish.TickIt.ProjectService.repos.ProjectDetailsRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembersRepo;
 import com.harish.TickIt.ProjectService.repos.ProjectMembershipRepo;
-
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -73,7 +72,7 @@ public class ProjectService
 	
 	//
 	@Transactional
-	@CacheEvict(value="AllProjects")
+	@CacheEvict(value="AllProjects", allEntries=true)
 	public String projectCreation(ProjectCreationDto dto)
 	{
 		ProjectDetails pd= new ProjectDetails();
@@ -104,7 +103,7 @@ public class ProjectService
 	}
 	
 	@Transactional
-	@Caching(evict= {@CacheEvict(value="AllProjects"),
+	@Caching(evict= {@CacheEvict(value="AllProjects", allEntries=true),
 					 @CacheEvict(value="ProjectId", key="#dto.projectId")})
 	public String projectDetailsUpdation(ProjectCreationDto dto)
 	{
@@ -167,7 +166,7 @@ public class ProjectService
 	}
 	
 	@Transactional
-	@CacheEvict(value="ProjectMembersUnassigned")
+	@CacheEvict(value="ProjectMembersUnassigned", allEntries=true)
 	public String userInfoPopulation(UserProjectDto dto)
 	{
 		ProjectMembers pm= new ProjectMembers();
@@ -212,8 +211,9 @@ public class ProjectService
 	}
 	
 	@Transactional
-	@Caching(evict= {@CacheEvict(value="ProjectMembersUnassigned"),
-					})	
+	@Caching(evict= {	@CacheEvict(value="ProjectMembersUnassigned", allEntries=true),
+						@CacheEvict(value="UserProjects", allEntries=true),
+						@CacheEvict(value="ProjectMembers", key="#projectId")})
 	public String addMembersIntoProject(List<AddMembersDto> dto, Long projectId)
 	{
 		List<String> roles= SecurityContextHolder.getContext().getAuthentication().getAuthorities()
