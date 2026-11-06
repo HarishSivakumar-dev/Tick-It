@@ -190,6 +190,10 @@ public class AuthService
 		
 		reg= assignRole(reg, employee);
 				
+		rep.save(reg);
+		employee.setAccountActivated(true);
+		emr.save(employee);
+		
 		return reg;
 	 }
 	
@@ -252,10 +256,6 @@ public class AuthService
 		UserRegistration reg= createUserOauth(emp, name);
 		createUserProfile(reg, emp.getId());
 		createProjectDetails(reg);
-		
-		rep.save(reg);
-		emp.setAccountActivated(true);
-		emr.save(emp);
 		
 		return reg;	
 	}
