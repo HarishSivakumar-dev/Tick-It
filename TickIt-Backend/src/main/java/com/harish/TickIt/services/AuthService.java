@@ -190,7 +190,7 @@ public class AuthService
 		
 		reg= assignRole(reg, employee);
 				
-		return rep.save(reg);
+		return reg;
 	 }
 	
 	public UserRegistration assignRole(UserRegistration reg, EmployeeManagement employee)
@@ -252,6 +252,10 @@ public class AuthService
 		UserRegistration reg= createUserOauth(emp, name);
 		createUserProfile(reg, emp.getId());
 		createProjectDetails(reg);
+		
+		rep.save(reg);
+		emp.setAccountActivated(true);
+		emr.save(emp);
 		
 		return reg;	
 	}
