@@ -8,5 +8,4 @@ public enum Designation
     DEVOPS_ENGINEER,
     UI_UX_DESIGNER,
     PLATFORM_ADMINISTRATOR
-    
 }
