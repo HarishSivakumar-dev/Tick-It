@@ -190,11 +190,11 @@ public class AuthService
 		
 		reg= assignRole(reg, employee);
 				
-		rep.save(reg);
+		
 		employee.setAccountActivated(true);
 		emr.save(employee);
 		
-		return reg;
+		return rep.save(reg);
 	 }
 	
 	public UserRegistration assignRole(UserRegistration reg, EmployeeManagement employee)
