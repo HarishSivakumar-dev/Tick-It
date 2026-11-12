@@ -18,7 +18,6 @@ import com.harish.TickIt.ProjectService.dtos.UserProjectDetailsDto;
 import com.harish.TickIt.ProjectService.dtos.UserProjectDto;
 import com.harish.TickIt.ProjectService.enums.ProjectRole;
 import com.harish.TickIt.ProjectService.enums.ProjectStatus;
-import com.harish.TickIt.ProjectService.feign.UserInformationFeign;
 import com.harish.TickIt.ProjectService.models.ProjectBelongers;
 import com.harish.TickIt.ProjectService.models.ProjectDetails;
 import com.harish.TickIt.ProjectService.models.ProjectMembers;
@@ -38,8 +37,6 @@ public class ProjectService
 	private ProjectDetailsRepo pdr;
 	@Autowired
 	private ProjectMembersRepo pmr;
-	@Autowired
-	private UserInformationFeign uif;
 	@Autowired
 	private CacheManager manager;
 	@Autowired
@@ -82,18 +79,10 @@ public class ProjectService
 		pd.setCreatedAt(LocalDateTime.now());
 		pd.setEndDate(null);
 		pd.setProjectDescription(dto.getProjectDescription());
-		
-		if(uif.findProjectManagerId(up.getEmployeeId()).getBody().equals(Boolean.TRUE))
-		{
-			pd.setProjectManagerId(up.getEmployeeId());
-		}
-		else
-		{
-			throw new RuntimeException("NO PROJECT MANAGER FOUND WITH THAT ID");
-		}
-		
+		pd.setProjectManagerId(up.getEmployeeId());
 		pd.setProjectName(dto.getProjectName());
 		pd.setStartDate(null);
+		pd.setActive(Boolean.FALSE);
 		pd.setStatus(ProjectStatus.NOT_STARTED);
 		pd.setUpdatedAt(LocalDateTime.now());
 		
@@ -120,13 +109,28 @@ public class ProjectService
 		if(dto.getStatus()!=null)
 		{
 			det.setStatus(dto.getStatus());
+			if(dto.getStatus().equals(ProjectStatus.IN_PROGRESS))
+			{
+				List<ProjectRole> ls= rep.findByProjectId(det.getProjectId())
+											.stream()
+											.map(r->{
+												return r.getRole();
+											})
+											.toList();
+			
+				if(!(ls.contains(ProjectRole.PROJECT_MANAGER) || ls.contains(ProjectRole.TEAM_LEAD)))
+				{
+					throw new RuntimeException("PROJECT CANNOT BE STARTED WITHOUT A PROJECT MANAGER OR TEAM LEAD");
+				}
+				det.setActive(Boolean.TRUE);
+			}
+			
 			if(dto.getStatus()==ProjectStatus.CANCELLED || dto.getStatus()==ProjectStatus.COMPLETED)
 			{
 				List<ProjectBelongers> ls= rep.findByProjectId(det.getProjectId())
 											.stream()
 											.map(r->{
-												r.setProjectId(null);
-												r.setRole(null);
+												r.setActive(false);
 												r.setRelievedDate(LocalDateTime.now());
 												return r;
 											})
@@ -142,8 +146,6 @@ public class ProjectService
 				manager.getCache("ProjectMembers").evict(det.getProjectId());
 			}
 		}
-		if(dto.isActive() != null)
-			det.setActive(dto.isActive());
 		
 		pdr.save(det);
 		
@@ -236,18 +238,6 @@ public class ProjectService
 			throw new RuntimeException("ACCESS DENIED");
 		}
 		
-		List<String> lt=dto.stream()
-						   .map(r->{
-							   String role=r.getRole().toString();
-							   return role;
-						   })
-						   .toList();
-		
-		if(!(lt.contains("TEAM_LEAD") && lt.contains("PROJECT_MANAGER")))
-		{
-			return "Should contain atleast 1 teamlead/project_manager"; 
-		}
-		
 		List<Long> ls= dto.stream()
 						  .map(r->{
 								return r.getEmployeeId();
@@ -332,7 +322,7 @@ public class ProjectService
 	public MemberDetailsDto verifyEmployeeProjectId(long projectId)
 	{
 		UserPrincipal usr= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		ProjectBelongers pm= rep.findByProjectIdAndEmployeeId(projectId, usr.getEmployeeId());
+		ProjectBelongers pm= rep.findByProjectIdAndEmployeeIdAndIsActiveTrue(projectId, usr.getEmployeeId());
 		
 		MemberDetailsDto dto= new MemberDetailsDto();
 		dto.setEmployeeId(pm.getEmployeeId());
@@ -349,7 +339,7 @@ public class ProjectService
 
 	public MemberDetailsDto verifyEmployeeProjectId(long projectId, long employeeId)
 	{	
-		ProjectBelongers pm= rep.findByProjectIdAndEmployeeId(projectId, employeeId);
+		ProjectBelongers pm= rep.findByProjectIdAndEmployeeIdAndIsActiveTrue(projectId, employeeId);
 		
 		MemberDetailsDto dto= new MemberDetailsDto();
 		dto.setEmployeeId(pm.getEmployeeId());
