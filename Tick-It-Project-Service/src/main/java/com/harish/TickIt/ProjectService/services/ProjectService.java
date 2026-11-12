@@ -75,16 +75,17 @@ public class ProjectService
 	@CacheEvict(value="AllProjects", allEntries=true)
 	public String projectCreation(ProjectCreationDto dto)
 	{
+		UserPrincipal up= (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		ProjectDetails pd= new ProjectDetails();
 		
-		pd.setActive(dto.isActive());
+		pd.setActive(true);
 		pd.setCreatedAt(LocalDateTime.now());
 		pd.setEndDate(null);
 		pd.setProjectDescription(dto.getProjectDescription());
 		
-		if(uif.findProjectManagerId(dto.getProjectManagerId()).getBody().equals(Boolean.TRUE))
+		if(uif.findProjectManagerId(up.getEmployeeId()).getBody().equals(Boolean.TRUE))
 		{
-			pd.setProjectManagerId(dto.getProjectManagerId());
+			pd.setProjectManagerId(up.getEmployeeId());
 		}
 		else
 		{
@@ -92,8 +93,8 @@ public class ProjectService
 		}
 		
 		pd.setProjectName(dto.getProjectName());
-		pd.setStartDate(dto.getStartDate());
-		pd.setStatus(dto.getStatus());
+		pd.setStartDate(null);
+		pd.setStatus(ProjectStatus.NOT_STARTED);
 		pd.setUpdatedAt(null);
 		
 		pdr.save(pd);
@@ -112,6 +113,8 @@ public class ProjectService
 		
 		if(dto.getEndDate()!=null)
 			det.setEndDate(dto.getEndDate());
+		if(dto.getStartDate()!=null)
+			det.setStartDate(dto.getStartDate());
 		if(dto.getProjectDescription()!=null)
 			det.setProjectDescription(dto.getProjectDescription());
 		if(dto.getStatus()!=null)
