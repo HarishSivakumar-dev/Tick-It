@@ -95,7 +95,7 @@ public class ProjectService
 		pd.setProjectName(dto.getProjectName());
 		pd.setStartDate(null);
 		pd.setStatus(ProjectStatus.NOT_STARTED);
-		pd.setUpdatedAt(null);
+		pd.setUpdatedAt(LocalDateTime.now());
 		
 		pdr.save(pd);
 		
