@@ -71,7 +71,7 @@ public class UserService
 	public Boolean getUserDetails(long employeeId)
 	{
 		ProfileResponseDto userProfile= this.getEmployeeDetails(employeeId);
-		if(userProfile.getDesignation().equals("PROJECT_MANAGER"))
+		if(userProfile.getDesignation().equals("PLATFORM_MANAGER"))
 		{
 			return Boolean.TRUE;
 		}
