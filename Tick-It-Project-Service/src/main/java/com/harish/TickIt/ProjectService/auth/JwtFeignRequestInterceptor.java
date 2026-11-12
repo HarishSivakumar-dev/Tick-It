@@ -5,7 +5,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtFeignRequestInterceptor implements RequestInterceptor
 {
 
@@ -18,6 +20,7 @@ public class JwtFeignRequestInterceptor implements RequestInterceptor
 		ServletRequestAttributes sessionRequestAttributes = (ServletRequestAttributes) requestAttributes;
 		String authHeader = sessionRequestAttributes.getRequest().getHeader("Authorization");
 		
+		System.out.println("Authorization Header in Feign Interceptor: " + authHeader);
 		if (authHeader != null && authHeader.startsWith("Bearer "))
 		{
 			template.header("Authorization", authHeader);
