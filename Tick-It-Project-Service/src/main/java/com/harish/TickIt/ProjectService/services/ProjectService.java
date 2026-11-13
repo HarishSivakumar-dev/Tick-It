@@ -1,5 +1,6 @@
 package com.harish.TickIt.ProjectService.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +101,6 @@ public class ProjectService
 		ProjectDetails det= pdr.findByProjectId(dto.getProjectId()).orElseThrow(()-> new RuntimeException("No Project Id found"));
 		det.setUpdatedAt(LocalDateTime.now());
 		
-		if(dto.getEndDate()!=null)
-			det.setEndDate(dto.getEndDate());
-		if(dto.getStartDate()!=null)
-			det.setStartDate(dto.getStartDate());
 		if(dto.getProjectDescription()!=null)
 			det.setProjectDescription(dto.getProjectDescription());
 		if(dto.getStatus()!=null)
@@ -111,7 +108,7 @@ public class ProjectService
 			det.setStatus(dto.getStatus());
 			if(dto.getStatus().equals(ProjectStatus.IN_PROGRESS))
 			{
-				List<ProjectRole> ls= rep.findByProjectId(det.getProjectId())
+				List<ProjectRole> ls= rep.findByProjectIdAndIsActiveTrue(det.getProjectId())
 											.stream()
 											.map(r->{
 												return r.getRole();
@@ -122,6 +119,7 @@ public class ProjectService
 				{
 					throw new RuntimeException("PROJECT CANNOT BE STARTED WITHOUT A PROJECT MANAGER OR TEAM LEAD");
 				}
+				det.setStartDate(LocalDate.now());
 				det.setActive(Boolean.TRUE);
 			}
 			
@@ -141,6 +139,9 @@ public class ProjectService
 				{
 					manager.getCache("UserProjects").evict(m.getEmployeeId());
 				}
+				
+				det.setActive(Boolean.FALSE);
+				det.setEndDate(LocalDate.now());
 				
 				manager.getCache("ProjectMembersUnassigned").clear();
 				manager.getCache("ProjectMembers").evict(det.getProjectId());
