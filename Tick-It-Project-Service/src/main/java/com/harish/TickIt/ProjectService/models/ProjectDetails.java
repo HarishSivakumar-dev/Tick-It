@@ -2,9 +2,7 @@ package com.harish.TickIt.ProjectService.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import com.harish.TickIt.ProjectService.enums.ProjectStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,6 +28,7 @@ public class ProjectDetails
 	private boolean isActive;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	
 	
 	@Enumerated(EnumType.STRING)
 	private ProjectStatus status;

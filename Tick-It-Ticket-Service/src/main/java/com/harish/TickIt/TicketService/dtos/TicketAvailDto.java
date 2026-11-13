@@ -6,7 +6,6 @@ public class TicketAvailDto
 	private String projectName;
 	private boolean isActive;
 	
-	
 	public Long getProjectId() {
 		return projectId;
 	}
